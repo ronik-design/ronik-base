@@ -1,0 +1,50 @@
+// Partials
+@use "../sass/partials/variables";
+@use "../sass/partials/reset";
+// @use "../sass/partials/images";
+// @use "../sass/partials/buttons";
+// @use "../sass/partials/icons";
+// @use "../sass/partials/comments";
+// @use "../sass/partials/texts";
+
+// Templates
+// @use "../sass/templates/content";
+
+html {
+  overflow-x: hidden;
+}
+
+
+.ronik-base_page_acf-options-support, .ronik-base_page_acf-options-integrations, .ronik-base_page_acf-options-settings, .toplevel_page_acf-options-ronik-base{
+  #poststuff #post-body.columns-2{
+    margin-right: 0;
+  }
+  #postbox-container-1{
+    display: none;
+  }
+  .wrap.acf-settings-wrap > h1{
+    display: none;
+  }
+}
+
+.accordion{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .accordion-item{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: solid 1px violet;
+
+    .accordion-title{
+      display: flex;
+      padding-bottom: 10px;
+    }
+    .accordion-content{
+      background-color: #eaeaea;
+      padding: 10px;
+    }
+  }
+}
