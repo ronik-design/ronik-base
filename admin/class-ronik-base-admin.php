@@ -135,55 +135,72 @@ class Ronik_Base_Admin {
 		}
 	}
 
+	// We create our own option page due to ACF in-effective
+	public function rbp_plugin_interface() {
+		add_menu_page(
+			'General - Ronik Base', // page <title>Title</title>
+			'Ronik Base', // link text
+			'manage_options', // user capabilities
+			'options-ronik-base', // page slug
+			'ronikbase_support_general', // this function prints the page content
+			'dashicons-visibility', // icon (from Dashicons for example)
+			6 // menu position
+		);
+		// Add Settings page.
+		add_submenu_page(
+			'options-ronik-base', // parent page slug
+			'Ronik Base Settings',
+			'Settings',
+			'manage_options',
+			'options-ronik-base_settings', //
+			'ronikbase_support_settings',
+			1 // menu position
+		);
+		// Add Integrations page.
+		add_submenu_page(
+			'options-ronik-base', // parent page slug
+			'Integrations',
+			'Integrations',
+			'manage_options',
+			'options-ronik-base_integrations', //
+			'ronikbase_integrations_callback',
+			2 // menu position
+		);
+		// Add Support page.
+		add_submenu_page(
+			'options-ronik-base', // parent page slug
+			'Support',
+			'Support',
+			'manage_options',
+			'options-ronik-base_support', //
+			'ronikbase_support_callback',
+			3 // menu position
+		);
 
-
-
-	// This will setup all options pages.
-	public function rbp_acf_op_init(){
-		// Check function exists.
-		if (function_exists('acf_add_options_page')) {
-
-			// Add parent General page.
-			$parent = acf_add_options_page(array(
-				'page_title'  => __('General - Ronik Base'),
-				'menu_title'  => __('Ronik Base'),
-				'redirect'    => false,
-				'icon_url' => 'dashicons-visibility', // Add this line and replace the second inverted commas with class of the icon you like
-				'position' => 7
-			));
-	
-			// Add Settings page.
-			$child = acf_add_options_sub_page(array(
-				'page_title'  => __('Settings'),
-				'menu_title'  => __('Settings'),
-				'parent_slug' => $parent['menu_slug'],
-			));
-	
-			// Add Integrations page.
-			$child = acf_add_options_sub_page(array(
-				'page_title'  => __('Integrations'),
-				'menu_title'  => __('Integrations'),
-				'parent_slug' => $parent['menu_slug'],
-			));
-
-	
-			// Add Support page.
-			$child = acf_add_options_sub_page(array(
-				'page_title'  => __('Support'),
-				'menu_title'  => __('Support'),
-				'parent_slug' => $parent['menu_slug'],
-			));
-						
+		function ronikbase_support_general(){
+			echo '
+				<div id="ronik-base_general"></div>
+			';
+		}
+		function ronikbase_support_settings(){
+			echo '
+				<div id="ronik-base_settings"></div>
+			';
+		}
+		function ronikbase_support_callback(){
+			echo '
+				<div id="ronik-base_support"></div>
+			';
+		}
+		function ronikbase_integrations_callback(){
+			echo '
+				<div id="ronik-base_integrations"></div>
+				<div id="ronik_media_cleaner_api_key" data-api='.get_option('rbp_media_cleaner_api_key').'></div>
+				<div id="ronik_optimization_api_key" data-api='.get_option('rbp_optimization_api_key').'></div>
+			';
 		}
 	}
-
-
-
-
-
-
-
-
+	
 
 	// This will setup all custom fields via php scripts.
 	public function rbp_acf_op_init_fields(){
@@ -207,13 +224,8 @@ class Ronik_Base_Admin {
 
 
 	// These files contain ajax functions.
-	// Init Unused Media Migration
-	public function rbp_ajax_media_cleaner_remove(){
-		// include dirname(__FILE__)  . '/ajax/media-cleaner-remove.php';
-
-	}
-	// Init Remove Unused Media
-	public function rbp_ajax_media_cleaner(){
-		// include dirname(__FILE__) . '/ajax/media-cleaner.php';
+	// The API Checkpoint.
+	public function api_checkpoint(){
+		include dirname(__FILE__)  . '/ajax/api-checkpoint.php';
 	}
 }

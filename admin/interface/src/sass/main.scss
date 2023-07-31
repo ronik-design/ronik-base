@@ -15,17 +15,17 @@ html {
 }
 
 
-.ronik-base_page_acf-options-support, .ronik-base_page_acf-options-integrations, .ronik-base_page_acf-options-settings, .toplevel_page_acf-options-ronik-base{
-  #poststuff #post-body.columns-2{
-    margin-right: 0;
-  }
-  #postbox-container-1{
-    display: none;
-  }
-  .wrap.acf-settings-wrap > h1{
-    display: none;
-  }
-}
+// .ronik-base_page_acf-options-support, .ronik-base_page_acf-options-integrations, .ronik-base_page_acf-options-settings, .toplevel_page_acf-options-ronik-base{
+//   #poststuff #post-body.columns-2{
+//     margin-right: 0;
+//   }
+//   #postbox-container-1{
+//     display: none;
+//   }
+//   .wrap.acf-settings-wrap > h1{
+//     display: none;
+//   }
+// }
 
 .accordion{
   display: flex;
@@ -45,6 +45,100 @@ html {
     .accordion-content{
       background-color: #eaeaea;
       padding: 10px;
+    }
+  }
+}
+
+
+
+.tile-block {
+  display: flex;
+
+  &__inner {
+    display: flex;
+
+    .tile-item {
+      display: flex;
+      // width: 33%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 5px;
+
+      &__inner{
+        display: flex;
+        background-color: #e3e4e6;
+        padding-bottom: 25px;
+        border-radius: 10px;
+
+        .tile-item__content{
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          width: 100%;
+
+          .tile-item__form{
+            padding: 25px 25px 0;
+
+            .tile-item__input-group{
+              padding-bottom: 15px;
+
+              label{
+                padding-bottom: 5px;
+                display: flex;
+              }
+              input{
+
+              }
+            }
+            button{
+              padding: 10px;
+              border: none;
+              border-radius: 5px;
+              color: #fff;
+              background-color: #006dff;
+              cursor: pointer;
+              transition: all .4s;
+
+              &:hover{
+                background-color: #3f91fc;
+              }
+            }
+          }
+
+          .tile-item__text{
+            padding: 0 25px;
+
+            &--message{
+              padding: 0px;
+              transition: all .4s;
+            }
+            &--valid{
+              padding: 10px;
+              background-color: #9ff3bf;
+            }
+            &--invalid{
+              padding: 10px;
+              background-color: #f39f9f;
+            }
+            &--name{
+              background-color: #d0d5dd;
+              padding: 25px;
+              margin-bottom: 25px;
+              text-align: center;
+              font-weight: 600;
+            } 
+            &--title{
+              font-weight: 600;
+              font-size: 16px;
+              padding-bottom: 10px;
+            }
+            &--desc{
+              font-size: 14px;
+              padding-bottom: 10px;
+            }
+          }
+        }
+      }
     }
   }
 }

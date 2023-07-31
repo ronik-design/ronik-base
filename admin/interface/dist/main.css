@@ -312,16 +312,6 @@ html {
   overflow-x: hidden;
 }
 
-.ronik-base_page_acf-options-support #poststuff #post-body.columns-2, .ronik-base_page_acf-options-integrations #poststuff #post-body.columns-2, .ronik-base_page_acf-options-settings #poststuff #post-body.columns-2, .toplevel_page_acf-options-ronik-base #poststuff #post-body.columns-2 {
-  margin-right: 0;
-}
-.ronik-base_page_acf-options-support #postbox-container-1, .ronik-base_page_acf-options-integrations #postbox-container-1, .ronik-base_page_acf-options-settings #postbox-container-1, .toplevel_page_acf-options-ronik-base #postbox-container-1 {
-  display: none;
-}
-.ronik-base_page_acf-options-support .wrap.acf-settings-wrap > h1, .ronik-base_page_acf-options-integrations .wrap.acf-settings-wrap > h1, .ronik-base_page_acf-options-settings .wrap.acf-settings-wrap > h1, .toplevel_page_acf-options-ronik-base .wrap.acf-settings-wrap > h1 {
-  display: none;
-}
-
 .accordion {
   display: flex;
   flex-direction: column;
@@ -340,4 +330,82 @@ html {
 .accordion .accordion-item .accordion-content {
   background-color: #eaeaea;
   padding: 10px;
+}
+
+.tile-block {
+  display: flex;
+}
+.tile-block__inner {
+  display: flex;
+}
+.tile-block__inner .tile-item {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 5px;
+}
+.tile-block__inner .tile-item__inner {
+  display: flex;
+  background-color: #e3e4e6;
+  padding-bottom: 25px;
+  border-radius: 10px;
+}
+.tile-block__inner .tile-item__inner .tile-item__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__form {
+  padding: 25px 25px 0;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__form .tile-item__input-group {
+  padding-bottom: 15px;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__form .tile-item__input-group label {
+  padding-bottom: 5px;
+  display: flex;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__form button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #006dff;
+  cursor: pointer;
+  transition: all 0.4s;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__form button:hover {
+  background-color: #3f91fc;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text {
+  padding: 0 25px;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--message {
+  padding: 0px;
+  transition: all 0.4s;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--valid {
+  padding: 10px;
+  background-color: #9ff3bf;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--invalid {
+  padding: 10px;
+  background-color: #f39f9f;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--name {
+  background-color: #d0d5dd;
+  padding: 25px;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 600;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--title {
+  font-weight: 600;
+  font-size: 16px;
+  padding-bottom: 10px;
+}
+.tile-block__inner .tile-item__inner .tile-item__content .tile-item__text--desc {
+  font-size: 14px;
+  padding-bottom: 10px;
 }

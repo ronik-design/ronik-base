@@ -155,8 +155,9 @@ class Ronik_Base {
 		// Lets check to see if dependencies are met before continuing...
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
 
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rbp_plugin_interface' );
+
 		// Hooking up our function to theme setup
-		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init');
 		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_fields', 10);
 		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_functions', 20);
 
@@ -165,11 +166,8 @@ class Ronik_Base {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		
 		// Add Ajax
-		// $this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rbp_ajax_media_cleaner_remove');
-		// $this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rbp_ajax_media_cleaner_remove');
-
-		// $this->loader->add_action('wp_ajax_nopriv_do_init_unused_media_migration', $plugin_admin, 'rbp_ajax_media_cleaner');
-		// $this->loader->add_action('wp_ajax_do_init_unused_media_migration', $plugin_admin, 'rbp_ajax_media_cleaner');
+		$this->loader->add_action('wp_ajax_nopriv_api_checkpoint', $plugin_admin, 'api_checkpoint');
+		$this->loader->add_action('wp_ajax_api_checkpoint', $plugin_admin, 'api_checkpoint');
 	}
 
 	/**
