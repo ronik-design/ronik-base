@@ -203,7 +203,7 @@ var FetchAddon = function FetchAddon(_ref) {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            endpoint = "https://ronik-plugin.local";
+            endpoint = "https://ronikmarketstg.wpenginepowered.com";
             key = formValues[license_key];
             websiteID = JSON.stringify(window.location.hostname);
             _context.next = 5;

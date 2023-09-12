@@ -37,7 +37,7 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
     };
     // This is critical this will send a request to the plugin owners server. And send out a response of success or failure.
     const handleFetchData = async (e) => {
-        const endpoint = "https://ronik-plugin.local";
+        const endpoint = "https://ronikmarketstg.wpenginepowered.com";
         const key = formValues[license_key];
         const websiteID = JSON.stringify(window.location.hostname);
         const response = await fetch(`${endpoint}/wp-json/apikey/v1/data/apikey?pluginSlug=${pluginSlug}&key=${key}&websiteID=${websiteID}`);
