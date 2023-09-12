@@ -9,6 +9,8 @@ import LoadIntegrationsScreen from './templates/integrations.js';
 import LoadSettingsScreen from './templates/settings.js';
 // Load General Screen.
 import LoadGeneralScreen from './templates/general.js';
+// Load General Screen.
+import LoadMediaCleanerScreen from './templates/media_cleaner.js';
 
 // Due to the nature of WP we need to wait for the readystate.
 document.addEventListener('readystatechange', event => { 
@@ -39,7 +41,14 @@ document.addEventListener('readystatechange', event => {
                 const root = createRoot(domNode);
                 root.render(<LoadGeneralScreen />);
             }
-            
+       
+            // General screen
+            if(document.querySelector("#ronik-base_media_cleaner") !== null){
+                const domNode = document.getElementById('ronik-base_media_cleaner');
+                const root = createRoot(domNode);
+                root.render(<LoadMediaCleanerScreen />);
+            }
+
             
 
         

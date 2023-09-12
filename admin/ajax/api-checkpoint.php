@@ -14,11 +14,9 @@ if (!is_user_logged_in()) {
 
 
 if($_POST['plugin_slug'] == 'ronik_media_cleaner'){
-    if(!get_option('rbp_media_cleaner_api_key') && get_option('rbp_media_cleaner_api_key') !== '' ){
-        $f_option = add_option('rbp_media_cleaner_api_key', $_POST['apikey']);
-    } else {
-        $f_option = update_option('rbp_media_cleaner_api_key', $_POST['apikey']);
-    }
+    $f_option = update_option('rbp_media_cleaner_api_key', (isset($_POST['apikey'])) ? $_POST['apikey'] : '' );
+    $f_option_validation = update_option('rbp_media_cleaner_api_key_validation', (isset($_POST['apikeyValidation'])) ? $_POST['apikeyValidation'] : 'invalid' );
+
     if($f_option){
         // Send sucess message!
         wp_send_json_success('Reload');
@@ -29,11 +27,8 @@ if($_POST['plugin_slug'] == 'ronik_media_cleaner'){
 }
 
 if($_POST['plugin_slug'] == 'ronik_optimization'){
-    if(!get_option('rbp_optimization_api_key')){
-        $f_option = add_option('rbp_optimization_api_key', $_POST['apikey']);
-    } else {
-        $f_option = update_option('rbp_optimization_api_key', $_POST['apikey']);
-    }
+    $f_option = update_option('rbp_optimization_api_key', (isset($_POST['apikey'])) ? $_POST['apikey'] : '' );
+    $f_option_validation = update_option('rbp_optimization_api_key_validation', (isset($_POST['apikeyValidation'])) ? $_POST['apikeyValidation'] : 'invalid' );
 
     if($f_option){
         // Send sucess message!

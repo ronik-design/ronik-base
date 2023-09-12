@@ -161,6 +161,11 @@ class Ronik_Base {
 		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_fields', 10);
 		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_functions', 20);
 
+			// // $this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init');
+			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init_fields', 300);
+			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init_functions', 30);
+
+
 		// Enque Scripts
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -168,6 +173,16 @@ class Ronik_Base {
 		// Add Ajax
 		$this->loader->add_action('wp_ajax_nopriv_api_checkpoint', $plugin_admin, 'api_checkpoint');
 		$this->loader->add_action('wp_ajax_api_checkpoint', $plugin_admin, 'api_checkpoint');
+		
+
+
+		// rmc_ajax_media_cleaner
+
+			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
+			$this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
+	
+			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
+			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
 	}
 
 	/**

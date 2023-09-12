@@ -24,7 +24,7 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
         e.preventDefault();
         setDataResponse({ responseResults : 'invalid', response : 'License key deactivated.' });
         setFormValues({ });
-        handlePostData(e, '');
+        handlePostData(e, '', 'invalid');
     }
     // Lets handle the input changes and store the changes to form values.
     const handleChange = (e) => {
@@ -43,7 +43,7 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
         const response = await fetch(`${endpoint}/wp-json/apikey/v1/data/apikey?pluginSlug=${pluginSlug}&key=${key}&websiteID=${websiteID}`);
         const data = await response.json();
         if(data == 'Success') {
-            handlePostData(e, e.target[0].value);
+            handlePostData(e, e.target[0].value, 'valid');
             // acf js update field
             setDataResponse({ responseResults : 'valid', response : 'License key activated.' });
         } else {
@@ -55,11 +55,12 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
 
 
 
-    const handlePostData = async (e, val) => {
+    const handlePostData = async (e, val, validation) => {
         const data = new FormData();
             data.append( 'action', 'api_checkpoint' );
             data.append( 'nonce', wpVars.nonce );
             data.append( 'apikey',  val );
+            data.append( 'apikeyValidation',  validation );
             data.append( 'plugin_slug',  pluginSlug );
 
         fetch(wpVars.ajaxURL, {
