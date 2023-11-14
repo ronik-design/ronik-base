@@ -151,38 +151,29 @@ class Ronik_Base {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state() );
 		// Lets check to see if dependencies are met before continuing...
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
-
+		// Let us load the plugin interface.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rbp_plugin_interface' );
-
-		// Hooking up our function to theme setup
-		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_fields', 10);
-		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_acf_op_init_functions', 20);
-
-			// // $this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init');
-			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init_fields', 300);
-			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_acf_op_init_functions', 30);
-
-
 		// Enque Scripts
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		
 		// Add Ajax
 		$this->loader->add_action('wp_ajax_nopriv_api_checkpoint', $plugin_admin, 'api_checkpoint');
 		$this->loader->add_action('wp_ajax_api_checkpoint', $plugin_admin, 'api_checkpoint');
 		
 
-
 		// rmc_ajax_media_cleaner
-
+			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
+		if( $this->get_media_cleaner_state() ){
+			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
-	
+
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
+		}
 	}
 
 	/**
@@ -193,9 +184,7 @@ class Ronik_Base {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
 		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() );
-
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
@@ -239,6 +228,42 @@ class Ronik_Base {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	/**
+	 * Retrieve the valid auth of media cleaner.
+	 *
+	 * @since     1.0.0
+	 * @return    string    .
+	 */
+	public function get_media_cleaner_state() {
+		// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
+		$rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
+		$rbp_media_cleaner_validation = get_option('rbp_media_cleaner_api_key_validation') ? get_option('rbp_media_cleaner_api_key_validation') : "invalid";
+		if($rbp_media_cleaner_api_key && ($rbp_media_cleaner_validation !== "invalid")){
+			$media_cleaner_state = true;
+		} else {
+			$media_cleaner_state = false;
+		}
+		return $media_cleaner_state;
+	}
+
+	/**
+	 * Retrieve the valid auth of media cleaner.
+	 *
+	 * @since     1.0.0
+	 * @return    string    .
+	 */
+	public function get_optimization_state() {
+		// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
+		$rbp_optimization_api_key = get_option('rbp_optimization_api_key') ? get_option('rbp_optimization_api_key') : "";
+		$rbp_optimization_validation = get_option('rbp_optimization_api_key_validation') ? get_option('rbp_optimization_api_key_validation') : "invalid";
+		if($rbp_optimization_api_key && ($rbp_optimization_validation !== "invalid")){
+			$optimization_state = true;
+		} else{
+			$optimization_state = false;
+		}
+		return $optimization_state;
 	}
 
 }

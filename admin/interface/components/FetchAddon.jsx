@@ -37,7 +37,12 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
     };
     // This is critical this will send a request to the plugin owners server. And send out a response of success or failure.
     const handleFetchData = async (e) => {
-        const endpoint = "https://ronikmarketstg.wpenginepowered.com";
+        let endpoint = '';
+        if( window.location.href.includes("ronik-boilerplate.local/") ){
+            endpoint = "https://ronik-marketing.local";
+        } else {
+            endpoint = "https://ronikmarketstg.wpenginepowered.com";
+        }       
         const key = formValues[license_key];
         const websiteID = JSON.stringify(window.location.hostname);
         const response = await fetch(`${endpoint}/wp-json/apikey/v1/data/apikey?pluginSlug=${pluginSlug}&key=${key}&websiteID=${websiteID}`);
@@ -52,9 +57,7 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
         }
     }
 
-
-
-
+    // On success we post the data to the server.
     const handlePostData = async (e, val, validation) => {
         const data = new FormData();
             data.append( 'action', 'api_checkpoint' );
@@ -81,13 +84,12 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
             }
         })
         .catch((error) => {
-            console.log('[WP Pageviews Plugin]');
+            console.log('[WP ERROR Plugin]');
             console.error(error);
         });
     }
 
 
-    
     const validResponse = () => {
         if(dataResponse.responseResults == 'valid') {
             return (

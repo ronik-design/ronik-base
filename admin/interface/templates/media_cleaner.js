@@ -15,8 +15,6 @@ function Mediacleaner() {
                 requestType= "rmc_ajax_media_cleaner"
             />  
             <MediaCollector />
-
-        
 		</div>
 	);
 }

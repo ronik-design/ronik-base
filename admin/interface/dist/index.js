@@ -203,16 +203,21 @@ var FetchAddon = function FetchAddon(_ref) {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            endpoint = "https://ronikmarketstg.wpenginepowered.com";
+            endpoint = '';
+            if (window.location.href.includes("ronik-boilerplate.local/")) {
+              endpoint = "https://ronik-marketing.local";
+            } else {
+              endpoint = "https://ronikmarketstg.wpenginepowered.com";
+            }
             key = formValues[license_key];
             websiteID = JSON.stringify(window.location.hostname);
-            _context.next = 5;
+            _context.next = 6;
             return fetch("".concat(endpoint, "/wp-json/apikey/v1/data/apikey?pluginSlug=").concat(pluginSlug, "&key=").concat(key, "&websiteID=").concat(websiteID));
-          case 5:
+          case 6:
             response = _context.sent;
-            _context.next = 8;
+            _context.next = 9;
             return response.json();
-          case 8:
+          case 9:
             data = _context.sent;
             if (data == 'Success') {
               handlePostData(e, e.target[0].value, 'valid');
@@ -228,7 +233,7 @@ var FetchAddon = function FetchAddon(_ref) {
                 response: 'License key is invalid.'
               });
             }
-          case 10:
+          case 11:
           case "end":
             return _context.stop();
         }
@@ -387,28 +392,33 @@ var MediaCollector = function MediaCollector(_ref) {
   var items = _ref.items;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
-    isRemovedRow = _useState2[0],
-    setRemovedRow = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+    isImageId = _useState2[0],
+    setImageId = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    dataResponse = _useState4[0],
-    setDataResponse = _useState4[1];
+    isRemovedRow = _useState4[0],
+    setRemovedRow = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+    _useState6 = _slicedToArray(_useState5, 2),
+    dataResponse = _useState6[0],
+    setDataResponse = _useState6[1];
   var targets = document.querySelectorAll("[data-media-id]");
   for (var i = 0, len = targets.length; i < len; i++) {
     targets[i].querySelector("button").addEventListener('click', function (e) {
       e.target.textContent = 'Row is Removed!';
       setRemovedRow([e.target.getAttribute("data-media-row")]);
+      setImageId([e.target.getAttribute("data-media-image-id")]);
       // Lets remove the row.
       e.currentTarget.parentNode.parentNode.remove();
       return;
     });
   }
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log(isRemovedRow);
-    handlePostData(isRemovedRow);
+    console.log(isImageId);
+    handlePostData(isRemovedRow, isImageId);
   }, [isRemovedRow]);
   var handlePostData = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(isRemovedRow) {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(isRemovedRow, isImageId) {
       var data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -418,6 +428,7 @@ var MediaCollector = function MediaCollector(_ref) {
             data.append('nonce', wpVars.nonce);
             data.append('post_overide', "media-row-removal");
             data.append('row-id', isRemovedRow);
+            data.append('image-id', isImageId);
             fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
@@ -438,13 +449,13 @@ var MediaCollector = function MediaCollector(_ref) {
               console.log('[WP Pageviews Plugin]');
               console.error(error);
             });
-          case 6:
+          case 7:
           case "end":
             return _context.stop();
         }
       }, _callee);
     }));
-    return function handlePostData(_x2) {
+    return function handlePostData(_x2, _x3) {
       return _ref2.apply(this, arguments);
     };
   }();
@@ -499,76 +510,83 @@ var FetchAddon = function FetchAddon(_ref) {
   var requestType = _ref.requestType,
     _ref$postOveride = _ref.postOveride,
     postOveride = _ref$postOveride === void 0 ? null : _ref$postOveride;
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_defineProperty({}, 'user-option', 'fetch-media')),
     _useState2 = _slicedToArray(_useState, 2),
     formValues = _useState2[0],
     setFormValues = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState4 = _slicedToArray(_useState3, 2),
-    formCheckValues = _useState4[0],
-    setFormCheckValues = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
-    _useState6 = _slicedToArray(_useState5, 2),
-    increment = _useState6[0],
-    setIncrement = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-    _useState8 = _slicedToArray(_useState7, 2),
-    dataResponse = _useState8[0],
-    setDataResponse = _useState8[1];
-  var f_increment = document.querySelector(".ronik-user-exporter_increment").value;
+  var _useState4 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState5 = _slicedToArray(_useState4, 2),
+    formCheckValues = _useState5[0],
+    setFormCheckValues = _useState5[1];
+  var _useState6 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState7 = _slicedToArray(_useState6, 2),
+    increment = _useState7[0],
+    setIncrement = _useState7[1];
+  var _useState8 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState9 = _slicedToArray(_useState8, 2),
+    dataResponse = _useState9[0],
+    setDataResponse = _useState9[1];
+  // const f_increment = document.querySelector(".ronik-user-exporter_increment").value;
 
-  // On page render lets detect if the option field is populated. 
+  // On page render lets detect if the option field is populated.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    console.log(formValues);
+    console.log(formCheckValues);
     if (dataResponse == 'incomplete') {
-      setIncrement(increment + 1);
-      handlePostData('fetch-media', formCheckValues, increment);
+      console.log(increment);
+      if (formCheckValues.length == 0) {
+        console.log(increment);
+        handlePostData(formValues['user-option'], ['all'], increment);
+      } else {
+        console.log(increment);
+        handlePostData(formValues['user-option'], formCheckValues, increment);
+      }
       setDataResponse('incomplete_half');
     }
-
-    // const f_increment = document.querySelector(".ronik-user-exporter_increment").value;
-    // if(f_increment > 5 && f_increment !== '0' ){
-    //     // initAjaxUserData( $f_selected_email, $f_target_email_domain, $f_target_sso, $f_increment );
-    //     handlePostData('fetch-media', formCheckValues, f_increment );
-    //     alert('Synchronization is complete! Please click the "Download" button.');
-    // } else{
-    //     if(f_increment !== '0'){
-    //         setTimeout(() => { }, 500);
-
-    //         console.log(formCheckValues);
-    //         console.log(f_increment);
-
-    //         // initAjaxUserData( $f_selected_email, $f_target_email_domain, $f_target_sso, $f_increment );
-    //         handlePostData( 'fetch-media', formCheckValues, f_increment );
-
-    //         // $('#wpcontent').css(
-    //         //     {
-    //         //         "cursor":"wait", 
-    //         //         "opacity":"0.3"
-    //         //     }
-    //         // );
-    //     } else {
-    //         // alert($f_increment);
-    //         // handlePostData(e, formValues['user-option'], formCheckValues, f_increment );
-    //     }
-    // }
-  }, [dataResponse]);
+  }, [dataResponse, formValues, formCheckValues]);
 
   // Lets handle the input changes and store the changes to form values.
   var handleChange = function handleChange(e) {
-    console.log(e.target.value);
-    setFormValues(_objectSpread(_objectSpread({}, formValues), {}, _defineProperty({}, e.target.id, e.target.value)));
+    setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
+      'user-option': e.target.value
+    }));
+    // setFormValues( 'e.target.value' );
+    console.log(formValues);
   };
   var handleChangeRadio = function handleChangeRadio(e) {
-    console.log(e.target.value);
-    // setFormCheckValues({ ...formCheckValues, [e.target.id]: e.target.value });
-    setFormCheckValues([].concat(_toConsumableArray(formCheckValues), [e.target.value]));
+    if (e.target.checked) {
+      setFormCheckValues([].concat(_toConsumableArray(formCheckValues), [e.target.value]));
+    } else {
+      var index = formCheckValues.indexOf(e.target.value);
+      formCheckValues.splice(index, 1);
+      setFormCheckValues(formCheckValues);
+    }
   };
 
   // Handlefetch data from server and update option values.
   var handleSubmit = function handleSubmit(e) {
-    console.log(formCheckValues);
     e.preventDefault();
-    handlePostData(formValues['user-option'], formCheckValues, f_increment);
+    var f_wpwrap = document.querySelector("#wpwrap");
+    var f_wpcontent = document.querySelector("#wpcontent");
+    f_wpwrap.classList.add('loader');
+    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+    console.log('formCheckValues');
+    console.log(formCheckValues);
+    if (formCheckValues.length == 0) {
+      console.log(increment);
+      console.log('formCheckValues1');
+      console.log(formCheckValues);
+      console.log("formValues['user-option']");
+      console.log(formValues['user-option']);
+      handlePostData(formValues['user-option'], ['all'], increment);
+    } else {
+      console.log(increment);
+      console.log('formCheckValues2');
+      console.log(formCheckValues);
+      console.log(formValues['user-option']);
+      handlePostData(formValues['user-option'], formCheckValues, increment);
+    }
+    e.preventDefault();
   };
   var handlePostData = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(userOptions, mimeType, f_increment) {
@@ -602,8 +620,15 @@ var FetchAddon = function FetchAddon(_ref) {
                   setTimeout(function () {
                     // Lets remove the form
                     // location.reload();
+                    setIncrement(increment + 1);
+                  }, 50);
+                  setTimeout(function () {
                     setDataResponse('incomplete');
                   }, 50);
+                }
+                if (data.data == 'Cleaner-Done') {
+                  alert('Media cleanup complete! Page will auto reload.');
+                  location.reload();
                 }
               }
             })["catch"](function (error) {
@@ -637,79 +662,133 @@ var FetchAddon = function FetchAddon(_ref) {
   // }
 
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-    className: "tile-item",
-    id: requestType,
+    className: "media-cleaner-block",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "tile-item__inner",
+      className: "media-cleaner-block__inner",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        className: "tile-item__content",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
-          className: "tile-item__form",
-          onSubmit: handleSubmit,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            onChange: handleChangeRadio,
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "checkbox",
-              id: "checkbox",
-              value: "jpg"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "checkbox",
-              children: "JPG"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "checkbox",
-              id: "checkbox2",
-              value: "gif"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "checkbox2",
-              children: "GIF "
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "checkbox",
-              id: "checkbox3",
-              value: "png"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "checkbox3",
-              children: "PNG "
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "checkbox",
-              id: "checkbox4",
-              value: "video"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "checkbox4",
-              children: "Video "
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "checkbox",
-              id: "checkbox5",
-              value: "misc"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "checkbox5",
-              children: "Misc "
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            className: "tile-item__input-group",
-            onChange: handleChange,
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-              htmlFor: "name",
-              children: "User Media Option"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "radio",
-              value: "fetch-media",
-              id: "user-option",
-              name: "user-option"
-            }), " Init Unused Media Migration", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-              type: "radio",
-              value: "delete-media",
-              id: "user-option",
-              name: "user-option"
-            }), " Delete Unused Media"]
-          }), Object.keys(formValues).length == 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            type: "submit",
-            className: "submit-btn",
-            children: "Submit Disabled"
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            type: "submit",
-            className: "submit-btn",
-            children: "Submit"
-          })]
+        className: "media-cleaner-item",
+        id: requestType,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          className: "media-cleaner-item__inner",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "media-cleaner-item__content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
+              className: "media-cleaner-item__form",
+              onSubmit: handleSubmit,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                className: "media-cleaner-item__checkboxes",
+                onChange: handleChangeRadio,
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "ALL"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox_all",
+                    value: "all",
+                    defaultChecked: true
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox_all",
+                    children: "ALL"
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored hidden",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "JPG"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox",
+                    value: "jpg"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox",
+                    children: "JPG"
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored hidden",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "GIF"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox2",
+                    value: "gif"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox2",
+                    children: "GIF "
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored hidden",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "PNG"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox3",
+                    value: "png"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox3",
+                    children: "PNG "
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored hidden",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "Video"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox4",
+                    value: "video"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox4",
+                    children: "Video "
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  className: "switch colored hidden",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                    children: "MISC"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "checkbox",
+                    id: "checkbox5",
+                    value: "misc"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    htmlFor: "checkbox5",
+                    children: "Misc "
+                  })]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                className: "media-cleaner-item__input-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "radio-switch",
+                  onChange: handleChange,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    className: "radio-switch-field",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      id: "switch-off",
+                      type: "radio",
+                      name: "radio-switch",
+                      value: "fetch-media",
+                      defaultChecked: true
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      htmlFor: "switch-off",
+                      children: "Init Unused Media Migration"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    className: "radio-switch-field",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      id: "switch-on",
+                      type: "radio",
+                      name: "radio-switch",
+                      value: "delete-media"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      htmlFor: "switch-on",
+                      children: "Delete Unused Media"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                type: "submit",
+                className: "submit-btn",
+                children: "Submit"
+              })]
+            })
+          })
         })
       })
     })
