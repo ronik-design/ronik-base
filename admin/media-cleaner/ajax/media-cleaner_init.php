@@ -2,6 +2,8 @@
 /**
 * Init Unused Media Migration.
 */
+	// Helper Guide
+	$helper = new RonikBaseHelper;
 
 	if(isset($_POST['increment'])){
 		$increment = $_POST['increment'];
@@ -9,12 +11,34 @@
 		$select_post_status = array('publish', 'pending', 'draft', 'private', 'future');
 		// For now we get the page type.
 		$select_post_type = "page";
+		// $post_types = get_post_types( array(), 'names', 'and' ); 
+		// $post_types_without_defaults = array_diff($post_types, 
+		// 	array(
+		// 		'attachment',
+		// 		'revision',
+		// 		'nav_menu_item',
+		// 		'custom_css',
+		// 		'customize_changeset',
+		// 		'oembed_cache',
+		// 		'wp_block',
+		// 		'wp_template',
+		// 		'wp_template_part',
+		// 		'wp_global_styles',
+		// 		'wp_navigation',
+		// 		'acf-post-type',
+		// 		'acf-taxonomy',
+		// 		'acf-field-group',
+		// 		'acf-field'
+		// 	)
+		// );
+		// $select_post_type = $post_types_without_defaults;
+
 		// Mime_type.
 		$select_attachment_type = cleaner_post_mime_type($_POST['mime_type']);
 		// Overall media counter...
 		$throttle_detector =  databaseScannerMedia__allMedia(array('count',$select_attachment_type));
 		// Set numberposts to a number that wont destroy the server resources.
-		$select_numberposts = 100;
+		$select_numberposts = 35;
 		// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
 		$maxIncrement = ceil($throttle_detector/$select_numberposts); 
 		if($increment == 0){
@@ -25,21 +49,31 @@
 		}
 		if($increment > $maxIncrement){
 			update_option('rbp_media_cleaner_increment', 1 );
-			wp_send_json_success('Reload');
+			$response = array(
+				"response" => "Reload",
+				"pageCounter" => $increment,
+				"pageTotalCounter" => $maxIncrement,
+			);
+			wp_send_json_success($response);
+			// wp_send_json_success('Reload');
 			die();
 		}
 	} else {
+		$helper->ronikdesigns_write_log_devmode('Increment error.', 'critical');
 		wp_send_json_error('Increment error.');
 		die();
 	}
 
 	
 	// rmc_recursive_media_scanner
-	function rmc_recursive_media_scanner($increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status){		
+	function rmc_recursive_media_scanner($maxIncrement, $increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status){		
+		// Helper Guide
+		$helper = new RonikBaseHelper;
+
 		$offsetValue = $increment * $select_numberposts;
 		// Lets gather all the image id of the entire application.
 			// We receive all the image id.
-			error_log(print_r('Gather All Image ID of the entire website.' , true));
+			$helper->ronikdesigns_write_log_devmode('Gather All Image ID of the entire website.', 'low');
 			$allimagesid = get_posts( array(
 				'post_type' => 'attachment',
 				'offset' => $offsetValue,
@@ -56,12 +90,15 @@
 					$main_image_ids[] = $imageID;
 				}
 			}
-			error_log(print_r( count($main_image_ids) , true));
-			error_log(print_r( $main_image_ids , true));
 
+			$helper->ronikdesigns_write_log_devmode('KEVIN $offsetValue', 'low');
+			$helper->ronikdesigns_write_log_devmode($offsetValue, 'low');
+			$helper->ronikdesigns_write_log_devmode('KEVIN $increment', 'low');
+			$helper->ronikdesigns_write_log_devmode($increment, 'low');
 
 		// CHECKPOINT 1
-			error_log(print_r('CHECKPOINT 1: Check for post thumbnail && image attachement.' , true));
+			// error_log(print_r('CHECKPOINT 1: Check for post thumbnail && image attachement.' , true));
+			$helper->ronikdesigns_write_log_devmode('CHECKPOINT 1: Check for post thumbnail && image attachement.', 'low');
 		// Lets get all of the pages, posts and custom post types of the entire application. Thumbnail.
 			$get_all_post_pages = get_posts( array(
 				'post_type' => $select_post_type,
@@ -103,13 +140,14 @@
 			// $arr_checkpoint_1c = array_values(array_filter($arr_checkpoint_1b));
 
 		// CHECKPOINT COMPLETE
-			error_log(print_r('CHECKPOINT 1 COMPLETE: Check for post thumbnail && image attachement' , true));
-			error_log(print_r( count($arr_checkpoint_1b) , true));
-			error_log(print_r( $arr_checkpoint_1b , true));
+			$helper->ronikdesigns_write_log_devmode('CHECKPOINT 1 COMPLETE: Check for post thumbnail && image attachement', 'low');
+			$helper->ronikdesigns_write_log_devmode( count($arr_checkpoint_1b), 'low');
+			$helper->ronikdesigns_write_log_devmode( $arr_checkpoint_1b, 'low');
 
 
 		// CHECKPOINT 2
-			error_log(print_r('CHECKPOINT 2: Check image id within all posts. Primarily for Gutenberg Block Editor.' , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 2: Check image id within all posts. Primarily for Gutenberg Block Editor.', 'low');
+
 			$wp_postsid_gutenberg_image_array = array();
 			$wp_posts_gutenberg_image_array = array();
 			if($arr_checkpoint_1b){
@@ -145,7 +183,6 @@
 					) );
 					if($f_postsattached){
 						foreach($f_postsattached as $key => $posts){
-							error_log(print_r($posts, true));
 							if($posts){
 								$wp_posts_gutenberg_image_array[] = $image_id;
 							}
@@ -159,12 +196,13 @@
 			$arr_checkpoint_2b = cleaner_compare_array_diff($arr_checkpoint_2a, $wp_posts_gutenberg_image_array);
 
 		// CHECKPOINT COMPLETE
-			error_log(print_r('CHECKPOINT 2 COMPLETE: Check image id within all posts. Primarily for Gutenberg Block Editor.' , true));
-			error_log(print_r( count($arr_checkpoint_2b) , true));
-			error_log(print_r( $arr_checkpoint_2b , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 2 COMPLETE: Check image id within all posts. Primarily for Gutenberg Block Editor.', 'low');
+			$helper->ronikdesigns_write_log_devmode(  count($arr_checkpoint_2b), 'low');
+			$helper->ronikdesigns_write_log_devmode( $arr_checkpoint_2b, 'low');
 
 		// CHECKPOINT 3
-			error_log(print_r('CHECKPOINT 3: check all the postmeta for any image ids in the acf serialized array. AKA any repeater fields or gallery fields.' , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 3: check all the postmeta for any image ids in the acf serialized array. AKA any repeater fields or gallery fields.', 'low');
+
 			$wp_postsmeta_acf_repeater_image_array = array();
 			$wp_postsmeta_acf_repeater_image_url_array = array();
 			if($arr_checkpoint_2b){
@@ -221,13 +259,13 @@
 			$arr_checkpoint_3b = cleaner_compare_array_diff($arr_checkpoint_3a, $wp_postsmeta_acf_repeater_image_url_array);
 
 		// CHECKPOINT COMPLETE
-			error_log(print_r('CHECKPOINT 3 COMPLETE: Check all the postmeta for any image ids in the acf serialized array. AKA any repeater fields or gallery fields.' , true));
-			error_log(print_r( count($arr_checkpoint_3b) , true));
-			error_log(print_r( $arr_checkpoint_3b , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 3 COMPLETE: Check all the postmeta for any image ids in the acf serialized array. AKA any repeater fields or gallery fields.', 'low');
+			$helper->ronikdesigns_write_log_devmode( count($arr_checkpoint_3b), 'low');
+			$helper->ronikdesigns_write_log_devmode( $arr_checkpoint_3b, 'low');
 
 
 		// CHECKPOINT 4
-		error_log(print_r('CHECKPOINT 4: Check all the postmeta value for the id.' , true));
+		$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 4: Check all the postmeta value for the id.', 'low');
 			$wp_postsmeta_acf_array = array();
 			if($arr_checkpoint_3b){
 				foreach($arr_checkpoint_3b as $image_id){
@@ -257,13 +295,14 @@
 		// This part is critical we check all the postmeta for any image ids in the meta value
 			$arr_checkpoint_4a = cleaner_compare_array_diff($arr_checkpoint_3b, $wp_postsmeta_acf_array);
 		// CHECKPOINT COMPLETE
-		error_log(print_r('CHECKPOINT 4 COMPLETE: Check all the postmeta value for the id.' , true));
-		error_log(print_r( count($arr_checkpoint_4a) , true));
-		error_log(print_r( $arr_checkpoint_4a , true));
+		$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 4 COMPLETE: Check all the postmeta value for the id.', 'low');
+		$helper->ronikdesigns_write_log_devmode( count($arr_checkpoint_4a), 'low');
+		$helper->ronikdesigns_write_log_devmode( $arr_checkpoint_4a, 'low');
 
 
 		// CHECKPOINT 5
-			error_log(print_r('CHECKPOINT 5: Check all the php files within the active theme directory.' , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 5: Check all the php files within the active theme directory.', 'low');
+
 			$wp_infiles_array = array();
 			if($arr_checkpoint_4a){
 				foreach($arr_checkpoint_4a as $image_id){
@@ -273,37 +312,70 @@
 		// This part is critical we check all the php files within the active theme directory.
 			$arr_checkpoint_5a = cleaner_compare_array_diff($arr_checkpoint_4a, $wp_infiles_array);
 
+			$arr_has_post_parent = array();
+			if($arr_checkpoint_5a){
+				foreach($arr_checkpoint_5a as $arr_checkpoint_id){
+
+					if(get_post_parent($arr_checkpoint_id)){
+						$arr_has_post_parent[] = $arr_checkpoint_id;
+					}
+					
+				}
+			}
+			$arr_checkpoint_5b = cleaner_compare_array_diff($arr_checkpoint_5a, $arr_has_post_parent);
+
+
+			// error_log(print_r('$arr_has_post_parent', true));
+			// error_log(print_r($arr_has_post_parent, true));
+			// error_log(print_r('$arr_checkpoint_5a', true));
+			// error_log(print_r($arr_checkpoint_5a, true));
+			// error_log(print_r('$arr_checkpoint_5b', true));
+			// error_log(print_r($arr_checkpoint_5b, true));
+
 
 		// CHECKPOINT COMPLETE
-			error_log(print_r('CHECKPOINT 5 COMPLETE: Check all the php files within the active theme directory.' , true));
-			error_log(print_r( count($arr_checkpoint_5a) , true));
-			error_log(print_r( $arr_checkpoint_5a , true));
+			$helper->ronikdesigns_write_log_devmode( 'CHECKPOINT 5 COMPLETE: Check all the php files within the active theme directory.', 'low');
+			$helper->ronikdesigns_write_log_devmode( count($arr_checkpoint_5b), 'low');
+			$helper->ronikdesigns_write_log_devmode( $arr_checkpoint_5b, 'low');
 
-		return array_values(array_filter($arr_checkpoint_5a)); // 'reindex' array to cleanup...
+
+		return array_values(array_filter($arr_checkpoint_5b)); // 'reindex' array to cleanup...
 	}
 
 	// Pretty much the return will return all id.
 	sleep(1);
-		$image_array[] = rmc_recursive_media_scanner($increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status);
+		$image_array[] = rmc_recursive_media_scanner($maxIncrement, $increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status);
 		// remove empty and re-arrange image array
 		$image_array = array_values(array_filter($image_array));
 		$image_array = array_unique(array_merge(...$image_array));
 	
 		error_log(print_r('Final Results', true));
-		// error_log(print_r($image_array, true));
+		error_log(print_r($image_array, true));
+		$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
 		if($image_array){
 			// Get the array count..
 			update_option( 'rbp_media_cleaner_counter' , count($image_array) );
-	
+
+			// error_log(print_r('Final Results', true));
+			$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
+
+
+			$rbp_media_cleaner_media_data = get_option('rbp_media_cleaner_media_data');
+			if(!$rbp_media_cleaner_media_data){
+				$rbp_media_cleaner_media_data = array();
+			}
+
 			foreach( $image_array as $key => $f_result ){
 				$data = wp_get_attachment_metadata( $f_result ); // get the data structured
-				$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
+
+				if( isset($data['rbp_media_cleaner_isdetached']) && ($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') ){
+					$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
+					$rbp_media_cleaner_media_data[] = $f_result;
+				}
+				
 				wp_update_attachment_metadata( $f_result, $data );  // save it back to the db
 				update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
-				update_option('rbp_media_cleaner_' . $key . '_file_size', ((filesize(get_attached_file($f_result)))));
-				update_option('rbp_media_cleaner_' . $key . '_image_id', $f_result);
-				update_option('rbp_media_cleaner_' . $key . '_image_url', get_attached_file($f_result) );
-				update_option('rbp_media_cleaner_' . $key . '_thumbnail_preview', $f_result);
+				update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_media_data);
 	
 				if( $f_result == end($image_array) ){
 					// // Send sucess message!
@@ -311,7 +383,13 @@
 					// update_option( 'rbp_media_cleaner_increment', $f_increment );
 					// // Sleep for 1 seconds...
 					// sleep(1);
-					wp_send_json_success('Done');
+					$response = array(
+						"response" => "Done",
+						"pageCounter" => $increment,
+						"pageTotalCounter" => $maxIncrement,
+					);
+					wp_send_json_success($response);
+					// wp_send_json_success('Done');
 				}
 			}
 		} else {
@@ -322,7 +400,14 @@
 	
 			// Sleep for 1 seconds...
 			sleep(1);
-			wp_send_json_success('Done');
+			$response = array(
+				"response" => "Done",
+				"pageCounter" => $f_increment,
+				"pageTotalCounter" => $maxIncrement,
+			);
+			wp_send_json_success($response);
+
+			// wp_send_json_success('Done');
 	
 			// wp_send_json_error('No rows found! sss');
 		}

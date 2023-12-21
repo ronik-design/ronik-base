@@ -243,6 +243,8 @@ var FetchAddon = function FetchAddon(_ref) {
       return _ref2.apply(this, arguments);
     };
   }();
+
+  // On success we post the data to the server.
   var handlePostData = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e, val, validation) {
       var data;
@@ -272,7 +274,7 @@ var FetchAddon = function FetchAddon(_ref) {
                 }
               }
             })["catch"](function (error) {
-              console.log('[WP Pageviews Plugin]');
+              console.log('[WP ERROR Plugin]');
               console.error(error);
             });
           case 7:
@@ -392,33 +394,43 @@ var MediaCollector = function MediaCollector(_ref) {
   var items = _ref.items;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
-    isImageId = _useState2[0],
-    setImageId = _useState2[1];
+    unPreserveImageId = _useState2[0],
+    setUnImageId = _useState2[1];
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    isRemovedRow = _useState4[0],
-    setRemovedRow = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
-    _useState6 = _slicedToArray(_useState5, 2),
-    dataResponse = _useState6[0],
-    setDataResponse = _useState6[1];
+    preserveImageId = _useState4[0],
+    setImageId = _useState4[1];
   var targets = document.querySelectorAll("[data-media-id]");
   for (var i = 0, len = targets.length; i < len; i++) {
     targets[i].querySelector("button").addEventListener('click', function (e) {
-      e.target.textContent = 'Row is Removed!';
-      setRemovedRow([e.target.getAttribute("data-media-row")]);
-      setImageId([e.target.getAttribute("data-media-image-id")]);
-      // Lets remove the row.
-      e.currentTarget.parentNode.parentNode.remove();
-      return;
+      var f_wpwrap = document.querySelector("#wpwrap");
+      var f_wpcontent = document.querySelector("#wpcontent");
+      f_wpwrap.classList.add('loader');
+      f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+      if (e.target.getAttribute("data-unpreserve-media")) {
+        e.target.textContent = 'Row is Removed!';
+        setUnImageId([e.target.getAttribute("data-unpreserve-media")]);
+        // Lets remove the row.
+        e.currentTarget.parentNode.parentNode.remove();
+        return;
+      } else if (e.target.getAttribute("data-preserve-media")) {
+        e.target.textContent = 'Row is Removed!';
+        setImageId([e.target.getAttribute("data-preserve-media")]);
+        // Lets remove the row.
+        e.currentTarget.parentNode.parentNode.remove();
+        return;
+      }
     });
   }
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log(isImageId);
-    handlePostData(isRemovedRow, isImageId);
-  }, [isRemovedRow]);
-  var handlePostData = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(isRemovedRow, isImageId) {
+    console.log(preserveImageId);
+    handlePostDataPreserve(preserveImageId, 'invalid');
+  }, [preserveImageId]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    handlePostDataPreserve('invalid', unPreserveImageId);
+  }, [unPreserveImageId]);
+  var handlePostDataPreserve = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(preserveImageId, unPreserveImageId) {
       var data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -426,9 +438,9 @@ var MediaCollector = function MediaCollector(_ref) {
             data = new FormData();
             data.append('action', 'rmc_ajax_media_cleaner');
             data.append('nonce', wpVars.nonce);
-            data.append('post_overide', "media-row-removal");
-            data.append('row-id', isRemovedRow);
-            data.append('image-id', isImageId);
+            data.append('post_overide', "media-preserve");
+            data.append('preserveImageId', preserveImageId);
+            data.append('unPreserveImageId', unPreserveImageId);
             fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
@@ -455,7 +467,7 @@ var MediaCollector = function MediaCollector(_ref) {
         }
       }, _callee);
     }));
-    return function handlePostData(_x2, _x3) {
+    return function handlePostDataPreserve(_x2, _x3) {
       return _ref2.apply(this, arguments);
     };
   }();
@@ -520,18 +532,37 @@ var FetchAddon = function FetchAddon(_ref) {
     setFormCheckValues = _useState5[1];
   var _useState6 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
     _useState7 = _slicedToArray(_useState6, 2),
-    increment = _useState7[0],
-    setIncrement = _useState7[1];
-  var _useState8 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    pageCount = _useState7[0],
+    setPageCount = _useState7[1];
+  var _useState8 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
     _useState9 = _slicedToArray(_useState8, 2),
-    dataResponse = _useState9[0],
-    setDataResponse = _useState9[1];
+    pageTotalCount = _useState9[0],
+    setPageTotalCount = _useState9[1];
+  var _useState10 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState11 = _slicedToArray(_useState10, 2),
+    increment = _useState11[0],
+    setIncrement = _useState11[1];
+  var _useState12 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState13 = _slicedToArray(_useState12, 2),
+    dataResponse = _useState13[0],
+    setDataResponse = _useState13[1];
   // const f_increment = document.querySelector(".ronik-user-exporter_increment").value;
 
   // On page render lets detect if the option field is populated.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log(formValues);
     console.log(formCheckValues);
+    if (formCheckValues.length > 0) {
+      if (!formCheckValues.includes('all')) {
+        document.getElementById("checkbox_all").checked = false;
+      } else {
+        document.getElementById("checkbox").checked = true;
+        document.getElementById("checkbox2").checked = true;
+        document.getElementById("checkbox3").checked = true;
+        document.getElementById("checkbox4").checked = true;
+        document.getElementById("checkbox5").checked = true;
+        setFormCheckValues(['jpg', 'gif', 'png', 'video', 'misc']);
+      }
+    }
     if (dataResponse == 'incomplete') {
       console.log(increment);
       if (formCheckValues.length == 0) {
@@ -544,6 +575,19 @@ var FetchAddon = function FetchAddon(_ref) {
       setDataResponse('incomplete_half');
     }
   }, [dataResponse, formValues, formCheckValues]);
+
+  // On page render lets detect if the option field is populated.
+
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var f_wpwrap = document.querySelector("#wpwrap");
+    if (f_wpwrap.classList.contains('loader')) {
+      var f_wpcontent = document.querySelector(".centered-blob");
+      if (document.contains(document.querySelector(".page-counter"))) {
+        document.querySelector(".page-counter").remove();
+      }
+      f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter">Page ' + pageCount + ' of ' + pageTotalCount + '</div>');
+    }
+  }, [pageCount, pageTotalCount]);
 
   // Lets handle the input changes and store the changes to form values.
   var handleChange = function handleChange(e) {
@@ -569,7 +613,7 @@ var FetchAddon = function FetchAddon(_ref) {
     var f_wpwrap = document.querySelector("#wpwrap");
     var f_wpcontent = document.querySelector("#wpcontent");
     f_wpwrap.classList.add('loader');
-    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
     console.log('formCheckValues');
     console.log(formCheckValues);
     if (formCheckValues.length == 0) {
@@ -610,13 +654,13 @@ var FetchAddon = function FetchAddon(_ref) {
             }).then(function (data) {
               if (data) {
                 console.log(data);
-                if (data.data == 'Reload') {
+                if (data.data['response'] == 'Reload') {
                   setTimeout(function () {
                     alert('Synchronization is complete! Page will auto reload.');
                     location.reload();
                   }, 50);
                 }
-                if (data.data == 'Done') {
+                if (data.data['response'] == 'Done') {
                   setTimeout(function () {
                     // Lets remove the form
                     // location.reload();
@@ -624,6 +668,8 @@ var FetchAddon = function FetchAddon(_ref) {
                   }, 50);
                   setTimeout(function () {
                     setDataResponse('incomplete');
+                    setPageCount(data.data['pageCounter']);
+                    setPageTotalCount(data.data['pageTotalCounter']);
                   }, 50);
                 }
                 if (data.data == 'Cleaner-Done') {

@@ -76,8 +76,33 @@ class Ronik_Base {
 
 		$this->load_dependencies();
 		$this->set_locale();
-		$this->define_admin_hooks();
-		$this->define_public_hooks();
+
+
+			/* Checks to see if "is_plugin_active" function exists and if not load the php file that includes that function */
+			if (!function_exists('is_plugin_active')) {
+				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+			}
+
+			function ronik_admin_notice__error() { ?>
+				<div class="notice notice-error ">
+					<p><?php _e( 'Warning: Advanced Custom Fields PRO needs to be installed and activated!', 'sample-text-domain' ); ?></p>
+				</div>
+			<?php }
+
+			//plugin is activated ACF,
+			if (is_plugin_active('advanced-custom-fields-pro/acf.php')) {
+				$this->define_admin_hooks();
+				$this->define_public_hooks();
+			} else {
+				
+				if(!empty(get_mu_plugins()['acf.php'])){
+					$this->define_admin_hooks();
+					$this->define_public_hooks();
+				} else {
+					deactivate_plugins( 'ronik-base/ronik-base.php' );
+					add_action( 'admin_notices', 'ronik_admin_notice__error' );
+				}
+			}
 
 	}
 

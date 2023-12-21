@@ -18,6 +18,8 @@ add_filter( 'http_request_timeout', 'ronikdesigns_timeout_extend' );
 
 // Simple function that erases all option data from plugin,
 function databaseScannerMedia__cleaner( ) {
+
+    
     error_log(print_r('Lets cleanup the database', true));
     global $wpdb;
     // Remove the original post value to null..
@@ -31,7 +33,8 @@ function databaseScannerMedia__cleaner( ) {
                 ($result['option_name'] !== 'rbp_media_cleaner_api_key') && 
                 ($result['option_name'] !== 'rbp_media_cleaner_api_key_validation') && 
                 ($result['option_name'] !== 'rbp_media_cleaner_counter') && 
-                ($result['option_name'] !== 'rbp_media_cleaner_increment')
+                ($result['option_name'] !== 'rbp_media_cleaner_increment') && 
+                ($result['option_name'] !== 'rbp_media_cleaner_sync-time')
             ){
                 delete_option( $result['option_name'] );
             }
@@ -54,11 +57,11 @@ function databaseScannerMedia__cleaner( ) {
 
 
 
-if($_POST['post_overide'] == 'media-row-removal'){
-	foreach (glob(dirname(__FILE__) . '/media-cleaner_row-remove.php') as $file) {
+if ($_POST['post_overide'] == 'media-preserve'){
+	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
 		include $file;
 	}
-} else {
+ }else {
 	if(!$_POST['user_option']){
 		wp_send_json_error('Security check failed', '400');
 		wp_die();	

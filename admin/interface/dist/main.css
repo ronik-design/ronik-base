@@ -473,7 +473,12 @@ html {
   top: 0;
 }
 
-.centered {
+.page-counter {
+  color: #fff;
+  text-align: center;
+}
+
+.centered-blob {
   width: 400px;
   height: 400px;
   position: absolute;
@@ -483,7 +488,7 @@ html {
   background: #000;
   filter: blur(10px) contrast(20);
 }
-.centered .blob-1, .centered .blob-2 {
+.centered-blob .blob-1, .centered-blob .blob-2 {
   width: 70px;
   height: 70px;
   position: absolute;
@@ -493,11 +498,11 @@ html {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.centered .blob-1 {
+.centered-blob .blob-1 {
   left: 20%;
   animation: osc-l 2.5s ease infinite;
 }
-.centered .blob-2 {
+.centered-blob .blob-2 {
   left: 80%;
   animation: osc-r 2.5s ease infinite;
   background: #0ff;

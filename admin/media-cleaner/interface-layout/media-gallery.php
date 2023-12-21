@@ -23,6 +23,9 @@ function rmc_media_column_dimensions( $cols ) {
 // Image Isdetached.
 function rmc_media_column_isdetached( $cols ) {
     $cols["rmc_detached"] = "Ronik Media Cleaner Detached";
+
+    $cols["rmc_location"] = "Media Location";
+
     return $cols;
 }
 add_filter( 'manage_media_columns', 'rmc_media_column_isdetached' );
@@ -51,7 +54,7 @@ function rmc_media_column_value( $column_name, $id ) {
                 } else {
                     if($data['rbp_media_cleaner_isdetached'] == 'rbp_media_cleaner_isdetached_temp-saved'){
                         echo 'Media Detection last ran: <br>'.$f_sync.'<br><br>
-                        <strong style="color:orange;font-style:italics">Preserved Temporarily: Safe to Remove.</strong>';
+                        <strong style="color:orange;font-style:italics">Preserved Temporarily: <br>Safe to Remove.</strong>';
                     } else {
                         echo 'Media Detection last ran: <br>'.$f_sync.'<br><br>
                         <strong style="color:red;font-style:italics">Not Safe to Remove.</strong>';
@@ -76,15 +79,17 @@ function media_add_author_dropdown(){
     $scr = get_current_screen();
     if ( $scr->base !== 'upload' ) return;
 
-
-    $rbp_media_cleaner_filter   = filter_var((isset($_GET['rbp_media_cleaner_filter'])) ? $_GET['rbp_media_cleaner_filter'] : '', FILTER_VALIDATE_URL);
+    $rbp_media_cleaner_filter  = isset($_GET['rbp_media_cleaner_filter']) ? $_GET['rbp_media_cleaner_filter'] : '';
     $selected_1 = $rbp_media_cleaner_filter == 'rbp_media_cleaner_isdetached_true' ? 'selected="selected"' : '';
     $selected_2 = $rbp_media_cleaner_filter == 'rbp_media_cleaner_isdetached_false' ? 'selected="selected"' : '';
+    $selected_3 = $rbp_media_cleaner_filter == 'rbp_media_cleaner_isdetached_preserved' ? 'selected="selected"' : '';
     echo '
         <select name="rbp_media_cleaner_filter" id="rbp_media_cleaner_filter" class="">
             <option value="-1">Is Media Safe to Delete?</option>
             <option value="rbp_media_cleaner_isdetached_true" '.$selected_1.'>Safe to Delete</option>
             <option value="rbp_media_cleaner_isdetached_false" '.$selected_2.'>Not Safe to Delete</option>
+            <option value="rbp_media_cleaner_isdetached_preserved" '.$selected_3.'>Preserved Images</option>
+
         </select>
     ';
 }
@@ -116,9 +121,33 @@ function author_filter($query) {
         if ( isset($_GET['rbp_media_cleaner_filter']) ) {
             if ($_GET['rbp_media_cleaner_filter'] == 'rbp_media_cleaner_isdetached_false') {
                 $meta_query[] = array(
+                    'relation'  => 'AND',
+
+                    array (
+                        'key'     => '_wp_attachment_metadata',
+                        'value'   => 'rbp_media_cleaner_isdetached_temp-saved',
+                        'compare' => 'NOT LIKE'
+                    ),
+                    array (
+                        'key'     => '_wp_attachment_metadata',
+                        'value'   => 'rbp_media_cleaner_isdetached_true',
+                        'compare' => 'NOT LIKE'
+                    ),
+
+
+                    // 'key' => '_wp_attachment_metadata',
+                    // 'value' => 'rbp_media_cleaner_isdetached_true' ,
+                    // 'compare' => 'NOT LIKE', // works!
+                );
+            }
+        }
+
+        if ( isset($_GET['rbp_media_cleaner_filter']) ) {
+            if ($_GET['rbp_media_cleaner_filter'] == 'rbp_media_cleaner_isdetached_preserved') {
+                $meta_query[] = array(
                     'key' => '_wp_attachment_metadata',
-                    'value' => 'rbp_media_cleaner_isdetached_true',
-                    'compare' => 'NOT LIKE', // works!
+                    'value' => 'rbp_media_cleaner_isdetached_temp-saved',
+                    'compare' => 'LIKE', // works!
                 );
             }
         }

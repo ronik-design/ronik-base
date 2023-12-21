@@ -5,32 +5,60 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
     const [formValues, setFormValues] = useState({ ['user-option']:'fetch-media'});
     const [formCheckValues, setFormCheckValues] = useState([]);
 
+    const [pageCount, setPageCount] = useState(0);
+    const [pageTotalCount, setPageTotalCount] = useState(0);
+
     const [increment, setIncrement] = useState(0);
     const [dataResponse, setDataResponse] = useState('');
     // const f_increment = document.querySelector(".ronik-user-exporter_increment").value;
 
     // On page render lets detect if the option field is populated.
     useEffect(()=>{
-        console.log(formValues);
         console.log(formCheckValues);
+        if( formCheckValues.length > 0  ){
+            if(!formCheckValues.includes('all') ){
+                document.getElementById("checkbox_all").checked = false;
+            } else {
+                document.getElementById("checkbox").checked = true;
+                document.getElementById("checkbox2").checked = true;
+                document.getElementById("checkbox3").checked = true;
+                document.getElementById("checkbox4").checked = true;
+                document.getElementById("checkbox5").checked = true;
 
+                setFormCheckValues(['jpg', 'gif', 'png', 'video', 'misc']);
+            }
+        }
 
         if(dataResponse == 'incomplete'){
             console.log(increment);
             if(formCheckValues.length == 0){
                 console.log(increment);
-    
                 handlePostData(formValues['user-option'], ['all'], increment );
             } else {
                 console.log(increment);
                 handlePostData(formValues['user-option'], formCheckValues, increment );
             }
-
-            
             setDataResponse('incomplete_half');
         }
     }, [dataResponse, formValues, formCheckValues])
 
+
+    // On page render lets detect if the option field is populated.
+
+    useEffect(()=>{
+        const f_wpwrap = document.querySelector("#wpwrap");
+
+        if( f_wpwrap.classList.contains('loader')   ){
+            const f_wpcontent = document.querySelector(".centered-blob");
+
+            if (document.contains(document.querySelector(".page-counter"))) {
+                document.querySelector(".page-counter").remove();
+            }
+            f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter">Page '+pageCount + ' of ' + pageTotalCount+'</div>');
+        }
+    }, [pageCount, pageTotalCount])
+
+    
 
     // Lets handle the input changes and store the changes to form values.
     const handleChange = (e) => {
@@ -55,7 +83,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
         const f_wpwrap = document.querySelector("#wpwrap");
         const f_wpcontent = document.querySelector("#wpcontent");
         f_wpwrap.classList.add('loader')
-        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
 
 
         console.log('formCheckValues');
@@ -98,13 +126,13 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
         .then((data) => {
             if (data) {
                 console.log(data);
-                if(data.data == 'Reload'){
+                if(data.data['response'] == 'Reload'){
                     setTimeout(function(){
                         alert('Synchronization is complete! Page will auto reload.');
                         location.reload();
                     }, 50);
                 }
-                if(data.data == 'Done'){
+                if(data.data['response'] == 'Done'){
                     setTimeout(function(){
                         // Lets remove the form
                         // location.reload();
@@ -112,6 +140,8 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                     }, 50);
                     setTimeout(function(){
                         setDataResponse('incomplete');
+                        setPageCount(data.data['pageCounter']);
+                        setPageTotalCount(data.data['pageTotalCounter']);
                     }, 50);
                 }
                 if(data.data == 'Cleaner-Done'){

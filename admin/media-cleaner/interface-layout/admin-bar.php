@@ -53,7 +53,7 @@ function mc_sync_action_js() { ?>
             const f_wpwrap = document.querySelector("#wpwrap");
             const f_wpcontent = document.querySelector("#wpcontent");
             f_wpwrap.classList.add('loader')
-            f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+            f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
 
             const handlePostDataTest = async ( userOptions, mimeType, f_increment ) => {
                 const data = new FormData();
