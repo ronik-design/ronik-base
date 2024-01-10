@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
+
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
+import { useDrag, useDrop } from 'react-dnd'
+
+
 const MediaCollector = ({ items }) => {
     const [unPreserveImageId, setUnImageId] = useState([]);
     const [preserveImageId, setImageId] = useState([]);
@@ -71,8 +78,104 @@ const MediaCollector = ({ items }) => {
     }
 
 
+
+
+    const PetCard = ({ id, name }) => {
+        const [{ isDragging }, dragRef] = useDrag({
+            type: 'pet',
+            item: { id, name },
+            end: (item, monitor) => {
+                const dropResult = monitor.getDropResult()
+                if (item && dropResult) {
+                  alert(`You dropped ${item.name} into ${dropResult.name}!`)
+                }
+            },
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+                handlerId: monitor.getHandlerId()
+
+            })
+        })
+        return (
+            <div className='pet-card' ref={dragRef} id={name+id}>
+                {name}
+                {isDragging && '😱'}
+            </div>
+        )
+    }
+
+
+    const PETS = [
+        { id: 1, name: 'dog' },
+        { id: 2, name: 'cat' },
+        { id: 3, name: 'fish' },
+        { id: 4, name: 'hamster' },
+    ]
+    
+    const styles = {
+        height: '12rem',
+        width: '12rem',
+        marginRight: '1.5rem',
+        marginBottom: '1.5rem',
+        color: 'white',
+        padding: '1rem',
+        textAlign: 'center',
+        fontSize: '1rem',
+        lineHeight: 'normal',
+        float: 'left',
+      }
+
+    const Basket = () => {
+        const [basket, setBasket] = useState([])
+        const [{ canDrop, isOver }, dropRef] = useDrop({
+            accept: 'pet',
+            drop: () => ({ name: 'Dustbin' }),
+            drop: (item) => setBasket((basket) => !basket.includes(item) ? [...basket, item] : basket),
+            collect: (monitor) => ({
+                isOver: monitor.isOver(),
+                canDrop: monitor.canDrop(),
+
+            })
+        })
+        const isActive = canDrop && isOver
+        let backgroundColor = '#222'
+        if (isActive) {
+          backgroundColor = 'darkgreen'
+        } else if (canDrop) {
+          backgroundColor = 'darkkhaki'
+        }
+        return (
+            <React.Fragment>
+                <div className='pets'>
+                    {PETS.map(pet => <PetCard draggable id={pet.id} name={pet.name} />)}
+                </div>
+                <div className='basket' ref={dropRef} style={{  ...styles, backgroundColor }}>
+                    {basket.map(pet => <PetCard id={pet.id} name={pet.name} />)}
+                    {isOver && <div>Drop Here!</div>}
+                </div>
+            </React.Fragment>
+        )
+    }
+
+
+
+
+
+
+
+      
     return (
-        <div className="message"> </div>
+
+        <>
+            <div className="message"> </div>
+            <div>
+            <DndProvider backend={HTML5Backend}>
+                {/* Here, render a component that uses DND inside it */}
+                <Basket />
+            </DndProvider>
+            </div>
+        </>
+        
     );
   };
   

@@ -10,28 +10,35 @@
 		// Set post status.
 		$select_post_status = array('publish', 'pending', 'draft', 'private', 'future');
 		// For now we get the page type.
-		$select_post_type = "page";
-		// $post_types = get_post_types( array(), 'names', 'and' ); 
-		// $post_types_without_defaults = array_diff($post_types, 
-		// 	array(
-		// 		'attachment',
-		// 		'revision',
-		// 		'nav_menu_item',
-		// 		'custom_css',
-		// 		'customize_changeset',
-		// 		'oembed_cache',
-		// 		'wp_block',
-		// 		'wp_template',
-		// 		'wp_template_part',
-		// 		'wp_global_styles',
-		// 		'wp_navigation',
-		// 		'acf-post-type',
-		// 		'acf-taxonomy',
-		// 		'acf-field-group',
-		// 		'acf-field'
-		// 	)
-		// );
-		// $select_post_type = $post_types_without_defaults;
+		// $select_post_type = "post ,page ,user_request ,segments ,networks ,programs ,articles ,playlists ,credits ,programming ,contact-form ,videos";
+
+		// WARNING: 
+		$post_types = get_post_types( array(), 'names', 'and' ); 
+		// We remove a few of the deafult types to help with speed cases..
+		$post_types_without_defaults = array_diff($post_types, 
+			array(
+				'attachment',
+				'revision',
+				'nav_menu_item',
+				'custom_css',
+				'customize_changeset',
+				'oembed_cache',
+				'wp_block',
+				'wp_template',
+				'wp_template_part',
+				'wp_global_styles',
+				'wp_navigation',
+				'acf-post-type',
+				'acf-taxonomy',
+				'acf-field-group',
+				'acf-field'
+			)
+		);
+		$post_types_arrays = array();
+		foreach($post_types_without_defaults as $key => $value) {
+			array_push($post_types_arrays, $value);
+		}
+		$select_post_type = implode(",", $post_types_arrays);
 
 		// Mime_type.
 		$select_attachment_type = cleaner_post_mime_type($_POST['mime_type']);
@@ -47,7 +54,7 @@
 			// Throttle after cleaner.
 			sleep(1);
 		}
-		if($increment > $maxIncrement){
+		if($increment >= $maxIncrement){
 			update_option('rbp_media_cleaner_increment', 1 );
 			$response = array(
 				"response" => "Reload",
@@ -309,28 +316,22 @@
 					$wp_infiles_array[] = rmc_receiveAllFiles_ronikdesigns(get_theme_file_path(), $image_id);
 				}
 			}
+
 		// This part is critical we check all the php files within the active theme directory.
 			$arr_checkpoint_5a = cleaner_compare_array_diff($arr_checkpoint_4a, $wp_infiles_array);
 
-			$arr_has_post_parent = array();
-			if($arr_checkpoint_5a){
-				foreach($arr_checkpoint_5a as $arr_checkpoint_id){
-
-					if(get_post_parent($arr_checkpoint_id)){
-						$arr_has_post_parent[] = $arr_checkpoint_id;
-					}
-					
-				}
-			}
-			$arr_checkpoint_5b = cleaner_compare_array_diff($arr_checkpoint_5a, $arr_has_post_parent);
-
-
-			// error_log(print_r('$arr_has_post_parent', true));
-			// error_log(print_r($arr_has_post_parent, true));
-			// error_log(print_r('$arr_checkpoint_5a', true));
-			// error_log(print_r($arr_checkpoint_5a, true));
-			// error_log(print_r('$arr_checkpoint_5b', true));
-			// error_log(print_r($arr_checkpoint_5b, true));
+		
+		// This part was critical but not anymore. We assume that all file that have post parents are attached but they are not... so let ignore this for now..
+			// $arr_has_post_parent = array();
+			// if($arr_checkpoint_5a){
+			// 	foreach($arr_checkpoint_5a as $arr_checkpoint_id){
+			// 		if(get_post_parent($arr_checkpoint_id)){
+			// 			$arr_has_post_parent[] = $arr_checkpoint_id;
+			// 		}
+			// 	}
+			// }
+			// $arr_checkpoint_5b = cleaner_compare_array_diff($arr_checkpoint_5a, $arr_has_post_parent);
+			$arr_checkpoint_5b = $arr_checkpoint_5a;
 
 
 		// CHECKPOINT COMPLETE
@@ -346,15 +347,15 @@
 	sleep(1);
 		$image_array[] = rmc_recursive_media_scanner($maxIncrement, $increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status);
 		// remove empty and re-arrange image array
-		$image_array = array_values(array_filter($image_array));
-		$image_array = array_unique(array_merge(...$image_array));
+		$image_array2 = array_values(array_filter($image_array));
+		$image_array3 = array_unique(array_merge(...$image_array2));
 	
 		error_log(print_r('Final Results', true));
-		error_log(print_r($image_array, true));
+		error_log(print_r($image_array3, true));
 		$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
-		if($image_array){
+		if($image_array3){
 			// Get the array count..
-			update_option( 'rbp_media_cleaner_counter' , count($image_array) );
+			update_option( 'rbp_media_cleaner_counter' , count($image_array3) );
 
 			// error_log(print_r('Final Results', true));
 			$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
@@ -365,7 +366,7 @@
 				$rbp_media_cleaner_media_data = array();
 			}
 
-			foreach( $image_array as $key => $f_result ){
+			foreach( $image_array3 as $key => $f_result ){
 				$data = wp_get_attachment_metadata( $f_result ); // get the data structured
 
 				if( isset($data['rbp_media_cleaner_isdetached']) && ($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') ){
@@ -377,7 +378,9 @@
 				update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
 				update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_media_data);
 	
-				if( $f_result == end($image_array) ){
+				if( $f_result == end($image_array3) ){
+					error_log(print_r("response DONE", true));
+
 					// // Send sucess message!
 					// $f_increment = $increment+1;
 					// update_option( 'rbp_media_cleaner_increment', $f_increment );

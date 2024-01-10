@@ -58,7 +58,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
         }
     }, [pageCount, pageTotalCount])
 
-    
 
     // Lets handle the input changes and store the changes to form values.
     const handleChange = (e) => {
@@ -140,7 +139,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                     }, 50);
                     setTimeout(function(){
                         setDataResponse('incomplete');
-                        setPageCount(data.data['pageCounter']);
+                        setPageCount(increment);
                         setPageTotalCount(data.data['pageTotalCounter']);
                     }, 50);
                 }
@@ -236,6 +235,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                                             <label htmlFor="switch-on">Delete Unused Media</label>
                                         </div>
                                     </div>
+
 
 
                                 </div>

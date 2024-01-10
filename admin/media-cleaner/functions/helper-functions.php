@@ -227,25 +227,31 @@ function databaseScannerMedia__allMedia( $requestParameter ) {
         "SELECT * FROM $tablename WHERE post_type = 'attachment' AND post_mime_type IN (".implode(" , ", $requestParameter[1]).") ORDER BY ID ASC", $tablename );
     $results = $wpdb->get_results( $sql , ARRAY_A );
 
-    if($results){
-        $array_collector = array();
-        foreach($results as $key => $result){
-            if( isset($result['post_parent']) ){
-                if( ($result['post_parent'] == 0 )){
-                    $array_collector[] = $result['ID'];
-                }
-            } else {
-                $array_collector[] = $result['ID'];
-            }
-        }
-    }
-    if($requestParameter[0] == 'count'){
-        return count($array_collector);
-    }
-
-    // if($requestParameter[0] == 'count'){
-    //     return count($results);
+    // We have to comment this out because post_parent is not a 100% fact that image is attached or is not attached.
+    // if($results){
+    //     $array_collector = array();
+    //     foreach($results as $key => $result){
+    //         if( isset($result['post_parent']) ){
+    //             if( ($result['post_parent'] == 0 )){
+    //                 $array_collector[] = $result['ID'];
+    //             }
+    //         } else {
+    //             $array_collector[] = $result['ID'];
+    //         }
+    //     }
     // }
+    // if($requestParameter[0] == 'count'){
+    //     if(isset($array_collector) && $array_collector){            
+    //         return count($array_collector);
+    //     } else {
+    //         if($requestParameter[0] == 'count'){
+    //             return count($results);
+    //         }
+    //     }
+    // }
+    if($requestParameter[0] == 'count'){
+        return count($results);
+    }
 }
 
 
