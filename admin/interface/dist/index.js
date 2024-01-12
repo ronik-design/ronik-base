@@ -515,12 +515,21 @@ var MediaCollector = function MediaCollector(_ref) {
       isDragging = _useDrag2[0].isDragging,
       dragRef = _useDrag2[1];
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      id: "id",
       className: "pet-card",
       ref: dragRef,
-      id: name + id,
       children: [name, isDragging && '😱']
     });
   };
+  var el = document.querySelectorAll("[data-class=image-target]");
+  var IMGARRAYS = [];
+  for (var _i2 = 0; _i2 < el.length; _i2++) {
+    IMGARRAYS[_i2] = {
+      id: el[_i2].getAttribute('data-id'),
+      name: 'dog',
+      src: el[_i2].getAttribute('src')
+    };
+  }
   var PETS = [{
     id: 1,
     name: 'dog'
@@ -584,11 +593,11 @@ var MediaCollector = function MediaCollector(_ref) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         className: "pets",
-        children: PETS.map(function (pet) {
+        children: IMGARRAYS.map(function (pet) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PetCard, {
             draggable: true,
             id: pet.id,
-            name: pet.name
+            name: pet.src
           });
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {

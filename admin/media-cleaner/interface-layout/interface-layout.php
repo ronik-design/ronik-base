@@ -144,7 +144,7 @@ function ronikbase_media_cleaner_callback(){
                         <tr data-media-id="<?= $image_id; ?>" style="width:100%;display: flex;width: 100%;position: relative;overflow: hidden;margin: 0 auto;border-spacing: 0;">
                             <td style="max-width: 5%;">Trash</td>
 
-                            <td style="max-width: 15%;"><?= wp_get_attachment_image(  $image_id , 'small'  );  ?></td>
+                            <td style="max-width: 15%;"><?= wp_get_attachment_image(  $image_id , 'small', false, array('data-id'=>$image_id, 'data-class'=>'image-target')  );  ?></td>
                             <td style="max-width: 5%;" class="file-type"><?= $media_file_type; ?> </td>
                             <td  style="max-width: 5%;" class="file-size"><?= $media_size; ?> </td>
                             <td  style="max-width: 5%;"><?=  $image_id; ?> </td>
@@ -152,6 +152,7 @@ function ronikbase_media_cleaner_callback(){
                             <td  style="max-width: 40%;"><?= $media_file; ?> </td>
                             <td  style="max-width: 20%;"><button style="background-color: #6700ff;" data-preserve-media="<?= $image_id; ?>">Preserve Row</button></td>
                         </tr>
+                        
                     <?php }
                 ?>
             </tbody>
@@ -183,8 +184,8 @@ function ronikbase_media_cleaner_callback(){
         <table style="width:100%;display: flex;flex-wrap: wrap;width: 100%;position: relative;overflow: hidden;margin: 0 auto;border-spacing: 0;">
             <tbody style="width:100%;display: flex;flex-wrap: wrap;width: 100%;position: relative;overflow: hidden;margin: 0 auto;border-spacing: 0;">
                 <tr style="width:100%;display: flex;width: 100%;position: relative;overflow: hidden;margin: 0 auto;border-spacing: 0;">
-                    <th  style="max-width: 20%;">Thumbnail Image</th>
-                    <th  style="max-width: 5%;">File Type</th>
+                    <th style="max-width: 20%;">Thumbnail Image</th>
+                    <th style="max-width: 5%;">File Type</th>
                     <th style="max-width: 5%;">File Size</th>
                     <th style="max-width: 5%;">Image ID</th>
                     <th style="max-width: 5%;">Image Edit</th>

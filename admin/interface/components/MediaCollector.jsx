@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import parse from 'html-react-parser';
 
 import { DndProvider } from 'react-dnd'
@@ -97,12 +97,28 @@ const MediaCollector = ({ items }) => {
             })
         })
         return (
-            <div className='pet-card' ref={dragRef} id={name+id}>
-                {name}
-                {isDragging && '😱'}
-            </div>
+            <div id="id" className='pet-card' ref={dragRef}>{name}{isDragging && '😱'}</div>
         )
     }
+
+
+
+
+
+
+    var el = document.querySelectorAll("[data-class=image-target]");
+    const IMGARRAYS = [];
+    for (let i = 0; i < el.length; i++) {  
+        IMGARRAYS[i] = {
+            id: el[i].getAttribute('data-id'), 
+            name: 'dog',
+            src: el[i].getAttribute('src')
+        }
+    }
+
+
+
+
 
 
     const PETS = [
@@ -147,7 +163,7 @@ const MediaCollector = ({ items }) => {
         return (
             <React.Fragment>
                 <div className='pets'>
-                    {PETS.map(pet => <PetCard draggable id={pet.id} name={pet.name} />)}
+                    {IMGARRAYS.map(pet => <PetCard draggable id={pet.id} name={pet.src} />)}
                 </div>
                 <div className='basket' ref={dropRef} style={{  ...styles, backgroundColor }}>
                     {basket.map(pet => <PetCard id={pet.id} name={pet.name} />)}
