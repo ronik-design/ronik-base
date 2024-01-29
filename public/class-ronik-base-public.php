@@ -94,4 +94,11 @@ class Ronik_Base_Public {
 		 */
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ronik-base-public.js', array( 'jquery' ), $this->version, false );
 	}
+
+	function ronikdesignsbase_rest_api_init(){
+		// Include the Spam Blocker.
+		foreach (glob(dirname(__FILE__) . '/rest-api/*.php') as $file) {
+			include $file;
+		}
+	}
 }

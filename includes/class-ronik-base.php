@@ -213,6 +213,7 @@ class Ronik_Base {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		$this->loader->add_action('rest_api_init', $plugin_public, 'ronikdesignsbase_rest_api_init');
 	}
 
 	/**
