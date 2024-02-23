@@ -12,10 +12,10 @@
 		// For now we get the page type.
 		// $select_post_type = "post ,page ,user_request ,segments ,networks ,programs ,articles ,playlists ,credits ,programming ,contact-form ,videos";
 
-		// WARNING: 
-		$post_types = get_post_types( array(), 'names', 'and' ); 
+		// WARNING:
+		$post_types = get_post_types( array(), 'names', 'and' );
 		// We remove a few of the deafult types to help with speed cases..
-		$post_types_without_defaults = array_diff($post_types, 
+		$post_types_without_defaults = array_diff($post_types,
 			array(
 				'attachment',
 				'revision',
@@ -47,7 +47,7 @@
 		// Set numberposts to a number that wont destroy the server resources.
 		$select_numberposts = 35;
 		// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
-		$maxIncrement = ceil($throttle_detector/$select_numberposts); 
+		$maxIncrement = ceil($throttle_detector/$select_numberposts);
 		if($increment == 0){
 			// Simple function that resets everything before we continue processing all the files..
 			databaseScannerMedia__cleaner();
@@ -71,9 +71,9 @@
 		die();
 	}
 
-	
+
 	// rmc_recursive_media_scanner
-	function rmc_recursive_media_scanner($maxIncrement, $increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status){		
+	function rmc_recursive_media_scanner($maxIncrement, $increment, $select_attachment_type, $select_post_type, $select_numberposts, $select_post_status){
 		// Helper Guide
 		$helper = new RonikBaseHelper;
 
@@ -139,7 +139,7 @@
 					}
 				}
 			}
-	
+
 		// Lets remove any duplicated matches & set to new array.
 			// First let remove the thumbnail id from the bulk main id array
 			$arr_checkpoint_1a = cleaner_compare_array_diff($main_image_ids, $all_post_thumbnail_ids);
@@ -320,7 +320,7 @@
 		// This part is critical we check all the php files within the active theme directory.
 			$arr_checkpoint_5a = cleaner_compare_array_diff($arr_checkpoint_4a, $wp_infiles_array);
 
-		
+
 		// This part was critical but not anymore. We assume that all file that have post parents are attached but they are not... so let ignore this for now..
 			// $arr_has_post_parent = array();
 			// if($arr_checkpoint_5a){
@@ -349,7 +349,7 @@
 		// remove empty and re-arrange image array
 		$image_array2 = array_values(array_filter($image_array));
 		$image_array3 = array_unique(array_merge(...$image_array2));
-	
+
 		error_log(print_r('Final Results', true));
 		error_log(print_r($image_array3, true));
 		$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
@@ -369,15 +369,18 @@
 			foreach( $image_array3 as $key => $f_result ){
 				$data = wp_get_attachment_metadata( $f_result ); // get the data structured
 
-				if( isset($data['rbp_media_cleaner_isdetached']) && ($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') ){
-					$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
-					$rbp_media_cleaner_media_data[] = $f_result;
-				}
-				
+				$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
+				$rbp_media_cleaner_media_data[] = $f_result;
+
+				// if( isset($data['rbp_media_cleaner_isdetached']) && ($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') ){
+				// 	$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
+				// 	$rbp_media_cleaner_media_data[] = $f_result;
+				// }
+
 				wp_update_attachment_metadata( $f_result, $data );  // save it back to the db
 				update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
 				update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_media_data);
-	
+
 				if( $f_result == end($image_array3) ){
 					error_log(print_r("response DONE", true));
 
@@ -400,7 +403,7 @@
 			// update_option( 'rbp_media_cleaner_increment', 0 );
 			$f_increment = $increment+1;
 			// update_option( 'rbp_media_cleaner_increment', $f_increment );
-	
+
 			// Sleep for 1 seconds...
 			sleep(1);
 			$response = array(
@@ -411,7 +414,7 @@
 			wp_send_json_success($response);
 
 			// wp_send_json_success('Done');
-	
+
 			// wp_send_json_error('No rows found! sss');
 		}
 

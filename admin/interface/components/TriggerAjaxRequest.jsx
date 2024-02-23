@@ -147,6 +147,9 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                     alert('Media cleanup complete! Page will auto reload.');
                     location.reload();
                 }  
+
+
+
             }
         })
         .catch((error) => {

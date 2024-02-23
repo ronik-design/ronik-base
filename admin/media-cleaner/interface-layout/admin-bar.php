@@ -72,20 +72,24 @@ function mc_sync_action_js() { ?>
                 .then((data) => {
                     if (data) {
                         console.log(data);
-                        if(data.data == 'Reload'){
-                            setTimeout(function(){
-                                alert('Synchronization is complete! Page will auto reload.');
-                                location.reload();
-                            }, 50);
-                        }
-                        if(data.data == 'Done'){
-                            f_increment = f_increment + 1;
-                            console.log(f_increment),
-
-                            setTimeout(function(){
-                                // Lets remove the form
-                                handlePostDataTest('fetch-media', 'all', f_increment);
-                            }, 50);
+                        if((data.data['pageCounter'] == '0') && (data.data['pageTotalCounter'] == 1)){
+                            alert('Synchronization is complete! Page will auto reload.');
+                            location.reload();
+                        } else {
+                            if(data.data == 'Reload'){
+                                setTimeout(function(){
+                                    alert('Synchronization is complete! Page will auto reload.');
+                                    location.reload();
+                                }, 50);
+                            }
+                            if(data.data == 'Done'){
+                                f_increment = f_increment + 1;
+    
+                                setTimeout(function(){
+                                    // Lets remove the form
+                                    handlePostDataTest('fetch-media', 'all', f_increment);
+                                }, 50);
+                            }
                         }
                     }
                 })
