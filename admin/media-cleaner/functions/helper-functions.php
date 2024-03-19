@@ -65,7 +65,10 @@ class RonikBaseHelper{
 	}
 }
 
-
+/**
+ * Code Referenced
+ * https://gist.github.com/emiliojva/d894833bf8dbafc5e0e3bb68c9f2c4ea
+ */
 function formatSizeUnits($bytes){
     if ($bytes >= 1073741824){
         $bytes = number_format($bytes / 1073741824, 2) . ' GB';
@@ -258,7 +261,6 @@ function databaseScannerMedia__allMedia( $requestParameter ) {
 function cleaner_compare_array_diff($primary, $secondary){
     // Helper Guide
 	$helper = new RonikBaseHelper;
-
     if($secondary){
         // array_diff: Compares array against one or more other arrays and returns the values in array that are not present in any of the other arrays.
         // array_values: Return all the values of an array
@@ -283,6 +285,7 @@ function cleaner_compare_array_diff($primary, $secondary){
     $helper->ronikdesigns_write_log_devmode($arr_mixed_diff_reindexed, 'low');
     return $arr_mixed_diff_reindexed;
 }
+
 
 // Depending on the size of the site we would not want to do this but in this case it is okay.
 function ronik_database_cleaner(){
@@ -401,13 +404,3 @@ function ronik_database_cleaner(){
     }
 
 }
-
-
-
-
-
-
-
-
-
-

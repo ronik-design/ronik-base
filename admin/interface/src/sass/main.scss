@@ -1,6 +1,6 @@
 // Partials
 @use "../sass/partials/variables";
-@use "../sass/partials/reset";
+// @use "../sass/partials/reset";
 // @use "../sass/partials/images";
 // @use "../sass/partials/buttons";
 // @use "../sass/partials/icons";
@@ -499,36 +499,36 @@ html {
     border: 0px solid #ddd;
     padding: 0px;		
   }
+  table tr, table td, table th{
+    width: 100%;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  table tr td{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  table td img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  button{
+    border: 2px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+  }
 }
 
 
 
-table tr, table td, table th{
-  width: 100%;
-  margin-right: 5px;
-  margin-bottom: 5px;
-}
-table tr td{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-table td img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
-
-button{
-  border: 2px solid gray;
-  color: gray;
-  background-color: white;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
-}
 
 .reveal-disabled{
 	opacity: 0;

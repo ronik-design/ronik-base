@@ -204,7 +204,7 @@ var FetchAddon = function FetchAddon(_ref) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             endpoint = '';
-            if (window.location.href.includes("ronik-boilerplate.local/")) {
+            if (window.location.href.includes(".local/")) {
               endpoint = "https://ronik-marketing.local";
             } else {
               endpoint = "https://ronikmarketstg.wpenginepowered.com";

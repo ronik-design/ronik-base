@@ -38,7 +38,7 @@ const FetchAddon = ({pluginName, pluginSlug, title, description, linkHref, linkN
     // This is critical this will send a request to the plugin owners server. And send out a response of success or failure.
     const handleFetchData = async (e) => {
         let endpoint = '';
-        if( window.location.href.includes("ronik-boilerplate.local/") ){
+        if( window.location.href.includes(".local/") ){
             endpoint = "https://ronik-marketing.local";
         } else {
             endpoint = "https://ronikmarketstg.wpenginepowered.com";
