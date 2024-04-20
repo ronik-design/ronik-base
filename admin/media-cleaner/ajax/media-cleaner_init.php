@@ -31,7 +31,8 @@
 				'acf-post-type',
 				'acf-taxonomy',
 				'acf-field-group',
-				'acf-field'
+				'acf-field',
+				'acf-ui-options-page'
 			)
 		);
 		$post_types_arrays = array();
@@ -366,22 +367,22 @@
 				$rbp_media_cleaner_media_data = array();
 			}
 
-			foreach( $image_array3 as $key => $f_result ){
-				$data = wp_get_attachment_metadata( $f_result ); // get the data structured
+			foreach( $image_array3 as $key => $f_ar_3_result ){
+				$data = wp_get_attachment_metadata( $f_ar_3_result ); // get the data structured
 
 				$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
-				$rbp_media_cleaner_media_data[] = $f_result;
+				$rbp_media_cleaner_media_data_3[] = $f_ar_3_result;
 
 				// if( isset($data['rbp_media_cleaner_isdetached']) && ($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') ){
 				// 	$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';  // change the values you need to change
-				// 	$rbp_media_cleaner_media_data[] = $f_result;
+				// 	$rbp_media_cleaner_media_data[] = $f_ar_3_result;
 				// }
 
-				wp_update_attachment_metadata( $f_result, $data );  // save it back to the db
+				wp_update_attachment_metadata( $f_ar_3_result, $data );  // save it back to the db
 				update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
-				update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_media_data);
+				update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_media_data_3);
 
-				if( $f_result == end($image_array3) ){
+				if( $f_ar_3_result == end($image_array3) ){
 					error_log(print_r("response DONE", true));
 
 					// // Send sucess message!

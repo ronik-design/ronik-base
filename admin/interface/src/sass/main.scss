@@ -153,6 +153,7 @@ html {
 
             .submit-btn{
               background-color: #00C666;
+              color: #fff;
             }
             .media-cleaner-item__checkboxes{
               display: flex;
@@ -516,7 +517,6 @@ html {
   }
   
   button{
-    border: 2px solid gray;
     color: gray;
     background-color: white;
     padding: 8px 20px;
@@ -609,6 +609,7 @@ html {
         } 
         button{
           background-color: #6700ff;
+          color: #fff;
         }
         a{
           color:#6700ff;
@@ -616,4 +617,9 @@ html {
       } 
     }
   }
+}
+
+
+.notice *{
+  color: #000 !important;
 }

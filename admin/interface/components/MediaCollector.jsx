@@ -24,6 +24,8 @@ const MediaCollector = ({ items }) => {
     const [unPreserveImageId, setUnImageId] = useState([]);
     const [preserveImageId, setImageId] = useState([]);
 
+    const [deleteImageId, setDeleteImageId] = useState();
+
 
     const [mediaCollectorPreserved, setMediaCollectorPreserved] = useState(null);
 
@@ -103,12 +105,88 @@ const MediaCollector = ({ items }) => {
 
 
 
+    
+    const activateDelete = (e) => {
+        const f_wpwrap = document.querySelector("#wpwrap");
+        const f_wpcontent = document.querySelector("#wpcontent");
+        f_wpwrap.classList.add('loader')
+        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+
+        console.log(e.target.getAttribute("data-delete-media"));
+
+        console.log(e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id"));
+
+        if(e.target.getAttribute("data-delete-media")){
+            var MediaId = e.target.getAttribute("data-delete-media");
+        } else if(e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id")){
+            var MediaId = e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id");
+        } else {
+            f_wpwrap.classList.remove('loader')
+            const element = document.getElementsByClassName("centered-blob");
+            element[0].remove(); // Removes the div with the 'div-02' id
+
+        }
+    
+        var userPreference;
+
+        if (confirm("Are you sure you want to continue?") == true) {
+            userPreference = "Data saved successfully!";
+            setDeleteImageId(MediaId);
+        } else {
+            userPreference = "Save Canceled!";
+
+            f_wpwrap.classList.remove('loader')
+            const element = document.getElementsByClassName("centered-blob");
+            element[0].remove(); // Removes the div with the 'div-02' id
+
+        }
+        return;
+          
+    }
+    const handlePostDataDelete = async ( imageId ) => {
+        const data = new FormData();
+            data.append( 'action', 'rmc_ajax_media_cleaner' );
+            data.append( 'nonce', wpVars.nonce );
+            data.append( 'post_overide',  "media-delete-indiv" );
+
+            data.append( 'imageId',  imageId );
+
+        fetch(wpVars.ajaxURL, {
+            method: "POST",
+            credentials: 'same-origin',
+            body: data
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data) {
+                console.log(data);
+                if(data.data == 'Reload'){
+                    setTimeout(function(){
+                        // Lets remove the form
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        })
+        .catch((error) => {
+            console.log('[WP Pageviews Plugin]');
+            console.error(error);
+        });
+    }
 
 
 
 
 
+    
+    useEffect(() => {
+        if(deleteImageId){
+            console.log('deleteImageId');
+            console.log(deleteImageId);
+            handlePostDataDelete( deleteImageId );
+        }
 
+    }, deleteImageId);
 
     useEffect(() => {
         if(preserveImageId){
@@ -331,7 +409,11 @@ const MediaCollector = ({ items }) => {
             }
             const mediaCollectorItems = output.map((collector) =>
                 <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-                    <td className='media-collector-table__td'>Trash</td>
+                    <td className='media-collector-table__td'>
+                        <button onClick={activateDelete} data-delete-media={collector['id']}>
+                            <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
+                        </button>
+                    </td>
                     <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
                     <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
                     <td className='media-collector-table__td file-size'>{collector['media_size']}</td>

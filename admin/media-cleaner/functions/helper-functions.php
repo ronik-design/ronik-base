@@ -288,7 +288,7 @@ function cleaner_compare_array_diff($primary, $secondary){
 
 
 // Depending on the size of the site we would not want to do this but in this case it is okay.
-function ronik_database_cleaner(){
+function ronikbase_database_cleaner(){
     $f_ronik_database_cleaner = get_option( 'options_ronik-database-cleaner', 'not-triggered' );
     // delete_option( 'options_ronik-database-cleaner' );
     // update_option( 'options_ronik-database-cleaner' , 'not-triggered' );

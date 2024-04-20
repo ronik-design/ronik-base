@@ -59,7 +59,11 @@ if ($_POST['post_overide'] == 'media-preserve'){
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
 		include $file;
 	}
- }else {
+} else if( $_POST['post_overide'] == 'media-delete-indiv') {
+	foreach (glob(dirname(__FILE__) . '/media-cleaner_delete_indiv.php') as $file) {
+		include $file;
+	}
+} else{
 	if(!$_POST['user_option']){
 		wp_send_json_error('Security check failed', '400');
 		wp_die();	
