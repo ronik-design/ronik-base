@@ -246,8 +246,6 @@ const MediaCollector = ({ items }) => {
 
     
     useEffect(() => {
-        console.log(filterPager);
-
         const params = new URLSearchParams(window.location.search);
         const paramsObj = Array.from(params.keys()).reduce(
           (acc, val) => ({ ...acc, [val]: params.get(val) }),
@@ -268,7 +266,6 @@ const MediaCollector = ({ items }) => {
     const filter_size = async (e) => {
         setHasLoaded(false);
         // setHasFilterLoaded(true);
-
         fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
@@ -347,24 +344,52 @@ const MediaCollector = ({ items }) => {
 
         if(mediaCollector){
             const urlParams = new URLSearchParams(window.location.search);
-            const rbp_media_cleaner_media_data_page = filterPager;
-            let page_counter = 20;
+            const rbp_media_cleaner_media_data_page = parseInt(filterPager);
+            let page_counter = 5;
             let page_counter_offset = page_counter*rbp_media_cleaner_media_data_page;
-            let output = mediaCollector.slice(page_counter_offset, -(mediaCollector.length - (page_counter_offset + 20)));
+
+            // items per chunk 
+            const perChunk = page_counter;   
+            const inputArray = mediaCollector;
+            const result = inputArray.reduce((resultArray, item, index) => { 
+            const chunkIndex = Math.floor(index/perChunk)
+                if(!resultArray[chunkIndex]) {
+                    resultArray[chunkIndex] = [] // start a new chunk
+                }
+                resultArray[chunkIndex].push(item)
+                return resultArray
+            }, [])
+
+            var output;
+            output = result[rbp_media_cleaner_media_data_page];
 
 
-            console.log('filterMode');
-            console.log(filterMode);
-            console.log(mediaCollectorHigh);
+
             if(filterMode == 'high'){
                 if(mediaCollectorHigh){
-                    console.log(filterMode);
-
-                    output = mediaCollectorHigh.slice(page_counter_offset, -(mediaCollectorHigh.length - (page_counter_offset + 20)));
+                    const resultHigh = mediaCollectorHigh.reduce((resultArray, item, index) => { 
+                    const chunkIndex = Math.floor(index/page_counter)
+                        if(!resultArray[chunkIndex]) {
+                            resultArray[chunkIndex] = [] // start a new chunk
+                        }
+                        resultArray[chunkIndex].push(item)
+                        return resultArray
+                    }, [])
+                    output = resultHigh[rbp_media_cleaner_media_data_page];
+                    // output = mediaCollectorHigh.slice(page_counter_offset, -(mediaCollectorHigh.length - (page_counter_offset + 20)));
                 }
             } else if(filterMode == 'low'){
                 if(mediaCollectorLow){
-                    output = mediaCollectorLow.slice(page_counter_offset, -(mediaCollectorLow.length - (page_counter_offset + 20)));
+                    const resultLow = mediaCollectorLow.reduce((resultArray, item, index) => { 
+                    const chunkIndex = Math.floor(index/page_counter)
+                        if(!resultArray[chunkIndex]) {
+                            resultArray[chunkIndex] = [] // start a new chunk
+                        }
+                        resultArray[chunkIndex].push(item)
+                        return resultArray
+                    }, [])
+                    output = resultLow[rbp_media_cleaner_media_data_page];
+                    // output = mediaCollectorLow.slice(page_counter_offset, -(mediaCollectorLow.length - (page_counter_offset + 20)));
                 }
             }
 
@@ -386,12 +411,14 @@ const MediaCollector = ({ items }) => {
                         setFilterPager(Number(filterPager)-1)
                     }
                 }
-                if(props.pager == '0'){
-                    return (
-                        <div className='filter-nav filter-nav--no-space-top'>
-                            <button className='filter-nav__button' onClick={pager} data-pager="next">Next Page</button>
-                        </div>
-                    );  
+                if(props.pager == '0'){     
+                    if(mediaCollector.length > 20){
+                        return (
+                            <div className='filter-nav filter-nav--no-space-top'>
+                                <button className='filter-nav__button' onClick={pager} data-pager="next">Next Page</button>
+                            </div>
+                        );  
+                    }               
                 } else if(Number(props.pager)+2 <= Math.floor(mediaCollector.length/page_counter)){
                     return (
                         <div className='filter-nav filter-nav--no-space-top'>
@@ -466,7 +493,6 @@ const MediaCollector = ({ items }) => {
             // let output = mediaCollectorPreserved.slice(page_counter_offset, -(mediaCollectorPreserved.length - (page_counter_offset + 20)));
 
             let output = mediaCollectorPreserved;
-            console.log(mediaCollectorPreserved);
 
             const mediaCollectorItems = output.map((collector) =>
                 <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>

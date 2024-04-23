@@ -39,7 +39,9 @@
 		foreach($post_types_without_defaults as $key => $value) {
 			array_push($post_types_arrays, $value);
 		}
-		$select_post_type = implode(",", $post_types_arrays);
+		// $select_post_type = implode(",", $post_types_arrays);
+
+		$select_post_type = $post_types_arrays;
 
 		// Mime_type.
 		$select_attachment_type = cleaner_post_mime_type($_POST['mime_type']);
@@ -362,9 +364,9 @@
 			$helper->ronikdesigns_write_log_devmode( 'Final Results', 'low');
 
 
-			$rbp_media_cleaner_media_data = get_option('rbp_media_cleaner_media_data');
-			if(!$rbp_media_cleaner_media_data){
-				$rbp_media_cleaner_media_data = array();
+			$rbp_media_cleaner_media_data_3 = get_option('rbp_media_cleaner_media_data');
+			if(!$rbp_media_cleaner_media_data_3){
+				$rbp_media_cleaner_media_data_3 = array();
 			}
 
 			foreach( $image_array3 as $key => $f_ar_3_result ){

@@ -611,10 +611,13 @@ html {
           background-color: #6700ff;
           color: #fff;
         }
+        button[data-delete-media] img{
+          max-width: 20px;
+        }
         a{
           color:#6700ff;
         }
-      } 
+      }
     }
   }
 }

@@ -102,14 +102,6 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 $f_img_mod4 = preg_replace(array('/alt="[^"]*"/'), '', $f_img_mod3);
                 $f_reformatted_collector[$i]['img-thumb'] = $f_img_mod4;
 
-                error_log(print_r('$f_reformatted_collector', true));
-
-                error_log(print_r($image_id, true));
-
-                error_log(print_r($f_reformatted_collector, true));
-
-
-
                 $attachment_metadata = wp_get_attachment_metadata( $image_id);
                 if( isset($attachment_metadata['filesize']) && $attachment_metadata['filesize']){
                     $media_size = formatSizeUnits($attachment_metadata['filesize']);
@@ -242,10 +234,41 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return id_reformatter_media_data($rbp_media_cleaner_media_data);
     }
 
+    
     // Temp Saved mediacollector
     if($data['slug'] == 'tempsaved'){
+        $select_attachment_type['svg'] = 'image/svg+xml';
+        $select_attachment_type['jpg'] = "image/jpg";
+        $select_attachment_type['jpeg'] = "image/jpeg";
+        $select_attachment_type['jpe'] = "image/jpe";
+        $select_attachment_type['gif'] = "image/gif";
+        $select_attachment_type['png'] = "image/png";
+        $select_attachment_type['pdf'] = "application/pdf";
+        $select_attachment_type['asf|asx'] = "video/x-ms-asf";
+        $select_attachment_type['wmv'] = "video/x-ms-wmv";
+        $select_attachment_type['wmx'] = "video/x-ms-wmx";
+        $select_attachment_type['wm'] = "video/x-ms-wm";
+        $select_attachment_type['avi'] = "video/avi";
+        $select_attachment_type['divx'] = "video/divx";
+        $select_attachment_type['flv'] = "video/x-flv";
+        $select_attachment_type['mov|qt'] = "video/quicktime";
+        $select_attachment_type['mpeg|mpg|mpe'] = "video/mpeg";
+        $select_attachment_type['mp4|m4v'] = "video/mp4";
+        $select_attachment_type['ogv'] = "video/ogg";
+        $select_attachment_type['webm'] = "video/webm";
+        $select_attachment_type['mkv'] = "video/x-matroska";
+        $select_attachment_type['js'] = "application/javascript";
+        $select_attachment_type['pdf'] = "application/pdf";
+        $select_attachment_type['tar'] = "application/x-tar";
+        $select_attachment_type['zip'] = "application/zip";
+        $select_attachment_type['gz|gzip'] = "application/x-gzip";
+        $select_attachment_type['rar'] = "application/rar";
+        $select_attachment_type['txt|asc|c|cc|h|srt'] = "text/plain";
+        $select_attachment_type['csv'] = "text/csv";
+        $select_attachment_type['webp'] = "image/webp";
+
         $args = array( 
-            'post_mime_type' => 'image',
+            'post_mime_type' => $select_attachment_type,
             'numberposts'    => -1,
             'post_parent'    => get_the_ID(),
             'post_type'      => 'attachment',
