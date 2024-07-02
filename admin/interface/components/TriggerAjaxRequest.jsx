@@ -3,58 +3,60 @@ import parse from 'html-react-parser';
 
 const FetchAddon = ({requestType, postOveride=null  }) => {
     const [formValues, setFormValues] = useState({ ['user-option']:'fetch-media'});
-    const [formCheckValues, setFormCheckValues] = useState([]);
-
     const [pageCount, setPageCount] = useState(0);
     const [pageTotalCount, setPageTotalCount] = useState(0);
-
     const [increment, setIncrement] = useState(0);
     const [dataResponse, setDataResponse] = useState('');
-    // const f_increment = document.querySelector(".ronik-user-exporter_increment").value;
-
+    const [dataSync, setDataSync] = useState('');
+    const [dataSyncProgress, setDataSyncProgress] = useState('');
+    
     // On page render lets detect if the option field is populated.
     useEffect(()=>{
-        console.log(formCheckValues);
-        if( formCheckValues.length > 0  ){
-            if(!formCheckValues.includes('all') ){
-                document.getElementById("checkbox_all").checked = false;
-            } else {
-                document.getElementById("checkbox").checked = true;
-                document.getElementById("checkbox2").checked = true;
-                document.getElementById("checkbox3").checked = true;
-                document.getElementById("checkbox4").checked = true;
-                document.getElementById("checkbox5").checked = true;
-
-                setFormCheckValues(['jpg', 'gif', 'png', 'video', 'misc']);
-            }
-        }
-
         if(dataResponse == 'incomplete'){
-            console.log(increment);
-            if(formCheckValues.length == 0){
-                console.log(increment);
-                handlePostData(formValues['user-option'], ['all'], increment );
-            } else {
-                console.log(increment);
-                handlePostData(formValues['user-option'], formCheckValues, increment );
-            }
             setDataResponse('incomplete_half');
         }
-    }, [dataResponse, formValues, formCheckValues])
+    }, [dataResponse, formValues ])
 
 
     // On page render lets detect if the option field is populated.
+    useEffect(()=>{
+        if(dataSync){
+            const f_wpwrap = document.querySelector("#wpwrap");
+            if(f_wpwrap){
+                const f_wpwrap = document.querySelector("#wpwrap");
+                const f_wpcontent = document.querySelector("#wpcontent");
+                f_wpwrap.classList.add('loader')
+                f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+                if (document.contains(document.querySelector(".page-counter"))) {
+                    document.querySelector(".page-counter").remove();
+                }
+                f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter"> Please do not refresh the page! </div>');
+            }
+            console.log('USE-EFFECT');
+            if(dataSync == 'DONE'){
+                // alert('done');
+                handlePostData(formValues['user-option'], 'all', increment, false );
+            } else {
+                console.log(dataSyncProgress);
+                console.log(dataSync);
+                // alert('SYNC In Progress');
+                handlePostData(formValues['user-option'], 'all', increment, 'inprogress' );
+            }
+        }
+    }, [dataSync, dataSyncProgress])
 
+
+    // On page render lets detect if the option field is populated.
     useEffect(()=>{
         const f_wpwrap = document.querySelector("#wpwrap");
-
         if( f_wpwrap.classList.contains('loader')   ){
             const f_wpcontent = document.querySelector(".centered-blob");
-
             if (document.contains(document.querySelector(".page-counter"))) {
                 document.querySelector(".page-counter").remove();
             }
-            f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter">Page '+pageCount + ' of ' + pageTotalCount+'</div>');
+            if(pageTotalCount !== 0){
+                f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter">Page '+pageCount + ' of ' + pageTotalCount+'</div>');
+            }
         }
     }, [pageCount, pageTotalCount])
 
@@ -62,19 +64,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
     // Lets handle the input changes and store the changes to form values.
     const handleChange = (e) => {
         setFormValues({ ...formValues, 'user-option': e.target.value });
-        // setFormValues( 'e.target.value' );
-        console.log(formValues);
     }
-
-    const handleChangeRadio = (e) => {
-        if(e.target.checked){
-            setFormCheckValues([...formCheckValues, e.target.value ]);
-        } else {
-            let index = formCheckValues.indexOf(e.target.value);
-            formCheckValues.splice(index, 1);
-            setFormCheckValues(formCheckValues);
-        }
-    };
 
     // Handlefetch data from server and update option values.
     const handleSubmit = (e) => {
@@ -83,31 +73,13 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
         const f_wpcontent = document.querySelector("#wpcontent");
         f_wpwrap.classList.add('loader')
         f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-
-
-        console.log('formCheckValues');
-        console.log(formCheckValues);
-
-        if(formCheckValues.length == 0){
-            console.log(increment);
-            console.log('formCheckValues1');
-            console.log(formCheckValues);
-            console.log("formValues['user-option']");
-            console.log(formValues['user-option']);
-            handlePostData(formValues['user-option'], ['all'], increment );
-        } else {
-            console.log(increment);
-            console.log('formCheckValues2');
-            console.log(formCheckValues);
-            console.log(formValues['user-option']);
-            handlePostData(formValues['user-option'], formCheckValues, increment );
-        }
+        handlePostData(formValues['user-option'], 'all', increment, false );
         e.preventDefault();
 
     };
 
 
-    const handlePostData = async ( userOptions, mimeType, f_increment ) => {
+    const handlePostData = async ( userOptions, mimeType, f_increment, f_sync ) => {
         const data = new FormData();
             data.append( 'action', requestType );
             data.append( 'nonce', wpVars.nonce );
@@ -115,6 +87,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
             data.append( 'user_option',  userOptions );
             data.append( 'mime_type',  mimeType );
             data.append( 'increment',  f_increment );
+            data.append( 'sync', f_sync );
 
         fetch(wpVars.ajaxURL, {
             method: "POST",
@@ -134,7 +107,7 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                 if(data.data['response'] == 'Done'){
                     setTimeout(function(){
                         // Lets remove the form
-                        // location.reload();
+                        location.reload();
                         setIncrement(increment+1);
                     }, 50);
                     setTimeout(function(){
@@ -143,13 +116,25 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                         setPageTotalCount(data.data['pageTotalCounter']);
                     }, 50);
                 }
+                console.log(data.data['response']);
+                if(data.data['response'].includes("Collector-Sync-inprogress")){
+                    // alert("Sync is in Progress... Please do not refresh the page!");
+                    setTimeout(function(){
+                        setDataSyncProgress(data.data['sync']);
+                        setDataSync(data.data['response']);
+                    }, 5000);
+                }
+                if(data.data['response'] == 'Collector-Sync-done'){
+                    // alert("Sync is completed! Please do not refresh the page!");
+                    setTimeout(function(){
+                        setDataSync('DONE');
+                    }, 500);
+                    
+                }
                 if(data.data == 'Cleaner-Done'){
                     alert('Media cleanup complete! Page will auto reload.');
                     location.reload();
-                }  
-
-
-
+                }
             }
         })
         .catch((error) => {
@@ -159,32 +144,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
     }
 
 
-
-
-
-
-
-
-
-
-
-    // const validResponse = () => {
-    //     if(dataResponse.responseResults == 'valid') {
-    //         return (
-    //             <div className='tile-item__text tile-item__text--message tile-item__text--valid'>{dataResponse.response}</div>
-    //         )
-    //     }
-    // }
-    // const invalidResponse = () => {
-    //     if(dataResponse.responseResults == 'invalid') {
-    //         return (
-    //             <div className='tile-item__text tile-item__text--message tile-item__text--invalid'>{dataResponse.response}</div>
-    //         )
-    //     }
-    // }
-
-
-
     return (
         <div className="media-cleaner-block">
             <div className="media-cleaner-block__inner">
@@ -192,41 +151,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                     <div className="media-cleaner-item__inner">
                         <div className="media-cleaner-item__content">
                             <form className='media-cleaner-item__form' onSubmit={handleSubmit}  >
-
-                                <div className='media-cleaner-item__checkboxes' onChange={handleChangeRadio}>
-                                    <span className="switch colored">
-                                        <h3>ALL</h3>
-                                        <input type="checkbox" id="checkbox_all" value="all" defaultChecked />
-                                        <label htmlFor="checkbox_all">ALL</label>
-                                    </span>
-                                    <span className="switch colored hidden">
-                                        <h3>JPG</h3>
-                                        <input type="checkbox" id="checkbox" value="jpg" />
-                                        <label htmlFor="checkbox">JPG</label>
-                                    </span>
-                                    <span className="switch colored hidden">
-                                        <h3>GIF</h3>
-                                        <input type="checkbox" id="checkbox2" value="gif" />
-                                        <label htmlFor="checkbox2">GIF </label>
-                                    </span>
-                                    <span className="switch colored hidden">
-                                        <h3>PNG</h3>
-                                        <input type="checkbox" id="checkbox3"  value="png" />
-                                        <label htmlFor="checkbox3">PNG </label>
-                                    </span>
-                                    <span className="switch colored hidden">
-                                        <h3>Video</h3>
-                                        <input type="checkbox" id="checkbox4"  value="video" />
-                                        <label htmlFor="checkbox4">Video </label>
-                                    </span>
-                                    <span className="switch colored hidden">
-                                        <h3>MISC</h3>
-                                        <input type="checkbox" id="checkbox5"  value="misc" />
-                                        <label htmlFor="checkbox5">Misc </label>
-                                    </span>
-                                </div>
-
-
                                 <div className="media-cleaner-item__input-group">
                                     <div className="radio-switch" onChange={handleChange}>
                                         <div className="radio-switch-field" >
@@ -238,9 +162,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                                             <label htmlFor="switch-on">Delete Unused Media</label>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                                 <button type="submit" className="submit-btn">Submit</button>
                             </form>
@@ -251,6 +172,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
             </div>
         </div>
     );
-  };
+};
 
-  export default FetchAddon;
+export default FetchAddon;

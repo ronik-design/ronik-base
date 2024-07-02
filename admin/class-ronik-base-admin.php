@@ -193,16 +193,22 @@ class Ronik_Base_Admin {
 			3 // menu position
 		);
 		if($this->media_cleaner_state){
+			$_POST['media_cleaner_state'] = 'valid';
 			// Include the interface Fields
 			foreach (glob(dirname(__FILE__) . '/media-cleaner/interface-layout/*.php') as $file) {
 				include $file;
 			}
+		} else {
+			$_POST['media_cleaner_state'] = 'invalid';
 		}
 		if($this->optimization_state){
+			$_POST['optimization_state'] = 'valid';
 			// Include the interface Fields
 			foreach (glob(dirname(__FILE__) . '/optimization/interface-layout/*.php') as $file) {
 				include $file;
 			}
+		} else{
+			$_POST['optimization_state'] = 'invalid';
 		}
 		function ronikbase_support_general(){
 			echo '
@@ -210,9 +216,21 @@ class Ronik_Base_Admin {
 			';
 		}
 		function ronikbase_support_settings(){
-			echo '
-				<div id="ronik-base_settings"></div>
-			';
+			$rbp_media_cleaner_file_size = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size')/1048576 : 0;
+
+			
+			echo '<div id="ronik-base_settings"></div>';
+
+			if($_POST['media_cleaner_state'] == 'valid'){
+				echo '
+					<div id="ronik-base_settings-media-cleaner" data-file-size="'.$rbp_media_cleaner_file_size.'">Media Cleaner</div>
+				';
+			}
+			if($_POST['optimization_state'] == 'valid'){
+				echo '
+					<div id="ronik-base_settings-optimization">Optimization</div>
+				';
+			}
 		}
 		function ronikbase_support_callback(){
 			echo '
@@ -243,6 +261,13 @@ class Ronik_Base_Admin {
 
 
 	// Media Cleaner Chunk
+		public function rmc_classes(){
+			// Include the wp-functions.
+			foreach (glob(dirname(__FILE__) . '/media-cleaner/classes/*.php') as $file) {
+				include $file;
+			}
+		}
+
 		public function rmc_functions(){
 			// Include the wp-functions.
 			foreach (glob(dirname(__FILE__) . '/media-cleaner/functions/*.php') as $file) {
@@ -252,5 +277,225 @@ class Ronik_Base_Admin {
 		// These files contain ajax functions.
 		public function rmc_ajax_media_cleaner(){
 			include dirname(__FILE__) . '/media-cleaner/ajax/media-cleaner.php';
+		}
+
+		public function rmc_ajax_media_swap(){
+			include dirname(__FILE__) . '/media-cleaner/ajax/media-swap.php';
+		}
+
+		// These files contain ajax functions.
+		public function rmc_ajax_media_cleaner_settings(){
+			include dirname(__FILE__) . '/media-cleaner/ajax/media-cleaner-settings.php';
+		}
+
+		public function rmc_media_sync_save( $post_id ){
+			// Detect if the sync is already running. 
+			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
+			if($rbp_media_cleaner_sync_running == 'running'){
+				return false;
+			}
+
+			$transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+			if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized ) ) {
+				$rmc_media_cleaner_media_data_collectors_image_id_array_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized;
+			} else {
+				return false;
+			}
+
+			// Lets us set the max_execution_time to 1hr
+			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+			@set_time_limit( intval( 3600 ) );
+			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+
+			$RmcDataGathering = new RmcDataGathering;
+
+			$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor( $post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized );
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
+			
+			$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->specificImagePostAuditor( $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array,  $post_id  );
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
+
+			$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $RmcDataGathering->specificImagePostContentAuditor( $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $post_id );
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
+			
+			
+			$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array );
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
+
+			
+			$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+
+
+			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+			$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
+
+		}
+
+
+
+
+
+		public function rmc_media_sync(){
+			// Detect if the sync is already running. 
+			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
+			if($rbp_media_cleaner_sync_running == 'running'){
+				return false;
+			}
+			// Update the sync status to running..
+				update_option('rbp_media_cleaner_sync_running', 'running');
+				error_log(print_r('RUNNING Media Sync', true));
+
+				$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
+
+				error_log(print_r($rbp_media_cleaner_sync_running, true));
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '0%' , DAY_IN_SECONDS );
+
+
+			// Update the set_time_limit option.
+				// Lets us set the max_execution_time to 1hr
+				error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+				@set_time_limit( intval( 3600 ) );
+				error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+			// Default settings...
+				$RmcDataGathering = new RmcDataGathering;
+				// We retreive the follow post status.
+				$select_post_status = array('publish', 'pending', 'draft', 'private', 'future', 'archive');
+				// Dynamically retrieve the post types for entire site including custom post types.
+				$select_post_type = $RmcDataGathering->postTypesRetrieval();
+			// Mime_type.
+				$select_attachment_type = cleaner_post_mime_type('all' );
+				// error_log(print_r($_POST['mime_type'], true));
+			// Overall media counter...
+				$throttle_detector =  databaseScannerMedia__allMedia(array('count', $select_attachment_type));
+			// Set numberposts to a number that wont destroy the server resources.
+				$select_numberposts = 35;
+			// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
+				$maxIncrement = ceil($throttle_detector/$select_numberposts);
+			// File Size
+				$targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : 1048576;
+			// Gather all the posts ID of the entire database...
+				$transient_rmc_media_cleaner_media_data_collectors_posts_array = get_transient( 'rmc_media_cleaner_media_data_collectors_posts_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_posts_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_posts_array = $transient_rmc_media_cleaner_media_data_collectors_posts_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_posts_array = $RmcDataGathering->postIDCollector($select_post_status, $select_post_type);
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_posts_array' , $rmc_media_cleaner_media_data_collectors_posts_array , DAY_IN_SECONDS );
+				}
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '20%' , DAY_IN_SECONDS );
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_posts_array) , true));
+				sleep(1);
+
+
+			// Gather all the image ids.
+				$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_id_array = $transient_rmc_media_cleaner_media_data_collectors_image_id_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_id_array = $RmcDataGathering->imageIDCollector($select_attachment_type, $select_numberposts, $targetFileSize, $maxIncrement);
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' , $rmc_media_cleaner_media_data_collectors_image_id_array , DAY_IN_SECONDS );
+				}
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '40%' , DAY_IN_SECONDS );
+				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_id_array' , true));
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array) , true));
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_id_array , true));
+
+				sleep(1);
+
+
+			// Image Id Thumbnail Auditor.
+				$transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->imageThumbnailAuditor( $rmc_media_cleaner_media_data_collectors_posts_array, $rmc_media_cleaner_media_data_collectors_image_id_array, $select_attachment_type );
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
+				}
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '60%' , DAY_IN_SECONDS );
+				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , true));
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , true));
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , true));
+
+				sleep(1);
+
+
+			// Check image id within all posts. 
+				$transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->imagePostAuditor( $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array, $rmc_media_cleaner_media_data_collectors_posts_array, $select_post_status, $select_post_type );
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
+				}
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
+				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , true));
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , true));
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_auditor_array , true));
+
+				sleep(1);
+
+
+			// Check image basename within the post content primarily this is for gutenberg editior.
+				$transient_rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $RmcDataGathering->imagePostContentAuditor( $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $rmc_media_cleaner_media_data_collectors_posts_array );
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
+				}
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '90%' , DAY_IN_SECONDS );
+				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , true));
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , true));
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , true));
+				sleep(1);
+
+			// Check the image inside the filesystem. This checks if the image hardcoded into any of the files.
+				$transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array );
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
+				}
+
+
+
+
+				
+			// Check if images have the preserved attributes.
+				$transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
+				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
+					$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve;
+				} else {
+					$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
+					// Save the response so we don't have to call again until tomorrow.
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+				}
+
+
+
+
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '98%' , DAY_IN_SECONDS );
+				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , true));
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '99%' , DAY_IN_SECONDS );
+
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
+				sleep(1);
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , 'DONE' , DAY_IN_SECONDS );
+				sleep(5);
+
+
+				error_log(print_r('FINISHED SYNC' , true));
+
+			// Update the sync status
+			update_option('rbp_media_cleaner_sync_running', 'not-running');
+			update_option('rbp_media_cleaner_cron_last-ran', date('Y-m-d'));
 		}
 }

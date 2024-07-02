@@ -10,7 +10,7 @@ if (!is_user_logged_in()) {
 
 function ronikdesigns_timeout_extend( $time ){
 	// Default timeout is 5
-	return 20;
+	return 200;
 }
 add_filter( 'http_request_timeout', 'ronikdesigns_timeout_extend' );
 
@@ -39,20 +39,7 @@ function databaseScannerMedia__cleaner( ) {
             }
         }
     }
-
-    // $tablename = $wpdb->prefix . "posts";
-    // $sql = $wpdb->prepare( 
-    //     "SELECT * FROM $tablename WHERE post_type = 'attachment' ORDER BY ID ASC", $tablename );
-    // $results = $wpdb->get_results( $sql , ARRAY_A );
-    // if($results){
-    //     foreach($results as $result){
-    //         $data = wp_get_attachment_metadata( $result['ID'] ); // get the data structured
-	// 		$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false';  // change the values you need to change
-    //         wp_update_attachment_metadata( $result['ID'], $data );  // save it back to the db
-    //    }
-    // }
 }
-
 
 
 if ($_POST['post_overide'] == 'media-preserve'){

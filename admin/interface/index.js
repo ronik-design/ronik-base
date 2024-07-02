@@ -7,6 +7,8 @@ import LoadSupportScreen from './templates/support.js';
 import LoadIntegrationsScreen from './templates/integrations.js';
 // Load Settings Screen.
 import LoadSettingsScreen from './templates/settings.js';
+// Load Settings Screen.
+import LoadSettingsScreenMediaCleaner from './templates/media_cleaner_settings.js';
 // Load General Screen.
 import LoadGeneralScreen from './templates/general.js';
 // Load General Screen.
@@ -35,6 +37,16 @@ document.addEventListener('readystatechange', event => {
                 const root = createRoot(domNode);
                 root.render(<LoadSettingsScreen />);
             }
+
+            // Settings screen
+            if(document.querySelector("#ronik-base_settings-media-cleaner") !== null){
+                const domNode = document.getElementById('ronik-base_settings-media-cleaner');
+                const root = createRoot(domNode);
+                root.render(<LoadSettingsScreenMediaCleaner />);
+            }
+
+
+
             // General screen
             if(document.querySelector("#ronik-base_general") !== null){
                 const domNode = document.getElementById('ronik-base_general');

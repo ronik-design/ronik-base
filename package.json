@@ -32,7 +32,8 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-drag-and-drop": "^3.0.0"
+    "react-drag-and-drop": "^3.0.0",
+    "react-select": "^5.8.0"
   },
   "type": "module"
 }

@@ -1,34 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import parse from 'html-react-parser';
-
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-
-import { useDrag, useDrop } from 'react-dnd'
-
+import Select from 'react-select';
 
 const MediaCollector = ({ items }) => {
     const [hasLoaded, setHasLoaded] = useState(false);
     const [mediaCollector, setMediaCollector] = useState(null);
-    
     const urlParams = new URLSearchParams(window.location.search);
     const rbp_media_cleaner_media_data_page = urlParams.get('page_number') ? urlParams.get('page_number') : 0;
     const [filterPager, setFilterPager] = useState(rbp_media_cleaner_media_data_page);
-
     const rbp_media_cleaner_media_data_filter = urlParams.get('filter_size') ? urlParams.get('filter_size') : 'all';
     const [filterMode, setFilterMode] = useState(rbp_media_cleaner_media_data_filter);    
-
+    const [filterType, setFilterType] = useState(urlParams.get('filter_type') ? urlParams.get('filter_type') : 'all');    
     const [mediaCollectorLow, setMediaCollectorLow] = useState(null);
     const [mediaCollectorHigh, setMediaCollectorHigh] = useState(null);
-
     const [unPreserveImageId, setUnImageId] = useState([]);
     const [preserveImageId, setImageId] = useState([]);
-
     const [deleteImageId, setDeleteImageId] = useState();
-
+    const [selectedDataFormValues, setSelecDatatedFormValues] = useState(['all']);
+    const [selectedFormValues, setSelectedFormValues] = useState([{ value: 'all', label: 'All' }]);
 
     const [mediaCollectorPreserved, setMediaCollectorPreserved] = useState(null);
-
 
     // Lazy load images in aswell as image compression.
     function lazyLoader() {
@@ -39,17 +30,13 @@ const MediaCollector = ({ items }) => {
                 fetch(lazyImage.dataset.src)
                     .then(res => res.blob()) // Gets the response and returns it as a blob
                     .then(blob => {
-        
                         var imageSelector = document.querySelector('[data-id="'+lazyImage.getAttribute('data-id')+'"]');
                         lazyImage.className = " reveal-enabled";
-
                         var c = document.createElement("canvas");
                         var ctx = c.getContext("2d");
-
                         var img = new Image;
                             img.crossOrigin = ""; // if from different origin
-                            img.src = lazyImage.getAttribute('data-src');                                        
-                        
+                            img.src = lazyImage.getAttribute('data-src');
                             img.onload = function() {
                                 c.width = this.naturalWidth;     // update canvas size to match image
                                 c.height = this.naturalHeight;
@@ -59,7 +46,6 @@ const MediaCollector = ({ items }) => {
                                     imageSelector.src = URL.createObjectURL(blob)    
                                 }, lazyImage.getAttribute('data-type'), 0.5);
                             };
-
                 });
             }
         })
@@ -75,17 +61,12 @@ const MediaCollector = ({ items }) => {
     }, 50);
 
 
-                
-
-
-
 
     const activatePreserve = (e) => {
         const f_wpwrap = document.querySelector("#wpwrap");
         const f_wpcontent = document.querySelector("#wpcontent");
         f_wpwrap.classList.add('loader')
         f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-
         if(e.target.getAttribute("data-unpreserve-media")){
             e.target.textContent = 'Row is Removed!';
             setUnImageId([e.target.getAttribute("data-unpreserve-media")]);
@@ -103,19 +84,13 @@ const MediaCollector = ({ items }) => {
     }
 
 
-
-
-    
     const activateDelete = (e) => {
         const f_wpwrap = document.querySelector("#wpwrap");
         const f_wpcontent = document.querySelector("#wpcontent");
         f_wpwrap.classList.add('loader')
         f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-
         console.log(e.target.getAttribute("data-delete-media"));
-
         console.log(e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id"));
-
         if(e.target.getAttribute("data-delete-media")){
             var MediaId = e.target.getAttribute("data-delete-media");
         } else if(e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id")){
@@ -124,33 +99,28 @@ const MediaCollector = ({ items }) => {
             f_wpwrap.classList.remove('loader')
             const element = document.getElementsByClassName("centered-blob");
             element[0].remove(); // Removes the div with the 'div-02' id
-
         }
-    
         var userPreference;
-
         if (confirm("Are you sure you want to continue?") == true) {
             userPreference = "Data saved successfully!";
             setDeleteImageId(MediaId);
         } else {
             userPreference = "Save Canceled!";
-
             f_wpwrap.classList.remove('loader')
             const element = document.getElementsByClassName("centered-blob");
             element[0].remove(); // Removes the div with the 'div-02' id
-
         }
-        return;
-          
+        return;  
     }
+
+
+
     const handlePostDataDelete = async ( imageId ) => {
         const data = new FormData();
             data.append( 'action', 'rmc_ajax_media_cleaner' );
             data.append( 'nonce', wpVars.nonce );
             data.append( 'post_overide',  "media-delete-indiv" );
-
             data.append( 'imageId',  imageId );
-
         fetch(wpVars.ajaxURL, {
             method: "POST",
             credentials: 'same-origin',
@@ -174,10 +144,7 @@ const MediaCollector = ({ items }) => {
         });
     }
 
-
-
-
-
+ 
     
     useEffect(() => {
         if(deleteImageId){
@@ -185,7 +152,6 @@ const MediaCollector = ({ items }) => {
             console.log(deleteImageId);
             handlePostDataDelete( deleteImageId );
         }
-
     }, deleteImageId);
 
     useEffect(() => {
@@ -194,7 +160,6 @@ const MediaCollector = ({ items }) => {
             console.log(preserveImageId);
             handlePostDataPreserve( preserveImageId, 'invalid');
         }
-
     }, [preserveImageId]);
 
     useEffect(() => {
@@ -203,29 +168,35 @@ const MediaCollector = ({ items }) => {
             console.log(unPreserveImageId);
             handlePostDataPreserve( 'invalid' , unPreserveImageId);
         }
-
         setHasLoaded(false);
         fetch("/wp-json/mediacleaner/v1/mediacollector/tempsaved", {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
-            setMediaCollectorPreserved(data);
+            if(data.length !== 0){
+                setMediaCollectorPreserved(data);
+            }
         }).catch((error) => console.log(error));
         setHasLoaded(true);
-
     }, [unPreserveImageId]);
 
 
+    useEffect(() => {  
+        var route = 'all';
+        if(!selectedDataFormValues.includes("all")){
+            console.log(selectedDataFormValues);
 
 
-
-    useEffect(() => {        
-        fetch("/wp-json/mediacleaner/v1/mediacollector/all", {
+            route = selectedDataFormValues.join('?');
+        }
+        fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter="+route, {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
-            setMediaCollector(data);
+            if(data.length !== 0){
+                setMediaCollector(data);
+            }
             setHasLoaded(true);
         }).catch((error) => console.log(error));
-    }, []);
+    }, [selectedDataFormValues]);
 
 
     useEffect(() => {
@@ -235,13 +206,11 @@ const MediaCollector = ({ items }) => {
           (acc, val) => ({ ...acc, [val]: params.get(val) }),
           {}
         );
-
         if (window.history.pushState) {       
             const newURL = new URL(window.location.href);       
             newURL.search = '?page=options-ronik-base_media_cleaner&filter_size='+filterMode+'&page_number='+paramsObj['page_number'];        
             window.history.pushState({ path: newURL.href }, '', newURL.href); 
         }
-
     }, [filterMode]);
 
     
@@ -260,49 +229,47 @@ const MediaCollector = ({ items }) => {
 
   
 
-
-
-
     const filter_size = async (e) => {
         setHasLoaded(false);
         // setHasFilterLoaded(true);
         fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
-            setMediaCollectorLow(data);                
+            if(data.length !== 0){            
+                setMediaCollectorLow(data);                
+            }
         }).catch((error) => console.log(error));
 
         fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
-            setMediaCollectorHigh(data);
+            if(data.length !== 0){
+                setMediaCollectorHigh(data);
+            }
         }).catch((error) => console.log(error));
         setHasLoaded(true);
-
         if(e){
             setFilterMode(e.target.getAttribute("data-filter"));
             if(e.target.getAttribute("data-filter")){
                 setHasLoaded(false);
-                // setHasFilterLoaded(true);
-
                 fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
                     method: "GET",
                 }).then((response) => response.json()).then((data) => {
-                    setMediaCollectorLow(data);                
+                    if(data.length !== 0){                                    
+                        setMediaCollectorLow(data);                
+                    }
                 }).catch((error) => console.log(error));
-    
                 fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
                     method: "GET",
                 }).then((response) => response.json()).then((data) => {
-                    setMediaCollectorHigh(data);
+                    if(data.length !== 0){                                                        
+                        setMediaCollectorHigh(data);
+                    }
                 }).catch((error) => console.log(error));
-    
                 setHasLoaded(true);
             }
         }
     }
-
-
 
 
 
@@ -311,10 +278,8 @@ const MediaCollector = ({ items }) => {
             data.append( 'action', 'rmc_ajax_media_cleaner' );
             data.append( 'nonce', wpVars.nonce );
             data.append( 'post_overide',  "media-preserve" );
-
             data.append( 'preserveImageId',  preserveImageId );
             data.append( 'unPreserveImageId',  unPreserveImageId );
-
         fetch(wpVars.ajaxURL, {
             method: "POST",
             credentials: 'same-origin',
@@ -341,56 +306,119 @@ const MediaCollector = ({ items }) => {
 
 
     const MediaCollectorTable = ( props ) => {
-
+        console.log(mediaCollector);
         if(mediaCollector){
             const urlParams = new URLSearchParams(window.location.search);
             const rbp_media_cleaner_media_data_page = parseInt(filterPager);
-            let page_counter = 5;
+            let page_counter = 20;
             let page_counter_offset = page_counter*rbp_media_cleaner_media_data_page;
 
-            // items per chunk 
-            const perChunk = page_counter;   
-            const inputArray = mediaCollector;
-            const result = inputArray.reduce((resultArray, item, index) => { 
-            const chunkIndex = Math.floor(index/perChunk)
-                if(!resultArray[chunkIndex]) {
-                    resultArray[chunkIndex] = [] // start a new chunk
+            if(mediaCollector !== 'no-images'){
+                // items per chunk 
+                const perChunk = page_counter;   
+                const inputArray = mediaCollector;
+                const result = inputArray.reduce((resultArray, item, index) => { 
+                const chunkIndex = Math.floor(index/perChunk)
+                    if(!resultArray[chunkIndex]) {
+                        resultArray[chunkIndex] = [] // start a new chunk
+                    }
+                    resultArray[chunkIndex].push(item)
+                    return resultArray
+                }, [])
+
+                var output;
+                output = result[rbp_media_cleaner_media_data_page];
+
+
+
+                if(filterMode == 'high'){
+                    if(mediaCollectorHigh){
+                        const resultHigh = mediaCollectorHigh.reduce((resultArray, item, index) => { 
+                        const chunkIndex = Math.floor(index/page_counter)
+                            if(!resultArray[chunkIndex]) {
+                                resultArray[chunkIndex] = [] // start a new chunk
+                            }
+                            resultArray[chunkIndex].push(item)
+                            return resultArray
+                        }, [])
+                        output = resultHigh[rbp_media_cleaner_media_data_page];
+                    }
+                } else if(filterMode == 'low'){
+                    if(mediaCollectorLow){
+                        const resultLow = mediaCollectorLow.reduce((resultArray, item, index) => { 
+                        const chunkIndex = Math.floor(index/page_counter)
+                            if(!resultArray[chunkIndex]) {
+                                resultArray[chunkIndex] = [] // start a new chunk
+                            }
+                            resultArray[chunkIndex].push(item)
+                            return resultArray
+                        }, [])
+                        output = resultLow[rbp_media_cleaner_media_data_page];
+                    }
                 }
-                resultArray[chunkIndex].push(item)
-                return resultArray
-            }, [])
-
-            var output;
-            output = result[rbp_media_cleaner_media_data_page];
+            }
 
 
+            const options = [
+                { value: 'all', label: 'All' },
+                { value: 'jpg', label: 'JPG' },
+                { value: 'gif', label: 'GIF' },
+                { value: 'png', label: 'PNG' },
+                { value: 'video', label: 'Video' },
+                { value: 'misc', label: 'Misc' }
+              ]
 
-            if(filterMode == 'high'){
-                if(mediaCollectorHigh){
-                    const resultHigh = mediaCollectorHigh.reduce((resultArray, item, index) => { 
-                    const chunkIndex = Math.floor(index/page_counter)
-                        if(!resultArray[chunkIndex]) {
-                            resultArray[chunkIndex] = [] // start a new chunk
-                        }
-                        resultArray[chunkIndex].push(item)
-                        return resultArray
-                    }, [])
-                    output = resultHigh[rbp_media_cleaner_media_data_page];
-                    // output = mediaCollectorHigh.slice(page_counter_offset, -(mediaCollectorHigh.length - (page_counter_offset + 20)));
-                }
-            } else if(filterMode == 'low'){
-                if(mediaCollectorLow){
-                    const resultLow = mediaCollectorLow.reduce((resultArray, item, index) => { 
-                    const chunkIndex = Math.floor(index/page_counter)
-                        if(!resultArray[chunkIndex]) {
-                            resultArray[chunkIndex] = [] // start a new chunk
-                        }
-                        resultArray[chunkIndex].push(item)
-                        return resultArray
-                    }, [])
-                    output = resultLow[rbp_media_cleaner_media_data_page];
-                    // output = mediaCollectorLow.slice(page_counter_offset, -(mediaCollectorLow.length - (page_counter_offset + 20)));
-                }
+            const FilterType = ( props ) => {                                
+                return (
+                    <div className="select select-multiple">
+                        <Select 
+                            closeMenuOnSelect={false}
+                            // components={animatedComponents}
+                            defaultValue={selectedFormValues}
+                            isMulti
+                            options={options}   
+                            onChange={e => {
+                                const newArr = e.map(myFunction);
+                                function myFunction(num) {
+                                    return num;
+                                }
+                                setSelectedFormValues(newArr);
+                                const newDataArr = e.map(myDataFunction);
+                                function myDataFunction(num) {
+                                    console.log(num);
+                                    return num['value'];
+                                }
+                                setSelecDatatedFormValues(newDataArr);
+                            }}
+                        />
+                    </div>
+
+                    
+
+
+                    // <>         
+                    //     <div className="select select-multiple">
+                    //         <select id='multi-select selectType' 
+                    //             multiple={true}
+                    //             value={selectedFormValues}
+                                // onChange={e => {
+                                //     const options = [...e.target.selectedOptions];
+                                //     const values = options.map(option => option.value);
+                                //     setSelectedFormValues(values);
+                                // }}
+                    //         >
+                    //             <option value="all">All</option>
+                    //             <option value="jpg">JPG</option>
+                    //             <option value="gif">GIF</option>
+                    //             <option value="png">PNG</option>
+                    //             <option value="video">Video</option>
+                    //             <option value="misc">Misc</option>
+                    //         </select>
+                    //     </div>
+                    //     <p>Your filter selection: {selectedFormValues.join(', ')}</p>
+                    // </>
+
+                )
             }
 
             const FilterNav = ( props ) => {
@@ -433,29 +461,34 @@ const MediaCollector = ({ items }) => {
                         </>
                     ); 
                 }
-            }
-            const mediaCollectorItems = output.map((collector) =>
-                <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-                    <td className='media-collector-table__td'>
-                        <button onClick={activateDelete} data-delete-media={collector['id']}>
-                            <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
-                        </button>
-                    </td>
-                    <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
-                    <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
-                    <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
-                    <td className='media-collector-table__td'>{collector['id']}</td>
-                    <td className='media-collector-table__td'> 
-                        <a target="_blank" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
-                    </td>
-                    <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
-                    <td className='media-collector-table__td media-collector-table__td--preserve'>
-                        <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve Row</button>
-                    </td>
-                </tr>
-            );
+            }    
+            
+
+            if(mediaCollector !== 'no-images'){
+                const mediaCollectorItems = output.map((collector) =>
+                    <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
+                        <td className='media-collector-table__td'>
+                            <button onClick={activateDelete} data-delete-media={collector['id']}>
+                                <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
+                            </button>
+                        </td>
+                        <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
+                        <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
+                        <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
+                        <td className='media-collector-table__td'>{collector['id']}</td>
+                        <td className='media-collector-table__td'> 
+                            <a target="_blank" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
+                        </td>
+                        <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
+                        <td className='media-collector-table__td media-collector-table__td--preserve'>
+                            <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve Row</button>
+                        </td>
+                    </tr>
+                );
+
             return (
-                <>
+                <> 
+                    <FilterType filterType={filterType} />
                     <FilterNav filterType={filterMode} />
                     <PagerNav pager={rbp_media_cleaner_media_data_page} />
 
@@ -476,6 +509,15 @@ const MediaCollector = ({ items }) => {
                     </table>
                 </>
             )
+            } else {
+                return(
+                    <>                    
+                        <FilterType filterType={filterType} />
+                        <p>No Media Found!</p>
+                    </>
+
+                )
+            }
         }
     }
 
@@ -545,6 +587,6 @@ const MediaCollector = ({ items }) => {
     } else {
         return 'Loading...';
     }
-  };
+};
   
-  export default MediaCollector;
+export default MediaCollector;

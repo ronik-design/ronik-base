@@ -32,9 +32,20 @@ if(isset($_POST['preserveImageId']) && $_POST['preserveImageId']){
         $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_temp-saved';  // change the values you need to change
         wp_update_attachment_metadata( $_POST['preserveImageId'], $data );  // save it back to the db
 
-        $array_without_preserved_img = array_values(array_diff($rbp_media_cleaner_data_array, array($_POST['preserveImageId'])));
+        // $array_without_preserved_img = array_values(array_diff($rbp_media_cleaner_data_array, array($_POST['preserveImageId'])));
+        // $array_without_preserved_img_unique = array_unique($array_without_preserved_img);
+        // update_option('rbp_media_cleaner_media_data', array_values(array_filter($array_without_preserved_img_unique)));
+
+
+
+        $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        
+        $array_without_preserved_img = array_values(array_diff($transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized, array($_POST['preserveImageId'])));
         $array_without_preserved_img_unique = array_unique($array_without_preserved_img);
-        update_option('rbp_media_cleaner_media_data', array_values(array_filter($array_without_preserved_img_unique)));
+        
+        
+        set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $array_without_preserved_img_unique , DAY_IN_SECONDS );
+
 
         // Send sucess message!
         error_log(print_r('Preserve', true));

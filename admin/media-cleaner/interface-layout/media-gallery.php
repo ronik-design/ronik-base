@@ -24,7 +24,7 @@ function rmc_media_column_dimensions( $cols ) {
 function rmc_media_column_isdetached( $cols ) {
     $cols["rmc_detached"] = "Ronik Media Cleaner Detached";
 
-    $cols["rmc_location"] = "Media Location";
+    $cols["rmc_swap"] = "Media Swap";
 
     return $cols;
 }
@@ -70,6 +70,105 @@ function rmc_media_column_value( $column_name, $id ) {
     }
     if( $column_name == 'rmc_filesize' ){
         echo formatSizeUnits($data['filesize']);
+    }
+
+    if( $column_name == 'rmc_swap' ) { ?>
+        <script type="text/javascript">
+            jQuery("#media-swap").unbind().click(function(e){
+                e.preventDefault();
+                const f_wpwrap = document.querySelector("#wpwrap");
+                const f_wpcontent = document.querySelector("#wpcontent");
+                f_wpwrap.classList.add('loader')
+                f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+
+                const handlePostDataTest = async ( mediaSwapFileId, $id ) => {
+                    const data = new FormData();
+                        data.append( 'action', 'rmc_ajax_media_swap' );
+                        data.append( 'nonce', wpVars.nonce );
+                        data.append( 'mediaSwapFileId',  mediaSwapFileId );
+                        data.append( 'id',  $id );
+
+                    fetch(wpVars.ajaxURL, {
+                        method: "POST",
+                        credentials: 'same-origin',
+                        body: data
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data) {
+                            console.log(data);
+                            if((data.data['pageCounter'] == '0') && (data.data['pageTotalCounter'] == 1)){
+                                alert('Synchronization is complete! Page will auto reload.');
+                                location.reload();
+                            } else {
+                                console.log(data.data['response']);
+
+                                if(data.data['response'] == 'Reload'){
+                                    setTimeout(function(){
+                                        alert('Synchronization is complete! Page will auto reload.');
+                                        location.reload();
+                                    }, 50);
+                                }
+                                if(data.data['response'] == 'Done'){
+                                    f_increment = f_increment + 1;
+                                    
+                                    // setTimeout(function(){
+                                    //     // Lets remove the form
+                                    //     handlePostDataTest('fetch-media', 'all', f_increment);
+                                    // }, 50);
+                                }
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('[WP Pageviews Plugin]');
+                        console.error(error);
+                    });
+                }
+                let counter = 0;
+                console.log('Ajax request sent.');
+
+                handlePostDataTest( jQuery('#media-swap__file-id').attr('value'),  jQuery(this).closest('#the-list').find('.author-self.status-inherit').find('.check-column input').val() )                                            
+            });
+        </script>
+
+        <?php 
+            $f_mediaSwapFileTimestamp = get_post_meta($id , 'mediaSwapFileTimestamp', true );
+
+            echo $id;
+            
+            if($f_mediaSwapFileTimestamp){
+                echo 'Last Swapped: <br>' . date("F j, Y, g:i a", $f_mediaSwapFileTimestamp);
+            } else {
+                echo 'Never Swapped File';
+            }
+
+        
+            echo '
+                <table class="compat-attachment-fields">
+                    <tbody>
+                    <tr class="acf-field acf-field-image acf-field-swap" data-name="test" data-type="image" data-key="field_swap">
+                        <td class="acf-input">
+                            <div class="acf-image-uploader" data-preview_size="medium" data-library="all" data-mime_types="" data-uploader="wp">
+                                <input type="hidden" name="acf[field_swap]" id="media-swap__file-id" id="media-swap__id" value="">	
+                                <div class="show-if-value image-wrap" style="max-width: 300px">
+                                <img src="" alt="" data-name="image" style="max-height: 300px;">
+                                <div class="acf-actions -hover">
+                                    <a class="acf-icon -pencil dark" data-name="edit" href="#" title="Edit"></a>
+                                    <a class="acf-icon -cancel dark" data-name="remove" href="#" title="Remove"></a>
+                                </div>
+                                </div>
+                                <div class="hide-if-value">
+                                <p>No image selected <a data-name="add" class="acf-button button" href="#">Add Image</a></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="compat-field-acf-blank"><td></td></tr>
+                    </tbody>
+                </table>
+                <button id="media-swap">Click me</button>
+            ';
     }
 }
 add_action( 'manage_media_custom_column', 'rmc_media_column_value', 10, 2 );

@@ -427,6 +427,7 @@ html {
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+  background-color: #6700ff;
 }
 .ronik-base_page_options-ronik-base_media_cleaner button {
   color: gray;
@@ -519,7 +520,7 @@ html {
   color: #fff;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th button[data-delete-media] img, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td button[data-delete-media] img {
-  max-width: 20px;
+  width: 20px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th a, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td a {
   color: #6700ff;
@@ -527,4 +528,17 @@ html {
 
 .notice * {
   color: #000 !important;
+}
+
+.media-cleaner-item-settings__file-size {
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+}
+
+.select-multiple {
+  margin-top: 20px;
+}
+.select-multiple * input:focus, .select-multiple * input:hover {
+  box-shadow: none !important;
 }

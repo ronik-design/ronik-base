@@ -63,6 +63,7 @@ function mc_sync_action_js() { ?>
                     data.append( 'user_option',  userOptions );
                     data.append( 'mime_type',  mimeType );
                     data.append( 'increment',  f_increment );
+                    data.append( 'sync',  false );
                 fetch(wpVars.ajaxURL, {
                     method: "POST",
                     credentials: 'same-origin',
@@ -76,15 +77,17 @@ function mc_sync_action_js() { ?>
                             alert('Synchronization is complete! Page will auto reload.');
                             location.reload();
                         } else {
-                            if(data.data == 'Reload'){
+                            console.log(data.data['response']);
+
+                            if(data.data['response'] == 'Reload'){
                                 setTimeout(function(){
                                     alert('Synchronization is complete! Page will auto reload.');
                                     location.reload();
                                 }, 50);
                             }
-                            if(data.data == 'Done'){
+                            if(data.data['response'] == 'Done'){
                                 f_increment = f_increment + 1;
-    
+                                
                                 setTimeout(function(){
                                     // Lets remove the form
                                     handlePostDataTest('fetch-media', 'all', f_increment);
