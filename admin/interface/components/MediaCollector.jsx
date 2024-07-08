@@ -51,7 +51,6 @@ const MediaCollector = ({ items }) => {
         })
         });
         const arr = document.querySelectorAll('img.lzy_img');
-        console.log(arr.length);
         arr.forEach((v) => {
             imageObserver.observe(v);
         });
@@ -181,25 +180,45 @@ const MediaCollector = ({ items }) => {
 
 
     useEffect(() => {  
+        setHasLoaded(false);
         var route = 'all';
+        var $endpoint = "all?filter=all";
+
         if(!selectedDataFormValues.includes("all")){
+            console.log('selectedDataFormValues');
             console.log(selectedDataFormValues);
-
-
             route = selectedDataFormValues.join('?');
+
+            if(!filterMode){
+                $endpoint = "all?filter="+route;
+
+            } else {
+                $endpoint = filterMode+"?filter="+route;                
+            }
         }
-        fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter="+route, {
+
+        if(selectedDataFormValues.length == 0){
+            $endpoint = "all?filter=all";
+        }
+
+        // fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter="+route, {
+        fetch("/wp-json/mediacleaner/v1/mediacollector/"+$endpoint, {
             method: "GET",
         }).then((response) => response.json()).then((data) => {
             if(data.length !== 0){
                 setMediaCollector(data);
+
+                setTimeout(() => {
+                    console.log("Delayed for 1 second.");
+                    setHasLoaded(true);
+                }, 1000);
             }
-            setHasLoaded(true);
         }).catch((error) => console.log(error));
-    }, [selectedDataFormValues]);
+    }, [selectedDataFormValues, filterMode]);
 
 
     useEffect(() => {
+
         filter_size();    
         const params = new URLSearchParams(window.location.search);
         const paramsObj = Array.from(params.keys()).reduce(
@@ -230,42 +249,41 @@ const MediaCollector = ({ items }) => {
   
 
     const filter_size = async (e) => {
-        setHasLoaded(false);
-        // setHasFilterLoaded(true);
-        fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
-            method: "GET",
-        }).then((response) => response.json()).then((data) => {
-            if(data.length !== 0){            
-                setMediaCollectorLow(data);                
-            }
-        }).catch((error) => console.log(error));
-
-        fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
-            method: "GET",
-        }).then((response) => response.json()).then((data) => {
-            if(data.length !== 0){
-                setMediaCollectorHigh(data);
-            }
-        }).catch((error) => console.log(error));
-        setHasLoaded(true);
+        setHasLoaded(false);        
+        // setHasLoaded(true);
         if(e){
             setFilterMode(e.target.getAttribute("data-filter"));
             if(e.target.getAttribute("data-filter")){
                 setHasLoaded(false);
-                fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
-                    method: "GET",
-                }).then((response) => response.json()).then((data) => {
-                    if(data.length !== 0){                                    
-                        setMediaCollectorLow(data);                
+
+                if(e.target.getAttribute("data-filter") == 'high'){
+                    var route = 'large';
+                    if(!selectedDataFormValues.includes("large")){
+                        route = selectedDataFormValues.join('?');
                     }
-                }).catch((error) => console.log(error));
-                fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
-                    method: "GET",
-                }).then((response) => response.json()).then((data) => {
-                    if(data.length !== 0){                                                        
-                        setMediaCollectorHigh(data);
+                    fetch("/wp-json/mediacleaner/v1/mediacollector/large?filter="+route, {
+                    // fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
+                        method: "GET",
+                    }).then((response) => response.json()).then((data) => {
+                        if(data.length !== 0){                                                        
+                            setMediaCollectorHigh(data);
+                        }
+                    }).catch((error) => console.log(error));
+                } else {
+                    var route = 'small';
+                    if(!selectedDataFormValues.includes("small")){
+                        route = selectedDataFormValues.join('?');
                     }
-                }).catch((error) => console.log(error));
+                    fetch("/wp-json/mediacleaner/v1/mediacollector/small?filter="+route, {
+                    // fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
+                        method: "GET",
+                    }).then((response) => response.json()).then((data) => {
+                        if(data.length !== 0){                                    
+                            setMediaCollectorLow(data);                
+                        }
+                    }).catch((error) => console.log(error));
+                }
+
                 setHasLoaded(true);
             }
         }
@@ -378,6 +396,21 @@ const MediaCollector = ({ items }) => {
                             isMulti
                             options={options}   
                             onChange={e => {
+                                setFilterMode('all');
+                                const params = new URLSearchParams(window.location.search);
+                                const paramsObj = Array.from(params.keys()).reduce(
+                                  (acc, val) => ({ ...acc, [val]: params.get(val) }),
+                                  {}
+                                );
+                                if (window.history.pushState) {       
+                                    const newURL = new URL(window.location.href);       
+                                    newURL.search = '?page=options-ronik-base_media_cleaner&page_number='+paramsObj['page_number'];        
+                                    window.history.pushState({ path: newURL.href }, '', newURL.href); 
+                                }
+
+
+
+
                                 const newArr = e.map(myFunction);
                                 function myFunction(num) {
                                     return num;
@@ -385,7 +418,6 @@ const MediaCollector = ({ items }) => {
                                 setSelectedFormValues(newArr);
                                 const newDataArr = e.map(myDataFunction);
                                 function myDataFunction(num) {
-                                    console.log(num);
                                     return num['value'];
                                 }
                                 setSelecDatatedFormValues(newDataArr);
@@ -393,31 +425,7 @@ const MediaCollector = ({ items }) => {
                         />
                     </div>
 
-                    
-
-
-                    // <>         
-                    //     <div className="select select-multiple">
-                    //         <select id='multi-select selectType' 
-                    //             multiple={true}
-                    //             value={selectedFormValues}
-                                // onChange={e => {
-                                //     const options = [...e.target.selectedOptions];
-                                //     const values = options.map(option => option.value);
-                                //     setSelectedFormValues(values);
-                                // }}
-                    //         >
-                    //             <option value="all">All</option>
-                    //             <option value="jpg">JPG</option>
-                    //             <option value="gif">GIF</option>
-                    //             <option value="png">PNG</option>
-                    //             <option value="video">Video</option>
-                    //             <option value="misc">Misc</option>
-                    //         </select>
-                    //     </div>
-                    //     <p>Your filter selection: {selectedFormValues.join(', ')}</p>
-                    // </>
-
+        
                 )
             }
 

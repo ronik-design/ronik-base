@@ -2685,7 +2685,6 @@ var MediaCollector = function MediaCollector(_ref) {
       });
     });
     var arr = document.querySelectorAll('img.lzy_img');
-    console.log(arr.length);
     arr.forEach(function (v) {
       imageObserver.observe(v);
     });
@@ -2818,24 +2817,40 @@ var MediaCollector = function MediaCollector(_ref) {
     setHasLoaded(true);
   }, [unPreserveImageId]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    setHasLoaded(false);
     var route = 'all';
+    var $endpoint = "all?filter=all";
     if (!selectedDataFormValues.includes("all")) {
+      console.log('selectedDataFormValues');
       console.log(selectedDataFormValues);
       route = selectedDataFormValues.join('?');
+      if (!filterMode) {
+        $endpoint = "all?filter=" + route;
+      } else {
+        $endpoint = filterMode + "?filter=" + route;
+      }
     }
-    fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter=" + route, {
+    if (selectedDataFormValues.length == 0) {
+      $endpoint = "all?filter=all";
+    }
+
+    // fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter="+route, {
+    fetch("/wp-json/mediacleaner/v1/mediacollector/" + $endpoint, {
       method: "GET"
     }).then(function (response) {
       return response.json();
     }).then(function (data) {
       if (data.length !== 0) {
         setMediaCollector(data);
+        setTimeout(function () {
+          console.log("Delayed for 1 second.");
+          setHasLoaded(true);
+        }, 1000);
       }
-      setHasLoaded(true);
     })["catch"](function (error) {
       return console.log(error);
     });
-  }, [selectedDataFormValues]);
+  }, [selectedDataFormValues, filterMode]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     filter_size();
     var params = new URLSearchParams(window.location.search);
@@ -2865,64 +2880,55 @@ var MediaCollector = function MediaCollector(_ref) {
   }, [filterPager]);
   var filter_size = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
+      var route;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             setHasLoaded(false);
-            // setHasFilterLoaded(true);
-            fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
-              method: "GET"
-            }).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data.length !== 0) {
-                setMediaCollectorLow(data);
-              }
-            })["catch"](function (error) {
-              return console.log(error);
-            });
-            fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
-              method: "GET"
-            }).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data.length !== 0) {
-                setMediaCollectorHigh(data);
-              }
-            })["catch"](function (error) {
-              return console.log(error);
-            });
-            setHasLoaded(true);
+            // setHasLoaded(true);
             if (e) {
               setFilterMode(e.target.getAttribute("data-filter"));
               if (e.target.getAttribute("data-filter")) {
                 setHasLoaded(false);
-                fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
-                  method: "GET"
-                }).then(function (response) {
-                  return response.json();
-                }).then(function (data) {
-                  if (data.length !== 0) {
-                    setMediaCollectorLow(data);
+                if (e.target.getAttribute("data-filter") == 'high') {
+                  route = 'large';
+                  if (!selectedDataFormValues.includes("large")) {
+                    route = selectedDataFormValues.join('?');
                   }
-                })["catch"](function (error) {
-                  return console.log(error);
-                });
-                fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
-                  method: "GET"
-                }).then(function (response) {
-                  return response.json();
-                }).then(function (data) {
-                  if (data.length !== 0) {
-                    setMediaCollectorHigh(data);
+                  fetch("/wp-json/mediacleaner/v1/mediacollector/large?filter=" + route, {
+                    // fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
+                    method: "GET"
+                  }).then(function (response) {
+                    return response.json();
+                  }).then(function (data) {
+                    if (data.length !== 0) {
+                      setMediaCollectorHigh(data);
+                    }
+                  })["catch"](function (error) {
+                    return console.log(error);
+                  });
+                } else {
+                  route = 'small';
+                  if (!selectedDataFormValues.includes("small")) {
+                    route = selectedDataFormValues.join('?');
                   }
-                })["catch"](function (error) {
-                  return console.log(error);
-                });
+                  fetch("/wp-json/mediacleaner/v1/mediacollector/small?filter=" + route, {
+                    // fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
+                    method: "GET"
+                  }).then(function (response) {
+                    return response.json();
+                  }).then(function (data) {
+                    if (data.length !== 0) {
+                      setMediaCollectorLow(data);
+                    }
+                  })["catch"](function (error) {
+                    return console.log(error);
+                  });
+                }
                 setHasLoaded(true);
               }
             }
-          case 5:
+          case 2:
           case "end":
             return _context2.stop();
         }
@@ -3054,6 +3060,18 @@ var MediaCollector = function MediaCollector(_ref) {
             isMulti: true,
             options: options,
             onChange: function onChange(e) {
+              setFilterMode('all');
+              var params = new URLSearchParams(window.location.search);
+              var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
+                return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
+              }, {});
+              if (window.history.pushState) {
+                var newURL = new URL(window.location.href);
+                newURL.search = '?page=options-ronik-base_media_cleaner&page_number=' + paramsObj['page_number'];
+                window.history.pushState({
+                  path: newURL.href
+                }, '', newURL.href);
+              }
               var newArr = e.map(myFunction);
               function myFunction(num) {
                 return num;
@@ -3061,38 +3079,13 @@ var MediaCollector = function MediaCollector(_ref) {
               setSelectedFormValues(newArr);
               var newDataArr = e.map(myDataFunction);
               function myDataFunction(num) {
-                console.log(num);
                 return num['value'];
               }
               setSelecDatatedFormValues(newDataArr);
             }
           })
-        })
-
-        // <>         
-        //     <div className="select select-multiple">
-        //         <select id='multi-select selectType' 
-        //             multiple={true}
-        //             value={selectedFormValues}
-        // onChange={e => {
-        //     const options = [...e.target.selectedOptions];
-        //     const values = options.map(option => option.value);
-        //     setSelectedFormValues(values);
-        // }}
-        //         >
-        //             <option value="all">All</option>
-        //             <option value="jpg">JPG</option>
-        //             <option value="gif">GIF</option>
-        //             <option value="png">PNG</option>
-        //             <option value="video">Video</option>
-        //             <option value="misc">Misc</option>
-        //         </select>
-        //     </div>
-        //     <p>Your filter selection: {selectedFormValues.join(', ')}</p>
-        // </>
-        ;
+        });
       };
-
       var FilterNav = function FilterNav(props) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "filter-nav",

@@ -54,7 +54,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 $f_img_attached = (wp_get_attachment_image_src($image_id) ? wp_get_attachment_image_src($image_id) : 100);
                 $f_image_path = get_attached_file($image_id);
                 if(file_exists($f_image_path)){
-                    $f_image_url = wp_get_attachment_image_url($image_id , 'small' );
+                    $f_image_url = wp_get_attachment_image_url($image_id , 'thumbnail' );
                 } else {
                     $f_image_url = str_replace("public/rest-api/", "", plugin_dir_url( __FILE__ )).'admin/media-cleaner/image/not_found.jpg';
                 }
@@ -163,60 +163,102 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
 
 
 
-    if($data['slug'] == 'large' || $data['slug'] == 'small'){
-        if($rbp_media_cleaner_media_data){
-            $f_filter_collector = array();
-            foreach ( $rbp_media_cleaner_media_data as $i => $image_id ){    
-                $upload_dir = wp_upload_dir();
-                $attachment_metadata = wp_get_attachment_metadata( $image_id );
-                if( isset($attachment_metadata['filesize']) && $attachment_metadata['filesize']){
-                    $media_size = ($attachment_metadata['filesize']);
-                } else {
-                    if( isset( $upload_dir['basedir']) && isset($attachment_metadata['file']) ){
-                        if(file_exists( $upload_dir['basedir'].'/'.$attachment_metadata['file'] )){
-                            if(filesize( $upload_dir['basedir'].'/'.$attachment_metadata['file'] )){
-                                $media_size = (filesize( $upload_dir['basedir'].'/'.$attachment_metadata['file'] ) );
-                            } else {
-                                $media_size = (filesize(get_attached_file($image_id)) );
-                            }
+    function mediaDataSizeFormatter($rbp_media_cleaner_media_data, $slug){
+        error_log(print_r('mediaDataSizeFormatter', true));
+
+        $f_filter_collector = array();
+        foreach ( $rbp_media_cleaner_media_data as $i => $image_id ){    
+            $upload_dir = wp_upload_dir();
+            $attachment_metadata = wp_get_attachment_metadata( $image_id );
+            if( isset($attachment_metadata['filesize']) && $attachment_metadata['filesize']){
+                $media_size = ($attachment_metadata['filesize']);
+            } else {
+                if( isset( $upload_dir['basedir']) && isset($attachment_metadata['file']) ){
+                    if(file_exists( $upload_dir['basedir'].'/'.$attachment_metadata['file'] )){
+                        if(filesize( $upload_dir['basedir'].'/'.$attachment_metadata['file'] )){
+                            $media_size = (filesize( $upload_dir['basedir'].'/'.$attachment_metadata['file'] ) );
                         } else {
                             $media_size = (filesize(get_attached_file($image_id)) );
                         }
                     } else {
                         $media_size = (filesize(get_attached_file($image_id)) );
                     }
+                } else {
+                    $media_size = (filesize(get_attached_file($image_id)) );
                 }
-                $f_filter_collector[$image_id] = intval($media_size);
-                clearstatcache();
             }
-            arsort($f_filter_collector, SORT_NATURAL);
-            $f_filter_collector_high = array();
-            foreach ($f_filter_collector as $key => $val) {
-                $f_filter_collector_high[$key] = $val;
+            $f_filter_collector[$image_id] = intval($media_size);
+            clearstatcache();
+        }
+        arsort($f_filter_collector, SORT_NATURAL);
+        $f_filter_collector_high = array();
+        foreach ($f_filter_collector as $key => $val) {
+            $f_filter_collector_high[$key] = $val;
+        }
+        // return $f_filter_collector_high;
+
+        // mediacollector large to small
+        if($slug == 'large'){         
+            if(isset($f_filter_collector_high) && $f_filter_collector_high){            
+                $rbp_media_cleaner_media_data = array_keys($f_filter_collector_high);
+                return id_reformatter_media_data($rbp_media_cleaner_media_data);
             }
         }
+        // mediacollector small to large
+        if($slug == 'small'){
+            if(isset($f_filter_collector_high) && $f_filter_collector_high){
+                $f_filter_collector_low = array_reverse(array_keys($f_filter_collector_high));
+                $rbp_media_cleaner_media_data = $f_filter_collector_low;
+                return id_reformatter_media_data($rbp_media_cleaner_media_data);
+            }
+        }
+        return id_reformatter_media_data($rbp_media_cleaner_media_data);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
     $filters = $data->get_param( 'filter' );
+
+
+
+
+
+    if((str_contains($filters, 'all') || empty($filters)) && $data['slug'] == 'large' || $data['slug'] == 'small'){    
+        error_log(print_r('ssstest1', true));
+        error_log(print_r( $filters , true ));
+        error_log(print_r('sstest2', true));
+        error_log(print_r($data['slug'] , true));
+        
+        if( !str_contains($filters, 'gif') && !str_contains($filters, 'jpg') && !str_contains($filters, 'png') && !str_contains($filters, 'video')  && !str_contains($filters, 'misc') ){
+            error_log(print_r( 'filters', true));
+            error_log(print_r( $filters, true));
+
+            if($data['slug'] == 'large' || $data['slug'] == 'small'){
+                if($rbp_media_cleaner_media_data){
+                    error_log(print_r('aaaaa', true));
+
+                    return mediaDataSizeFormatter($rbp_media_cleaner_media_data, $data['slug']);
+                }
+            }
+        }
+
+
+    } 
     
-    // mediacollector large to small
-    if($data['slug'] == 'large' && str_contains($filters, 'all')){         
-        if(isset($f_filter_collector_high) && $f_filter_collector_high){            
-            $rbp_media_cleaner_media_data = array_keys($f_filter_collector_high);
-            return id_reformatter_media_data($rbp_media_cleaner_media_data);
-        }
-    }
-    // mediacollector small to large
-    if($data['slug'] == 'small' && str_contains($filters, 'all')){
-        if(isset($f_filter_collector_high) && $f_filter_collector_high){
-            $f_filter_collector_low = array_reverse(array_keys($f_filter_collector_high));
-            $rbp_media_cleaner_media_data = $f_filter_collector_low;
-            return id_reformatter_media_data($rbp_media_cleaner_media_data);
-        }
-    }
 
 
 
@@ -235,13 +277,33 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 }
             }
             if(isset($rbp_media_cleaner_media_data_collector_refomat_specific_id)){
+
+
+
+
+                if( (!str_contains($filters, 'all') || !empty($filters)) ){
+                    error_log(print_r('test1', true));
+            
+                    error_log(print_r( $filters , true ));
+                    error_log(print_r('test2', true));
+            
+                    error_log(print_r($data['slug'] , true));
+                    
+                    return mediaDataSizeFormatter( $rbp_media_cleaner_media_data_collector_refomat_specific_id, $data['slug'] );
+                }
+
+
                 return id_reformatter_media_data($rbp_media_cleaner_media_data_collector_refomat_specific_id);
+                
             } else{
                 return 'no-images';
             }
         }
         return 'no-images';
     }
+
+
+
 
 
 
