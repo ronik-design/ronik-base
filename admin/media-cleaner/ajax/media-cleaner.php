@@ -62,6 +62,8 @@ if ($_POST['post_overide'] == 'media-preserve'){
 		}
 	} 
 	if($_POST['user_option'] == 'delete-media'){
+		error_log(print_r('delete-media', true));
+
 		foreach (glob(dirname(__FILE__) . '/media-cleaner-remove.php') as $file) {
 			include $file;
 		}

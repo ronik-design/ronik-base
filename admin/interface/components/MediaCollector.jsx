@@ -430,12 +430,44 @@ const MediaCollector = ({ items }) => {
             }
 
             const FilterNav = ( props ) => {
+                var mediaCollectorItemsCounterOverall = 0;
+                for (let i = 0; i < mediaCollector.length; i++) {
+                    var number = 0;
+                    if( mediaCollector[i]['media_size'].includes("MB") ){
+                        number = Number(mediaCollector[i]['media_size'].replace(" MB", ""));
+                    } else if( mediaCollector[i]['media_size'].includes("KB") ){
+                        number = Number(mediaCollector[i]['media_size'].replace(" KB", ""));
+                        number = number / 1024;
+                    }  else if( mediaCollector[i]['media_size'].includes("GB") ){
+                        number = Number(mediaCollector[i]['media_size'].replace(" GB", ""));
+                        number = number * 1000;
+                    }  else if( mediaCollector[i]['media_size'].includes("bytes") ){
+                        number = Number(mediaCollector[i]['media_size'].replace(" bytes", ""));
+                        number = number * 1e+6;
+                    } 
+
+                    if( !isNaN(number)){
+
+                        console.log(number);
+                        mediaCollectorItemsCounterOverall += number; 
+                    }                
+                }
+
+
+
+
                 return (
-                    <div className='filter-nav'>
-                        <button type="button" title="Filter All" onClick={filter_size} data-filter="all" className={'filter-nav__button filter-nav__button--' + (filterMode == 'all' ? 'active' : 'inactive')}>Filter All</button>
-                        <button type="button" title="Filter High" onClick={filter_size} data-filter="high" className={'filter-nav__button filter-nav__button--' + (filterMode == 'high' ? 'active' : 'inactive')}>Filter High</button>
-                        <button type="button" title="Filter Low" onClick={filter_size} data-filter="low" className={'filter-nav__button filter-nav__button--' + (filterMode == 'low' ? 'active' : 'inactive')}>Filter Low</button> 
-                    </div>
+                    <>
+                        <div className='filter-nav'>
+                            <button type="button" title="Filter All" onClick={filter_size} data-filter="all" className={'filter-nav__button filter-nav__button--' + (filterMode == 'all' ? 'active' : 'inactive')}>Filter All</button>
+                            <button type="button" title="Filter High" onClick={filter_size} data-filter="high" className={'filter-nav__button filter-nav__button--' + (filterMode == 'high' ? 'active' : 'inactive')}>Filter High</button>
+                            <button type="button" title="Filter Low" onClick={filter_size} data-filter="low" className={'filter-nav__button filter-nav__button--' + (filterMode == 'low' ? 'active' : 'inactive')}>Filter Low</button> 
+                        </div>
+                        <span className="overall-number">Overall Unattached Media Found: {mediaCollector.length}</span>
+                        <span className="overall-number">Overall Unattached Media File Size: { Math.round(mediaCollectorItemsCounterOverall * 100) / 100 } MB</span>
+
+                        
+                    </>
                 )
             }
             const PagerNav = ( props ) => {
@@ -474,24 +506,26 @@ const MediaCollector = ({ items }) => {
 
             if(mediaCollector !== 'no-images'){
                 const mediaCollectorItems = output.map((collector) =>
-                    <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-                        <td className='media-collector-table__td'>
-                            <button onClick={activateDelete} data-delete-media={collector['id']}>
-                                <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
-                            </button>
-                        </td>
-                        <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
-                        <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
-                        <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
-                        <td className='media-collector-table__td'>{collector['id']}</td>
-                        <td className='media-collector-table__td'> 
-                            <a target="_blank" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
-                        </td>
-                        <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
-                        <td className='media-collector-table__td media-collector-table__td--preserve'>
-                            <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve Row</button>
-                        </td>
-                    </tr>
+                    <>                    
+                        <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
+                            <td className='media-collector-table__td'>
+                                <button onClick={activateDelete} data-delete-media={collector['id']}>
+                                    <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
+                                </button>
+                            </td>
+                            <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
+                            <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
+                            <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
+                            <td className='media-collector-table__td'>{collector['id']}</td>
+                            <td className='media-collector-table__td'> 
+                                <a target="_blank" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
+                            </td>
+                            <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
+                            <td className='media-collector-table__td media-collector-table__td--preserve'>
+                                <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve Row</button>
+                            </td>
+                        </tr>
+                    </>
                 );
 
             return (

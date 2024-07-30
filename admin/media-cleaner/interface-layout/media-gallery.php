@@ -16,10 +16,10 @@ add_action( 'delete_attachment', 'rbp_delete_attachment' );
 
 
 // Image Dimensions.
-function rmc_media_column_dimensions( $cols ) {
-    $cols["rmc_filesize"] = "File Size";
-    return $cols;
-}
+// function rmc_media_column_dimensions( $cols ) {
+//     $cols["rmc_filesize"] = "File Size";
+//     return $cols;
+// }
 // Image Isdetached.
 function rmc_media_column_isdetached( $cols ) {
     $cols["rmc_detached"] = "Ronik Media Cleaner Detached";
@@ -29,7 +29,7 @@ function rmc_media_column_isdetached( $cols ) {
     return $cols;
 }
 add_filter( 'manage_media_columns', 'rmc_media_column_isdetached' );
-add_filter( 'manage_media_columns', 'rmc_media_column_dimensions' );
+// add_filter( 'manage_media_columns', 'rmc_media_column_dimensions' );
 
 function rmc_media_column_value( $column_name, $id ) {
     $data = wp_get_attachment_metadata( $id ); // get the data structured
@@ -46,7 +46,8 @@ function rmc_media_column_value( $column_name, $id ) {
     ?>
 
     <?php if($f_detector && $f_detector > 0){
-        
+            echo formatSizeUnits($data['filesize']) . ' <br>';
+
             if( isset($data['rbp_media_cleaner_isdetached'])  ){
                 if($data['rbp_media_cleaner_isdetached'] == 'rbp_media_cleaner_isdetached_true'){
                     echo 'Media Detection last ran: <br>'.$f_sync.'<br><br>
@@ -68,9 +69,9 @@ function rmc_media_column_value( $column_name, $id ) {
             echo 'Please visit the media cleaner to start synchronization. <a href="/wp-admin/admin.php?page=options-ronik-base_media_cleaner">TEST</a>';
         }
     }
-    if( $column_name == 'rmc_filesize' ){
-        echo formatSizeUnits($data['filesize']);
-    }
+    // if( $column_name == 'rmc_filesize' ){
+    //     echo formatSizeUnits($data['filesize']);
+    // }
 
     if( $column_name == 'rmc_swap' ) { ?>
         <script type="text/javascript">
@@ -195,11 +196,7 @@ function mediacleaner_add_dropdown(){
             <option value="rbp_media_cleaner_isdetached_preserved" '.$isdetached_selected_3.'>Preserved Images</option>
         </select>
 
-        <select name="rbp_media_cleaner_size_filter" id="rbp_media_cleaner_size_filter" class="">
-            <option value="-1">File Size</option>
-            <option value="rbp_media_cleaner_size_large" '.$isdetached_selected_1.'>File Size Large</option>
-            <option value="rbp_media_cleaner_size_small" '.$isdetached_selected_2.'>File Size Small</option>
-        </select>
+
     ';
 }
 add_action('restrict_manage_posts', 'mediacleaner_add_dropdown');
@@ -269,61 +266,36 @@ function mediacleaner_filter($query) {
                 $query->set('rbp_media_cleaner_size_filter', '');
             }
         }
-        // Reset filter.
-        if ( isset($_GET['rbp_media_cleaner_size_filter']) ) {
-            if ($_GET['rbp_media_cleaner_size_filter'] == 'rbp_media_cleaner_size_large') {
-                $mishaValue = $_GET['rbp_media_cleaner_size_filter'];
-                // $meta_query[] = array(
-                //     'key'     => 'filesize',
-                //     // 'value'   => $mishaValue,
-                //     // 'compare' => 'LIKE'
-                // );
+        // // Reset filter.
+        // if ( isset($_GET['rbp_media_cleaner_size_filter']) ) {
+        //     $mishaValue = $_GET['rbp_media_cleaner_size_filter'];
 
-                // $query->set('order', 'asc');
-                // $query->set('orderby', '_wp_attachment_image_filesize');
+        //     $meta_query = array(
+        //         'relation' => 'OR',
+        //         array(
+        //             'key' => '_wp_attachment_image_filesize',
+        //             'compare' => 'NOT EXISTS',
+        //         ),
+        //         array(
+        //             'key' => '_wp_attachment_image_filesize',
+        //         ),
+        //     );
+    
+        //     if ($_GET['rbp_media_cleaner_size_filter'] == 'rbp_media_cleaner_size_large') {
+        //         $query->set( 'meta_query', $meta_query );
+        //         $query->set('order', 'dsc');
+        //         $query->set( 'orderby', 'meta_value' );
 
+        //         // $query->set('orderby', '_wp_attachment_image_filesize');
 
+        //     } else if ($_GET['rbp_media_cleaner_size_filter'] == 'rbp_media_cleaner_size_small'){
 
-                // $meta_query[] = array(
-                //     'relation' => 'OR',
-                //     array(
-                //         'key' => '_wp_attachment_image_filesize',
-                //         'compare' => 'NOT EXISTS',
-                //     ),
-                //     array(
-                //         'key' => '_wp_attachment_image_filesize',
-                //     ),
-                // );
-
-                $orderby = $query->get( 'orderby' );
-
-                if ( 'filesize' == $orderby ) {
-            
-                    $meta_query = array(
-                        'relation' => 'OR',
-                        array(
-                            'key' => '_wp_attachment_image_filesize',
-                            'compare' => 'NOT EXISTS',
-                        ),
-                        array(
-                            'key' => '_wp_attachment_image_filesize',
-                        ),
-                    );
-            
-                    $query->set( 'meta_query', $meta_query );
-                    $query->set( 'orderby', 'meta_value' );
-                }
-
-            }
-        }
-
-
-
-
-
-
-
-
+        //         $query->set( 'meta_query', $meta_query );
+        //         $query->set('order', 'asc');
+        //         $query->set( 'orderby', 'meta_value' );
+        //     }
+        //     // $query->set('order', 'asc');
+        // }
 
 
 

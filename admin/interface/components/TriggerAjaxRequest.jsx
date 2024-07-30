@@ -20,7 +20,11 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
 
     // On page render lets detect if the option field is populated.
     useEffect(()=>{
+        console.log(dataSync);
+
         if(dataSync){
+            console.log('dataSync, dataSyncProgress');
+
             const f_wpwrap = document.querySelector("#wpwrap");
             if(f_wpwrap){
                 const f_wpwrap = document.querySelector("#wpwrap");
@@ -117,6 +121,13 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                     }, 50);
                 }
                 console.log(data.data['response']);
+                if(data.data == 'Cleaner-Done'){
+                    setTimeout(function(){
+                        // Lets remove the form
+                        alert('Media cleanup complete! Page will auto reload.');
+                        location.reload();
+                    }, 50);
+                }
                 if(data.data['response'].includes("Collector-Sync-inprogress")){
                     // alert("Sync is in Progress... Please do not refresh the page!");
                     setTimeout(function(){
@@ -130,10 +141,6 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
                         setDataSync('DONE');
                     }, 500);
                     
-                }
-                if(data.data == 'Cleaner-Done'){
-                    alert('Media cleanup complete! Page will auto reload.');
-                    location.reload();
                 }
             }
         })

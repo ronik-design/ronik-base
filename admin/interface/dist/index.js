@@ -3087,29 +3087,57 @@ var MediaCollector = function MediaCollector(_ref) {
         });
       };
       var FilterNav = function FilterNav(props) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          className: "filter-nav",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            type: "button",
-            title: "Filter All",
-            onClick: filter_size,
-            "data-filter": "all",
-            className: 'filter-nav__button filter-nav__button--' + (filterMode == 'all' ? 'active' : 'inactive'),
-            children: "Filter All"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            type: "button",
-            title: "Filter High",
-            onClick: filter_size,
-            "data-filter": "high",
-            className: 'filter-nav__button filter-nav__button--' + (filterMode == 'high' ? 'active' : 'inactive'),
-            children: "Filter High"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            type: "button",
-            title: "Filter Low",
-            onClick: filter_size,
-            "data-filter": "low",
-            className: 'filter-nav__button filter-nav__button--' + (filterMode == 'low' ? 'active' : 'inactive'),
-            children: "Filter Low"
+        var mediaCollectorItemsCounterOverall = 0;
+        for (var i = 0; i < mediaCollector.length; i++) {
+          var number = 0;
+          if (mediaCollector[i]['media_size'].includes("MB")) {
+            number = Number(mediaCollector[i]['media_size'].replace(" MB", ""));
+          } else if (mediaCollector[i]['media_size'].includes("KB")) {
+            number = Number(mediaCollector[i]['media_size'].replace(" KB", ""));
+            number = number / 1024;
+          } else if (mediaCollector[i]['media_size'].includes("GB")) {
+            number = Number(mediaCollector[i]['media_size'].replace(" GB", ""));
+            number = number * 1000;
+          } else if (mediaCollector[i]['media_size'].includes("bytes")) {
+            number = Number(mediaCollector[i]['media_size'].replace(" bytes", ""));
+            number = number * 1e+6;
+          }
+          if (!isNaN(number)) {
+            console.log(number);
+            mediaCollectorItemsCounterOverall += number;
+          }
+        }
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "filter-nav",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              type: "button",
+              title: "Filter All",
+              onClick: filter_size,
+              "data-filter": "all",
+              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'all' ? 'active' : 'inactive'),
+              children: "Filter All"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              type: "button",
+              title: "Filter High",
+              onClick: filter_size,
+              "data-filter": "high",
+              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'high' ? 'active' : 'inactive'),
+              children: "Filter High"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              type: "button",
+              title: "Filter Low",
+              onClick: filter_size,
+              "data-filter": "low",
+              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'low' ? 'active' : 'inactive'),
+              children: "Filter Low"
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+            className: "overall-number",
+            children: ["Overall Unattached Media Found: ", mediaCollector.length]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+            className: "overall-number",
+            children: ["Overall Unattached Media File Size: ", Math.round(mediaCollectorItemsCounterOverall * 100) / 100, " MB"]
           })]
         });
       };
@@ -3161,49 +3189,51 @@ var MediaCollector = function MediaCollector(_ref) {
       };
       if (mediaCollector !== 'no-images') {
         var mediaCollectorItems = output.map(function (collector) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-            className: "media-collector-table__tr",
-            "data-media-id": collector['id'],
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                onClick: activateDelete,
-                "data-delete-media": collector['id'],
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-                  src: "/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+              className: "media-collector-table__tr",
+              "data-media-id": collector['id'],
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                  onClick: activateDelete,
+                  "data-delete-media": collector['id'],
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                    src: "/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"
+                  })
                 })
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td media-collector-table__td--img-thumb",
-              children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td file-type",
-              children: collector['media_file_type']
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td file-size",
-              children: collector['media_size']
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td",
-              children: collector['id']
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                target: "_blank",
-                href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
-                children: "Edit"
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td media-collector-table__td--img-url",
-              children: collector['media_file']
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-              className: "media-collector-table__td media-collector-table__td--preserve",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                onClick: activatePreserve,
-                "data-preserve-media": collector['id'],
-                children: "Preserve Row"
-              })
-            })]
-          }, collector['id']);
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td media-collector-table__td--img-thumb",
+                children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td file-type",
+                children: collector['media_file_type']
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td file-size",
+                children: collector['media_size']
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td",
+                children: collector['id']
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+                  target: "_blank",
+                  href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
+                  children: "Edit"
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td media-collector-table__td--img-url",
+                children: collector['media_file']
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                className: "media-collector-table__td media-collector-table__td--preserve",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                  onClick: activatePreserve,
+                  "data-preserve-media": collector['id'],
+                  children: "Preserve Row"
+                })
+              })]
+            }, collector['id'])
+          });
         });
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {
@@ -3446,7 +3476,9 @@ var FetchAddon = function FetchAddon(_ref) {
 
   // On page render lets detect if the option field is populated.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    console.log(dataSync);
     if (dataSync) {
+      console.log('dataSync, dataSyncProgress');
       var f_wpwrap = document.querySelector("#wpwrap");
       if (f_wpwrap) {
         var _f_wpwrap = document.querySelector("#wpwrap");
@@ -3544,6 +3576,13 @@ var FetchAddon = function FetchAddon(_ref) {
                   }, 50);
                 }
                 console.log(data.data['response']);
+                if (data.data == 'Cleaner-Done') {
+                  setTimeout(function () {
+                    // Lets remove the form
+                    alert('Media cleanup complete! Page will auto reload.');
+                    location.reload();
+                  }, 50);
+                }
                 if (data.data['response'].includes("Collector-Sync-inprogress")) {
                   // alert("Sync is in Progress... Please do not refresh the page!");
                   setTimeout(function () {
@@ -3556,10 +3595,6 @@ var FetchAddon = function FetchAddon(_ref) {
                   setTimeout(function () {
                     setDataSync('DONE');
                   }, 500);
-                }
-                if (data.data == 'Cleaner-Done') {
-                  alert('Media cleanup complete! Page will auto reload.');
-                  location.reload();
                 }
               }
             })["catch"](function (error) {
@@ -49688,7 +49723,10 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   // On page render lets detect if the option field is populated.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (formValues['filesize-option'] > 0) {
-      handlePostData(formValues['filesize-option']);
+      handlePostData(formValues['filesize-option'], 'changed', 'invalid', 'invalid');
+    }
+    if (formValues['fileimport-option']) {
+      handlePostData('invalid', 'invalid', formValues['fileimport-option'], 'changed');
     }
   }, [formValues]);
 
@@ -49701,8 +49739,26 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     }, 400);
     console.log(formValues);
   };
+
+  // Lets handle the input changes and store the changes to form values.
+  var handleImportChange = function handleImportChange(e) {
+    if (e.target.checked) {
+      setTimeout(function () {
+        alert('This may take a long time to complete!');
+        setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
+          'fileimport-option': 'on'
+        }));
+      }, 400);
+    } else {
+      setTimeout(function () {
+        setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
+          'fileimport-option': 'off'
+        }));
+      }, 400);
+    }
+  };
   var handlePostData = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(fileSizeSelector) {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged) {
       var data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -49710,8 +49766,10 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
             data = new FormData();
             data.append('action', 'rmc_ajax_media_cleaner_settings');
             data.append('nonce', wpVars.nonce);
-            data.append('file_size_selector', 'changed');
+            data.append('file_size_selector', fileSizeSelectorChanged);
             data.append('file_size_selection', fileSizeSelector);
+            data.append('file_import_selector', fileImportSelectorChanged);
+            data.append('file_import_selection', fileImportSelector);
             fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
@@ -49733,13 +49791,13 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
               console.log('[WP Pageviews Plugin]');
               console.error(error);
             });
-          case 6:
+          case 8:
           case "end":
             return _context.stop();
         }
       }, _callee);
     }));
-    return function handlePostData(_x2) {
+    return function handlePostData(_x2, _x3, _x4, _x5) {
       return _ref.apply(this, arguments);
     };
   }();
@@ -49762,11 +49820,30 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
         name: "file-size-selector",
         min: "0",
         max: "1000",
-        defaultValue: "3",
-        step: ".1"
+        defaultValue: formValues['filesize-option'],
+        step: ".01"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
         id: "file-size-selector_val",
         children: [formValues['filesize-option'], " MB"]
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      title: "Media Cleaner Re-import",
+      description: "Tell us which features you want to use."
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "media-cleaner-item-settings__file-size",
+      onChange: handleImportChange,
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+        htmlFor: "file-size-selector",
+        children: "Minimum File Size Limit"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: "This will change the overall targeted media file size."
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("label", {
+        className: "switch",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+          type: "checkbox"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+          className: "slider round"
+        })]
       })]
     })]
   });

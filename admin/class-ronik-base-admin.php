@@ -306,6 +306,11 @@ class Ronik_Base_Admin {
 			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
 			@set_time_limit( intval( 3600 ) );
 			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+	
+			error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+			ini_set('memory_limit', '1024M');
+			error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
+			// ini_set('memory_limit', '-1');
 
 			$RmcDataGathering = new RmcDataGathering;
 
@@ -357,6 +362,17 @@ class Ronik_Base_Admin {
 				error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
 				@set_time_limit( intval( 3600 ) );
 				error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+
+				error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+				ini_set('memory_limit', '-1');
+				error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
+				// ini_set('memory_limit', '-1');
+
+				// define('WP_MEMORY_LIMIT', '512M');	
+				// define('WP_MAX_MEMORY_LIMIT', '512M');	
+
+
+
 			// Default settings...
 				$RmcDataGathering = new RmcDataGathering;
 				// We retreive the follow post status.

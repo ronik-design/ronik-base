@@ -165,6 +165,20 @@ class RmcDataGathering{
             if ($allimagesid) {
                 $all_image_ids = array();
                 foreach ($allimagesid as $imageID){
+                    $data = wp_get_attachment_metadata( $imageID ); // get the data structured
+                    $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false'; 
+                    wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
+
+                        // finds the total file / image size
+                        $filesize = filesize( get_attached_file( $imageID ) );
+                        // converts bits to mega bytes
+                        $filesize_convert = $filesize / 1024 / 1024;
+                        // converts number to format based on locale
+                        $filesize  = number_format_i18n( $filesize_convert, 3 );
+                        // creates new meta field with file size of an image
+                        update_post_meta( $imageID, '_wp_attachment_image_filesize', $filesize );
+
+
                     // $all_image_ids[] = $imageID;
                     // This is responsible for only getting the large images rather then the tiny ones.
                     if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
@@ -591,11 +605,187 @@ class RmcDataGathering{
 
 
 
+    public function imageCloneSave( $is_array , $imagesid ) {
+        	// Lets us set the max_execution_time to 1hr
+			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+			@set_time_limit( intval( 3600 ) );
+			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+	
+			error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+			ini_set('memory_limit', '100024M');
+			error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
 
 
 
-    
+        if(!$is_array){
+            $rbp_media_cleaner_media_data = array($imagesid);
+        } else {
+            $rbp_media_cleaner_media_data = $imagesid;
+        }
+        
+        error_log(print_r('$rbp_media_cleaner_media_data', true));
+
+        error_log(print_r($rbp_media_cleaner_media_data, true));
+
+
+        if($rbp_media_cleaner_media_data){
+            foreach($rbp_media_cleaner_media_data as $rbp_data_id){
+                $time_stamp = time();
+                // First lets copy the full image to the ronikdetached folder.
+                $upload_dir   = wp_upload_dir();
+                // We must use the get_attached_file function
+                $link = get_attached_file($rbp_data_id);
+                $file_path = $link;
+                $file_name = basename ( get_attached_file( $rbp_data_id ) );                    
+                $file_path_date = str_replace( $upload_dir['baseurl'], '', $link);
+                $file_path_date_mod = str_replace($file_name , '', $file_path_date);
+                $file_path_date_mod_array = explode('/wp-content/uploads', $file_path_date_mod);
+                $file_path_date_mod_array_reindexed = array_values(array_filter($file_path_date_mod_array));
+                $file_path_date_mod_array_last = explode('/', $file_path_date_mod_array_reindexed[1]);
+                $file_path_date_mod_array_last_reindexed = array_values(array_filter($file_path_date_mod_array_last));
+                //Year in YYYY format.
+                $year = $file_path_date_mod_array_last_reindexed[0];
+                //Month in mm format, with leading zeros.
+                $month = $file_path_date_mod_array_last_reindexed[1];
+                //The folder path for our file should be YYYY/MM/DD
+                $directory = dirname(__FILE__, 2).'/ronikdetached/archive-'.time()."/$year/$month/";
+                // If the directory doesn't already exists.
+                // if(!is_dir($directory)){
+                //     //Create our directory.
+                //     mkdir($directory, 0777, true);
+                // }
+                // if($file_path){
+                //     copy($file_path , $directory.$file_name);
+                // }
+
+
+                if(!is_dir(dirname(__FILE__, 2).'/ronikdetached/')){
+                    //Create our directory.
+                    mkdir(dirname(__FILE__, 2).'/ronikdetached/', 0777, true);
+                }
+
+
+                // // Clean up the temporary files delete all files after roughly 30 days.
+                // $dir = new DirectoryIterator(dirname(__FILE__, 2).'/ronikdetached/');
+                // foreach ($dir as $i => $fileinfo) {
+                //     if (!$fileinfo->isDot()) {
+                //         $file_path_date_og = str_replace( 'archive-', '', $fileinfo->getFilename());
+                //         $file_path_date_og_mod = str_replace( '.zip', '', $file_path_date_og);
+                //         $dateTime = new DateTime();
+                //         // $dateTime->modify('-30 day');
+                //         $dateTime->modify('-1 minute');
+                        
+                //         if( $file_path_date_og_mod <= $dateTime->getTimestamp() ){
+                //             unlink(  dirname(__FILE__, 2).'/ronikdetached/'.$fileinfo->getFilename() );
+                //             // error_log(print_r( 'Past' , true));
+                //             // error_log(print_r( dirname(__FILE__, 2).'/ronikdetached/'.$fileinfo->getFilename() , true));
+                //         } else {
+                //             // error_log(print_r( 'NEW' , true));
+                //             // error_log(print_r( $fileinfo->getFilename() , true));
+                //         }
+                //     }
+                // }
+
+                // Erase old files and database
+                unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql' );
+                unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-media.zip' );
+
+
+                $zip = new ZipArchive();
+                $filename = dirname(__FILE__, 2)."/ronikdetached/archive-media.zip";
+                if ($zip->open($filename, ZipArchive::CREATE)!==TRUE) {
+                    exit("cannot open <$filename>\n");
+                }
+                // Add a file new.txt file to zip using the text specified
+                $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
+                // $zip->addFile($directory.$file_name, "$year/$month/".$file_name);
+                $zip->addFile($file_path, "$year/$month/".$file_name);
+                $zip->close();
 
 
 
+
+                // // Delete attachment from database only, not file
+                // $delete_attachment = wp_delete_attachment( $rbp_data_id , true);
+                // if($delete_attachment){
+                //     //Delete attachment file from disk
+                //     if(get_attached_file( $rbp_data_id )){
+                //         unlink( get_attached_file( $rbp_data_id ) );
+                //     }
+                //     error_log(print_r('File Deleted', true));
+                // }
+
+                // if( $rbp_data_id == end($rbp_media_cleaner_media_data) ){
+                //     return true;
+                // }
+            }
+
+
+
+
+
+            
+
+
+
+            $dbhost = DB_HOST;
+            $dbuser = DB_USER;
+            $dbpass = DB_PASSWORD;
+            $dbname = DB_NAME;
+
+
+            // https://www.blogdesire.com/create-a-database-backup-and-restore-system-in-php/
+            $con = mysqli_connect($dbhost,$dbuser,$dbpass,$dbname);
+            if(isset($_POST['backup'])){    }
+                $tables = array();
+                $sql = "SHOW TABLES";
+                $result = mysqli_query($con, $sql);
+                while ($row = mysqli_fetch_row($result)) {
+                    $tables[] = $row[0];
+                }
+                $sqlScript = "";
+                foreach ($tables as $table) {
+                    $query = "SHOW CREATE TABLE $table";
+                    $result = mysqli_query($con, $query);
+                    $row = mysqli_fetch_row($result);
+                    $sqlScript .= "\n\n" . $row[1] . ";\n\n";
+                    $query = "SELECT * FROM $table";
+                    $result = mysqli_query($con, $query);
+                    $columnCount = mysqli_num_fields($result);
+                    for ($i = 0; $i < $columnCount; $i ++) {
+                        while ($row = mysqli_fetch_row($result)) {
+                            $sqlScript .= "INSERT INTO $table VALUES(";
+                            for ($j = 0; $j < $columnCount; $j ++) {
+                                $row[$j] = $row[$j];           
+                                if (isset($row[$j])) {
+                                    $sqlScript .= '"' . mysqli_real_escape_string($con,$row[$j]) . '"';
+                                } else {
+                                    $sqlScript .= '""';
+                                }
+                                if ($j < ($columnCount - 1)) {
+                                    $sqlScript .= ',';
+                                }
+                            }
+                            $sqlScript .= ");\n";
+                        }
+                    }   
+                    $sqlScript .= "\n"; 
+                }
+                if(!empty($sqlScript)) {
+                    $backup_file_name =  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql';
+                    $fileHandler = fopen($backup_file_name, 'w+');
+                    $number_of_lines = fwrite($fileHandler, $sqlScript);
+                    fclose($fileHandler);
+                    $message = "Backup Created Successfully";
+                    error_log(print_r($message, true));
+                }
+   
+
+
+
+                
+            return true;
+
+        }        
+    }
 }
