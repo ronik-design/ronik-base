@@ -11,6 +11,7 @@ $RmcDataGathering = new RmcDataGathering;
 $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
 
 
+error_log(print_r('Init Remove Unused Media .', true));
 error_log(print_r('Deleted', true));
 
 

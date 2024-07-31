@@ -5,6 +5,7 @@
 
 $RmcDataGathering = new RmcDataGathering;
 
+error_log(print_r('Init Remove individual Media .', true));
 error_log(print_r('imageId', true));
 error_log(print_r($_POST['imageId'], true));
 

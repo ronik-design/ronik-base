@@ -41,94 +41,73 @@ if( isset( $_POST['file_import_selection'])  ){
     if ($_POST['file_import_selection'] !== 'invalid'){
         update_option('rbp_media_cleaner_file_import', $_POST['file_import_selection']);
         
+        // Send sucess message!
+        wp_send_json_success('Done');
+
         error_log(print_r( $_POST['file_import_selection'], true));
         if($_POST['file_import_selection'] == 'on'){
+                        // $backup_file_name =  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql';
+                        // // if(isset($_POST['restore'])){
+                        // // }
+                        //     $dbhost = DB_HOST;
+                        //     $dbuser = DB_USER;
+                        //     $dbpass = DB_PASSWORD;
+                        //     $dbname = DB_NAME;
+                        //     $sql = '';
+                        //     $error = '';
+                        //                 // https://www.blogdesire.com/create-a-database-backup-and-restore-system-in-php/
+                        //         $con = mysqli_connect($dbhost,$dbuser,$dbpass,$dbname);
+
+                        //     if (file_exists($backup_file_name)) {
+                        //         // Deleting starts here
+                        //         $query_disable_checks = 'SET foreign_key_checks = 0';
+                        //         mysqli_query($con, $query_disable_checks);
+                        //         $show_query = 'Show tables';
+                        //         $query_result = mysqli_query($con, $show_query);
+                        //         $row = mysqli_fetch_array($query_result);
+                        //         while ($row) {
+                        //             $query = 'DROP TABLE IF EXISTS ' . $row[0];
+                        //             $query_result = mysqli_query($con, $query);
+                        //             $show_query = 'Show tables';
+                        //             $query_result = mysqli_query($con, $show_query);
+                        //             $row = mysqli_fetch_array($query_result);
+                        //         }
+                        //         $query_enable_checks = 'SET foreign_key_checks = 1';
+                        //         mysqli_query($con, $query_enable_checks);
+                        //         // Deleting ends here
+
+                        //         error_log(print_r('Database Started', true));
+
+                        //         $lines = file($backup_file_name);
+                        //         foreach ($lines as $line) {
+                        //             if (substr($line, 0, 2) == '--' || $line == '') {
+                        //                 continue;
+                        //             }
+                        //             $sql .= $line;
+                        //             if (substr(trim($line), - 1, 1) == ';') {
+                        //                 $result = mysqli_query($con, $sql);
+                        //                 if (! $result) {
+                        //                     $error .= mysqli_error($con) . "\n";
+                        //                 }
+                        //                 $sql = '';
+                        //             }
+                        //             // error_log(print_r($line, true));
+
+                        //         }
+                        //         if ($error) {
+                        //             $message = $error;
+                        //             error_log(print_r( 'Error:' . $message, true));
+                        //         } else {
+                        //             $message = "Database restored successfully";
+                        //             error_log(print_r( 'Successfully:' . $message, true));
+                        //         }
+                        //     }else{
+                        //         $message = "Uh Oh! No backup file found on the current directory!";
+                        //         error_log(print_r( 'Uh Oh: ' . $message, true));
+
+                        //     }
             
-
-
-            
-
-
-            $backup_file_name =  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql';
-
-
-
-
-                        // if(isset($_POST['restore'])){
-                        // }
-                            $dbhost = DB_HOST;
-                            $dbuser = DB_USER;
-                            $dbpass = DB_PASSWORD;
-                            $dbname = DB_NAME;
-
-                            $sql = '';
-                            $error = '';
-                                        // https://www.blogdesire.com/create-a-database-backup-and-restore-system-in-php/
-                                $con = mysqli_connect($dbhost,$dbuser,$dbpass,$dbname);
-
-                            if (file_exists($backup_file_name)) {
-                                // Deleting starts here
-                                $query_disable_checks = 'SET foreign_key_checks = 0';
-                                mysqli_query($con, $query_disable_checks);
-                                $show_query = 'Show tables';
-                                $query_result = mysqli_query($con, $show_query);
-                                $row = mysqli_fetch_array($query_result);
-                                while ($row) {
-                                    $query = 'DROP TABLE IF EXISTS ' . $row[0];
-                                    $query_result = mysqli_query($con, $query);
-                                    $show_query = 'Show tables';
-                                    $query_result = mysqli_query($con, $show_query);
-                                    $row = mysqli_fetch_array($query_result);
-                                }
-                                $query_enable_checks = 'SET foreign_key_checks = 1';
-                                mysqli_query($con, $query_enable_checks);
-                                // Deleting ends here
-
-                                error_log(print_r('Database Started', true));
-
-                                $lines = file($backup_file_name);
-                                foreach ($lines as $line) {
-                                    if (substr($line, 0, 2) == '--' || $line == '') {
-                                        continue;
-                                    }
-                                    $sql .= $line;
-                                    if (substr(trim($line), - 1, 1) == ';') {
-                                        $result = mysqli_query($con, $sql);
-                                        if (! $result) {
-                                            $error .= mysqli_error($con) . "\n";
-                                        }
-                                        $sql = '';
-                                    }
-                                    // error_log(print_r($line, true));
-
-                                }
-                                if ($error) {
-                                    $message = $error;
-                                    error_log(print_r( 'Error:' . $message, true));
-                                } else {
-                                    $message = "Database restored successfully";
-                                    error_log(print_r( 'Successfully:' . $message, true));
-                                }
-                            }else{
-                                $message = "Uh Oh! No backup file found on the current directory!";
-                                error_log(print_r( 'Uh Oh: ' . $message, true));
-
-                            }
-            
-                            error_log(print_r($message, true));
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        //     error_log(print_r($message, true));
 
         }
 

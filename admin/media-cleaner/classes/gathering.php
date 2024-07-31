@@ -535,6 +535,8 @@ class RmcDataGathering{
     public function imageFilesystemAudit( $allimagesid  ){
         error_log(print_r('imageFilesystemAudit Started' , true));
 
+        error_log(print_r(get_theme_file_path(), true));
+        
         $wp_infiles_array = array();
         if($allimagesid){
             foreach($allimagesid as $image_id){
@@ -606,14 +608,16 @@ class RmcDataGathering{
 
 
     public function imageCloneSave( $is_array , $imagesid ) {
-        	// Lets us set the max_execution_time to 1hr
-			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-			@set_time_limit( intval( 3600 ) );
-			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
-	
-			error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
-			ini_set('memory_limit', '100024M');
-			error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
+        $f_file_import = get_option( 'rbp_media_cleaner_file_import' );
+
+        // Lets us set the max_execution_time to 1hr
+        error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+        @set_time_limit( intval( 3600 ) );
+        error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+
+        error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+        ini_set('memory_limit', '100024M');
+        error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
 
 
 
@@ -624,8 +628,37 @@ class RmcDataGathering{
         }
         
         error_log(print_r('$rbp_media_cleaner_media_data', true));
-
         error_log(print_r($rbp_media_cleaner_media_data, true));
+
+
+        if($f_file_import == 'off' || !isset($f_file_import)){
+            if($rbp_media_cleaner_media_data){
+                foreach($rbp_media_cleaner_media_data as $rbp_data_id){
+                    $clone_path = get_post_meta($rbp_data_id , '_wp_attached_file' ); // Full path
+                    $delete_attachment_clone = wp_delete_attachment(  attachment_url_to_postid( $clone_path[0] ) , true);
+                    if($delete_attachment_clone){
+                        //Delete attachment file from disk
+                        unlink( get_attached_file( $clone_path ) );
+                        error_log(print_r('Clone File Deleted', true));
+                    }
+
+                    // Delete attachment from database only, not file
+                    $delete_attachment = wp_delete_attachment( $rbp_data_id , true);
+                    if($delete_attachment){
+                        //Delete attachment file from disk
+                        if(get_attached_file( $rbp_data_id )){
+                            unlink( get_attached_file( $rbp_data_id ) );
+                        }
+                        error_log(print_r('File Deleted', true));
+                    }
+
+                    if( $rbp_data_id == end($rbp_media_cleaner_media_data) ){
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
 
 
         if($rbp_media_cleaner_media_data){
@@ -700,33 +733,34 @@ class RmcDataGathering{
                 $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
                 // $zip->addFile($directory.$file_name, "$year/$month/".$file_name);
                 $zip->addFile($file_path, "$year/$month/".$file_name);
+                // $zip->addFile($file_path , $upload_dir['basedir']);
+                // error_log(print_r($upload_dir['basedir'], true));
                 $zip->close();
 
 
 
+                $clone_path = get_post_meta($rbp_data_id , '_wp_attached_file' ); // Full path
+                $delete_attachment_clone = wp_delete_attachment(  attachment_url_to_postid( $clone_path[0] ) , true);
+                if($delete_attachment_clone){
+                    //Delete attachment file from disk
+                    unlink( get_attached_file( $clone_path ) );
+                    error_log(print_r('Clone File Deleted', true));
+                }
 
-                // // Delete attachment from database only, not file
-                // $delete_attachment = wp_delete_attachment( $rbp_data_id , true);
-                // if($delete_attachment){
-                //     //Delete attachment file from disk
-                //     if(get_attached_file( $rbp_data_id )){
-                //         unlink( get_attached_file( $rbp_data_id ) );
-                //     }
-                //     error_log(print_r('File Deleted', true));
-                // }
+                // Delete attachment from database only, not file
+                $delete_attachment = wp_delete_attachment( $rbp_data_id , true);
+                if($delete_attachment){
+                    //Delete attachment file from disk
+                    if(get_attached_file( $rbp_data_id )){
+                        unlink( get_attached_file( $rbp_data_id ) );
+                    }
+                    error_log(print_r('File Deleted', true));
+                }
 
                 // if( $rbp_data_id == end($rbp_media_cleaner_media_data) ){
                 //     return true;
                 // }
             }
-
-
-
-
-
-            
-
-
 
             $dbhost = DB_HOST;
             $dbuser = DB_USER;
@@ -779,6 +813,14 @@ class RmcDataGathering{
                     $message = "Backup Created Successfully";
                     error_log(print_r($message, true));
                 }
+
+
+
+
+            
+
+
+
    
 
 

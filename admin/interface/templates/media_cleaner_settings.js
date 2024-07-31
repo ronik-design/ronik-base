@@ -37,7 +37,7 @@ const MediaCleanerSettings = () => {
 
         if(e.target.checked){
             setTimeout(function(){
-                alert('This may take a long time to complete!');
+                alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
                 setFormValues({ ...formValues, 'fileimport-option': 'on' });
             }, 400);
              

@@ -49744,7 +49744,7 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   var handleImportChange = function handleImportChange(e) {
     if (e.target.checked) {
       setTimeout(function () {
-        alert('This may take a long time to complete!');
+        alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
         setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
           'fileimport-option': 'on'
         }));
