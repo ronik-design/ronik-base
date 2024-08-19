@@ -169,6 +169,7 @@ class RmcDataGathering{
                     $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false'; 
                     wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
 
+                    if( file_exists( get_attached_file( $imageID ) ) ){
                         // finds the total file / image size
                         $filesize = filesize( get_attached_file( $imageID ) );
                         // converts bits to mega bytes
@@ -177,13 +178,15 @@ class RmcDataGathering{
                         $filesize  = number_format_i18n( $filesize_convert, 3 );
                         // creates new meta field with file size of an image
                         update_post_meta( $imageID, '_wp_attachment_image_filesize', $filesize );
-
-
-                    // $all_image_ids[] = $imageID;
-                    // This is responsible for only getting the large images rather then the tiny ones.
-                    if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
-                        $all_image_ids[] = $imageID;
+                        
+                        // $all_image_ids[] = $imageID;
+                        // This is responsible for only getting the large images rather then the tiny ones.
+                        if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
+                            $all_image_ids[] = $imageID;
+                        }
                     }
+
+
                 }
                 return $all_image_ids;
             }
@@ -612,7 +615,7 @@ class RmcDataGathering{
 
         // Lets us set the max_execution_time to 1hr
         error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-        @set_time_limit( intval( 3600 ) );
+        @set_time_limit( intval( 3600*2 ) );
         error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
 
         error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
@@ -674,77 +677,59 @@ class RmcDataGathering{
                 $file_path_date_mod = str_replace($file_name , '', $file_path_date);
                 $file_path_date_mod_array = explode('/wp-content/uploads', $file_path_date_mod);
                 $file_path_date_mod_array_reindexed = array_values(array_filter($file_path_date_mod_array));
-                $file_path_date_mod_array_last = explode('/', $file_path_date_mod_array_reindexed[1]);
-                $file_path_date_mod_array_last_reindexed = array_values(array_filter($file_path_date_mod_array_last));
-                //Year in YYYY format.
-                $year = $file_path_date_mod_array_last_reindexed[0];
-                //Month in mm format, with leading zeros.
-                $month = $file_path_date_mod_array_last_reindexed[1];
-                //The folder path for our file should be YYYY/MM/DD
-                $directory = dirname(__FILE__, 2).'/ronikdetached/archive-'.time()."/$year/$month/";
-                // If the directory doesn't already exists.
-                // if(!is_dir($directory)){
-                //     //Create our directory.
-                //     mkdir($directory, 0777, true);
-                // }
-                // if($file_path){
-                //     copy($file_path , $directory.$file_name);
-                // }
-
+                if(isset($file_path_date_mod_array_reindexed[1])){
+                    $file_path_date_mod_array_last = explode('/', $file_path_date_mod_array_reindexed[1]);
+                    $file_path_date_mod_array_last_reindexed = array_values(array_filter($file_path_date_mod_array_last));
+                    //Year in YYYY format.
+                    $year = $file_path_date_mod_array_last_reindexed[0];
+                    //Month in mm format, with leading zeros.
+                    $month = $file_path_date_mod_array_last_reindexed[1];
+                    //The folder path for our file should be YYYY/MM/DD
+                }
 
                 if(!is_dir(dirname(__FILE__, 2).'/ronikdetached/')){
                     //Create our directory.
                     mkdir(dirname(__FILE__, 2).'/ronikdetached/', 0777, true);
                 }
+          
 
-
-                // // Clean up the temporary files delete all files after roughly 30 days.
-                // $dir = new DirectoryIterator(dirname(__FILE__, 2).'/ronikdetached/');
-                // foreach ($dir as $i => $fileinfo) {
-                //     if (!$fileinfo->isDot()) {
-                //         $file_path_date_og = str_replace( 'archive-', '', $fileinfo->getFilename());
-                //         $file_path_date_og_mod = str_replace( '.zip', '', $file_path_date_og);
-                //         $dateTime = new DateTime();
-                //         // $dateTime->modify('-30 day');
-                //         $dateTime->modify('-1 minute');
-                        
-                //         if( $file_path_date_og_mod <= $dateTime->getTimestamp() ){
-                //             unlink(  dirname(__FILE__, 2).'/ronikdetached/'.$fileinfo->getFilename() );
-                //             // error_log(print_r( 'Past' , true));
-                //             // error_log(print_r( dirname(__FILE__, 2).'/ronikdetached/'.$fileinfo->getFilename() , true));
-                //         } else {
-                //             // error_log(print_r( 'NEW' , true));
-                //             // error_log(print_r( $fileinfo->getFilename() , true));
-                //         }
-                //     }
-                // }
 
                 // Erase old files and database
-                unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql' );
-                unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-media.zip' );
-
-
-                $zip = new ZipArchive();
-                $filename = dirname(__FILE__, 2)."/ronikdetached/archive-media.zip";
-                if ($zip->open($filename, ZipArchive::CREATE)!==TRUE) {
-                    exit("cannot open <$filename>\n");
+                if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-database.sql')) {
+                    unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql' );
                 }
-                // Add a file new.txt file to zip using the text specified
-                $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
-                // $zip->addFile($directory.$file_name, "$year/$month/".$file_name);
-                $zip->addFile($file_path, "$year/$month/".$file_name);
-                // $zip->addFile($file_path , $upload_dir['basedir']);
-                // error_log(print_r($upload_dir['basedir'], true));
-                $zip->close();
+                if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-media.zip')) {                
+                    unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-media.zip' );
+                }
 
 
+                if($file_path && isset($file_path_date_mod_array_reindexed[1])){
+                    if( file_exists($file_path) ){
+                        $zip = new ZipArchive();
+                        $filename = dirname(__FILE__, 2)."/ronikdetached/archive-media.zip";
+                        if ($zip->open($filename, ZipArchive::CREATE)!==TRUE) {
+                            exit("cannot open <$filename>\n");
+                        }
+                        // Add a file new.txt file to zip using the text specified
+                        $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
+                        $zip->addFile($file_path, "$year/$month/".$file_name);
+                        $zip->close();
+                    }
+                }
+
+
+                error_log(print_r($rbp_data_id, true));
 
                 $clone_path = get_post_meta($rbp_data_id , '_wp_attached_file' ); // Full path
-                $delete_attachment_clone = wp_delete_attachment(  attachment_url_to_postid( $clone_path[0] ) , true);
-                if($delete_attachment_clone){
-                    //Delete attachment file from disk
-                    unlink( get_attached_file( $clone_path ) );
-                    error_log(print_r('Clone File Deleted', true));
+                if( isset($clone_path[0]) ){
+                    $delete_attachment_clone = wp_delete_attachment(  attachment_url_to_postid( $clone_path[0] ) , true);
+                    if($delete_attachment_clone){
+                        //Delete attachment file from disk
+                        if (file_exists(get_attached_file( $clone_path ))) { 
+                            unlink( get_attached_file( $clone_path ) );
+                        }
+                        error_log(print_r('Clone File Deleted', true));
+                    }
                 }
 
                 // Delete attachment from database only, not file
@@ -752,22 +737,18 @@ class RmcDataGathering{
                 if($delete_attachment){
                     //Delete attachment file from disk
                     if(get_attached_file( $rbp_data_id )){
-                        unlink( get_attached_file( $rbp_data_id ) );
+                        if (file_exists(get_attached_file( $rbp_data_id ))) {                          
+                            unlink( get_attached_file( $rbp_data_id ) );
+                        }
                     }
                     error_log(print_r('File Deleted', true));
-                }
-
-                // if( $rbp_data_id == end($rbp_media_cleaner_media_data) ){
-                //     return true;
-                // }
+                } 
             }
 
             $dbhost = DB_HOST;
             $dbuser = DB_USER;
             $dbpass = DB_PASSWORD;
             $dbname = DB_NAME;
-
-
             // https://www.blogdesire.com/create-a-database-backup-and-restore-system-in-php/
             $con = mysqli_connect($dbhost,$dbuser,$dbpass,$dbname);
             if(isset($_POST['backup'])){    }
@@ -817,17 +798,10 @@ class RmcDataGathering{
 
 
 
-            
-
-
-
-   
-
-
-
                 
             return true;
 
-        }        
+        }   
+        return true;     
     }
 }

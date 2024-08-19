@@ -10,9 +10,10 @@ add_submenu_page(
     4 // menu position
 );
 
-function ronikbase_media_cleaner_callback(){ ?>
-    <!-- The main container  -->
-    <div id="ronik-base_media_cleaner">Media Cleaner</div>
+function ronikbase_media_cleaner_callback(){ 
+?> 
+    <!-- The main container  --> 
+    <div id="ronik-base_media_cleaner" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
     <canvas></canvas>
     <?php
 }

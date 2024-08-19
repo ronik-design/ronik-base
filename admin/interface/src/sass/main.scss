@@ -312,6 +312,15 @@ html {
    input[type=checkbox]:checked + label:after {
     left: 33px;
   }
+
+  input[type=checkbox].valid + label {
+    background-color: #2f7df9;
+  }
+   input[type=checkbox].valid + label:after {
+    left: 33px;
+  }
+
+
    label {
     transition: all 200ms ease-in-out;
     display: inline-block;
@@ -694,7 +703,22 @@ html {
   transition: .4s;
 }
 
-input:checked + .slider {
+// input:checked + .slider {
+//   background-color: #2196F3;
+// }
+
+// input:focus + .slider {
+//   box-shadow: 0 0 1px #2196F3;
+// }
+
+// input:checked + .slider:before {
+//   -webkit-transform: translateX(26px);
+//   -ms-transform: translateX(26px);
+//   transform: translateX(26px);
+// }
+
+
+input.valid + .slider {
   background-color: #2196F3;
 }
 
@@ -702,11 +726,12 @@ input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
 }
 
-input:checked + .slider:before {
+input.valid + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
+
 
 /* Rounded sliders */
 .slider.round {

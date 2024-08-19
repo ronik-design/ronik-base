@@ -147,6 +147,8 @@ const FetchAddon = ({requestType, postOveride=null  }) => {
         .catch((error) => {
             console.log('[WP Pageviews Plugin]');
             console.error(error);
+            location.reload();
+
         });
     }
 

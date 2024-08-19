@@ -217,13 +217,14 @@ class Ronik_Base_Admin {
 		}
 		function ronikbase_support_settings(){
 			$rbp_media_cleaner_file_size = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size')/1048576 : 0;
+			$f_file_import = get_option( 'rbp_media_cleaner_file_import' ) ? get_option( 'rbp_media_cleaner_file_import' ) : 'off'; 
 
 			
 			echo '<div id="ronik-base_settings"></div>';
 
 			if($_POST['media_cleaner_state'] == 'valid'){
 				echo '
-					<div id="ronik-base_settings-media-cleaner" data-file-size="'.$rbp_media_cleaner_file_size.'">Media Cleaner</div>
+					<div id="ronik-base_settings-media-cleaner" data-file-backup="'.$f_file_import .'" data-file-size="'.$rbp_media_cleaner_file_size.'">Media Cleaner</div>
 				';
 			}
 			if($_POST['optimization_state'] == 'valid'){
@@ -304,7 +305,7 @@ class Ronik_Base_Admin {
 
 			// Lets us set the max_execution_time to 1hr
 			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-			@set_time_limit( intval( 3600 ) );
+			@set_time_limit( intval( 3600*2 ) );
 			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
 	
 			error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
@@ -313,6 +314,12 @@ class Ronik_Base_Admin {
 			// ini_set('memory_limit', '-1');
 
 			$RmcDataGathering = new RmcDataGathering;
+
+			$f_sync = get_option('rbp_media_cleaner_sync-time');
+			$date = new DateTime($f_sync); // For today/now, don't pass an arg.
+			$date->modify("-1 day");
+			update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+
 
 			$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor( $post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
@@ -360,7 +367,7 @@ class Ronik_Base_Admin {
 			// Update the set_time_limit option.
 				// Lets us set the max_execution_time to 1hr
 				error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-				@set_time_limit( intval( 3600 ) );
+				@set_time_limit( intval( 3600*2 ) );
 				error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
 
 				error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));

@@ -7,6 +7,8 @@ const MediaCleanerSettings = () => {
 
     const [formValues, setFormValues] = useState({ ['filesize-option']: fileSizeDefault });
     const [dataResponse, setDataResponse] = useState('');
+    const [backupEnabled, setBackupEnabled] = useState(false);
+
 
 
     // On page render lets detect if the option field is populated.
@@ -20,8 +22,20 @@ const MediaCleanerSettings = () => {
         }         
     }, [formValues])
 
-        
 
+
+    useEffect(()=>{
+        // alert('dd');
+        var filebackupenabled = document.querySelector('#ronik-base_settings-media-cleaner').getAttribute("data-file-backup");
+        if(filebackupenabled == 'on'){
+            // filebackupenabled = true;
+            setBackupEnabled('valid');
+        } else {
+            setBackupEnabled('invalid');
+        }
+    
+    }, [])
+        
 
     // Lets handle the input changes and store the changes to form values.
     const handleChange = (e) => {
@@ -32,17 +46,21 @@ const MediaCleanerSettings = () => {
         console.log(formValues);
     }
 
+    
+    
+    
     // Lets handle the input changes and store the changes to form values.
     const handleImportChange = (e) => {
-
         if(e.target.checked){
             setTimeout(function(){
+                setBackupEnabled('valid');    
                 alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
                 setFormValues({ ...formValues, 'fileimport-option': 'on' });
             }, 400);
              
         } else {
             setTimeout(function(){
+                setBackupEnabled('invalid');
                 setFormValues({ ...formValues, 'fileimport-option': 'off' });
             }, 400);
         }
@@ -102,17 +120,13 @@ const MediaCleanerSettings = () => {
 
 
            	<ContentBlock
-				title= "Media Cleaner Re-import"
-				description= "Tell us which features you want to use."
+				title= "Media Cleaner Backup Settings"
+				description= "Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached. Upon Deletion, <br> Based on size of site this may take a while"
 			/>
 			<br></br>
-            <div className='media-cleaner-item-settings__file-size' onChange={handleImportChange}>
-                <label htmlFor="file-size-selector">Minimum File Size Limit</label>
-                <p>This will change the overall targeted media file size.</p>
-                {/* <input type="file" id="file-import-selector" name="file-import-selector"  /> */}
-  
+            <div className='media-cleaner-item-settings__file-size'>
                 <label className="switch">
-                    <input type="checkbox" />
+                    <input type="checkbox" defaultChecked={backupEnabled ? backupEnabled=='valid':true} className={backupEnabled}  onChange={handleImportChange} />
                     <span className="slider round"></span>
                 </label>
 

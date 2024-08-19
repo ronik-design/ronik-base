@@ -256,6 +256,12 @@ html {
 .switch input[type=checkbox]:checked + label:after {
   left: 33px;
 }
+.switch input[type=checkbox].valid + label {
+  background-color: #2f7df9;
+}
+.switch input[type=checkbox].valid + label:after {
+  left: 33px;
+}
 .switch label {
   transition: all 200ms ease-in-out;
   display: inline-block;
@@ -585,7 +591,7 @@ html {
   transition: 0.4s;
 }
 
-input:checked + .slider {
+input.valid + .slider {
   background-color: #2196F3;
 }
 
@@ -593,7 +599,7 @@ input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
 }
 
-input:checked + .slider:before {
+input.valid + .slider:before {
   transform: translateX(26px);
 }
 

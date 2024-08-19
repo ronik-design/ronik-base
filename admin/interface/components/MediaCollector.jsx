@@ -505,12 +505,13 @@ const MediaCollector = ({ items }) => {
             
 
             if(mediaCollector !== 'no-images'){
+                var dataPluginName = document.querySelector('#ronik-base_media_cleaner').getAttribute("data-plugin-name");                
                 const mediaCollectorItems = output.map((collector) =>
                     <>                    
                         <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
                             <td className='media-collector-table__td'>
                                 <button onClick={activateDelete} data-delete-media={collector['id']}>
-                                    <img src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"></img>
+                                    <img src={`/wp-content/plugins/${dataPluginName}/admin/media-cleaner/image/big-trash-can.svg`}></img>
                                 </button>
                             </td>
                             <td className="media-collector-table__td media-collector-table__td--img-thumb">{parse(collector['img-thumb'])}</td>
@@ -617,7 +618,14 @@ const MediaCollector = ({ items }) => {
 
     }
     
+    const f_wpwrap = document.querySelector("#wpwrap");
+    const f_wpcontent = document.querySelector("#wpcontent");
+    
     if(hasLoaded){
+        f_wpwrap.classList.remove('loader')
+        const element = document.getElementsByClassName("centered-blob");
+        element[0].remove(); // Removes the div with the 'div-02' id
+        
         return (
             <>
                 <div className="message"> </div>
@@ -627,6 +635,10 @@ const MediaCollector = ({ items }) => {
             </>
         );
     } else {
+        f_wpwrap.classList.add('loader')
+        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+
+        
         return 'Loading...';
     }
 };

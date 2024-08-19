@@ -3188,6 +3188,7 @@ var MediaCollector = function MediaCollector(_ref) {
         }
       };
       if (mediaCollector !== 'no-images') {
+        var dataPluginName = document.querySelector('#ronik-base_media_cleaner').getAttribute("data-plugin-name");
         var mediaCollectorItems = output.map(function (collector) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
@@ -3199,7 +3200,7 @@ var MediaCollector = function MediaCollector(_ref) {
                   onClick: activateDelete,
                   "data-delete-media": collector['id'],
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-                    src: "/wp-content/plugins/ronik-base/admin/media-cleaner/image/big-trash-can.svg"
+                    src: "/wp-content/plugins/".concat(dataPluginName, "/admin/media-cleaner/image/big-trash-can.svg")
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
@@ -3379,7 +3380,13 @@ var MediaCollector = function MediaCollector(_ref) {
       });
     }
   };
+  var f_wpwrap = document.querySelector("#wpwrap");
+  var f_wpcontent = document.querySelector("#wpcontent");
   if (hasLoaded) {
+    f_wpwrap.classList.remove('loader');
+    var element = document.getElementsByClassName("centered-blob");
+    element[0].remove(); // Removes the div with the 'div-02' id
+
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         className: "message",
@@ -3393,6 +3400,8 @@ var MediaCollector = function MediaCollector(_ref) {
       })]
     });
   } else {
+    f_wpwrap.classList.add('loader');
+    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
     return 'Loading...';
   }
 };
@@ -3600,6 +3609,7 @@ var FetchAddon = function FetchAddon(_ref) {
             })["catch"](function (error) {
               console.log('[WP Pageviews Plugin]');
               console.error(error);
+              location.reload();
             });
           case 9:
           case "end":
@@ -49719,6 +49729,10 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     _useState5 = _slicedToArray(_useState4, 2),
     dataResponse = _useState5[0],
     setDataResponse = _useState5[1];
+  var _useState6 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState7 = _slicedToArray(_useState6, 2),
+    backupEnabled = _useState7[0],
+    setBackupEnabled = _useState7[1];
 
   // On page render lets detect if the option field is populated.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -49729,6 +49743,16 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
       handlePostData('invalid', 'invalid', formValues['fileimport-option'], 'changed');
     }
   }, [formValues]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // alert('dd');
+    var filebackupenabled = document.querySelector('#ronik-base_settings-media-cleaner').getAttribute("data-file-backup");
+    if (filebackupenabled == 'on') {
+      // filebackupenabled = true;
+      setBackupEnabled('valid');
+    } else {
+      setBackupEnabled('invalid');
+    }
+  }, []);
 
   // Lets handle the input changes and store the changes to form values.
   var handleChange = function handleChange(e) {
@@ -49744,6 +49768,7 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   var handleImportChange = function handleImportChange(e) {
     if (e.target.checked) {
       setTimeout(function () {
+        setBackupEnabled('valid');
         alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
         setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
           'fileimport-option': 'on'
@@ -49751,6 +49776,7 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
       }, 400);
     } else {
       setTimeout(function () {
+        setBackupEnabled('invalid');
         setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
           'fileimport-option': 'off'
         }));
@@ -49827,24 +49853,21 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
         children: [formValues['filesize-option'], " MB"]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      title: "Media Cleaner Re-import",
-      description: "Tell us which features you want to use."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      title: "Media Cleaner Backup Settings",
+      description: "Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached. Upon Deletion, <br> Based on size of site this may take a while"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "media-cleaner-item-settings__file-size",
-      onChange: handleImportChange,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-        htmlFor: "file-size-selector",
-        children: "Minimum File Size Limit"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-        children: "This will change the overall targeted media file size."
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("label", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("label", {
         className: "switch",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-          type: "checkbox"
+          type: "checkbox",
+          defaultChecked: backupEnabled ? backupEnabled == 'valid' : true,
+          className: backupEnabled,
+          onChange: handleImportChange
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
           className: "slider round"
         })]
-      })]
+      })
     })]
   });
 };
