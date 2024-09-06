@@ -1,19 +1,20 @@
 <?php
 // Verify nonce for security
-if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
     wp_send_json_error('Security check failed', 400);
     wp_die();
 }
 
 // Ensure the user is logged in
 if (!is_user_logged_in()) {
-    return;
+    wp_send_json_error('User not logged in', 403);
+    wp_die();
 }
 
-// Get API key from options
+// Retrieve the API key from options
 $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key', '');
 
-
+// Handle different AJAX requests based on POST data
 switch (true) {
     case isset($_POST['media_progress']) && $_POST['media_progress'] === 'checker_run':
         handleMediaProgress($rbp_media_cleaner_api_key);
@@ -40,31 +41,31 @@ switch (true) {
         break;
 }
 
-// Handle media progress
+// Handle media progress updates
 function handleMediaProgress($apiKey) {
     if ($apiKey) {
         $syncStatus = get_option('rbp_media_cleaner_sync_running', 'not-running');
+        $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+        $finalized = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
 
         if ($syncStatus === 'running') {
-            $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-            $finalized = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
-
             if ($progress !== 'DONE') {
                 wp_send_json_success($progress);
             } elseif ($finalized) {
                 delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-
                 wp_send_json_success('COMPLETED');
             }
         } else {
-            // wp_send_json_success('COMPLETED');
-            // wp_send_json_success('SEMI_SUCCESS');
-
+            if ($progress === 'DONE') {
+                wp_send_json_success('COMPLETED');
+            } else{
+                wp_send_json_success('NOT_RUNNING');
+            }
         }
     }
 }
 
-// Handle API validation
+// Handle API key invalidation
 function handleApiValidation() {
     $apiKey = get_option('rbp_media_cleaner_api_key', '');
 
@@ -73,20 +74,20 @@ function handleApiValidation() {
         update_option('rbp_media_cleaner_api_key_validation', 'invalid');
         wp_send_json_success('Reload');
     } else {
-        wp_send_json_success('noreload');
+        wp_send_json_success('No change required');
     }
 }
 
-// Handle API key check
+// Handle API key checking
 function handleApiKeyCheck($apiKey) {
     if ($apiKey) {
         wp_send_json_success($apiKey);
     } else {
-        wp_send_json_error('Invalid');
+        wp_send_json_error('Invalid API key');
     }
 }
 
-// Handle plugin slug update
+// Handle plugin slug updates
 function handlePluginSlugUpdate($keyOption, $validationOption) {
     $apiKey = $_POST['apikey'] ?? '';
     $apiKeyValidation = $_POST['apikeyValidation'] ?? 'invalid';
@@ -97,12 +98,16 @@ function handlePluginSlugUpdate($keyOption, $validationOption) {
     if ($isUpdated) {
         wp_send_json_success('Reload');
     } else {
-        wp_send_json_error('No rows found!');
+        wp_send_json_error('Failed to update options');
     }
 }
 
+// Check the progress of media cleaning and send the appropriate response
 $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-$finalized = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
-if ($progress == 'DONE') {
+if ($progress === 'DONE') {
     wp_send_json_success('COMPLETED');
+}
+
+if(!$progress){
+    wp_send_json_success('NOT_RUNNING');
 }

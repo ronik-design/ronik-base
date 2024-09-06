@@ -1,80 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-// Load Support Screen.
+// Import screen components
 import LoadSupportScreen from './templates/support.js';
-// Load Integrations Screen.
 import LoadIntegrationsScreen from './templates/integrations.js';
-// Load Settings Screen.
 import LoadSettingsScreen from './templates/settings.js';
-// Load Settings Screen.
 import LoadSettingsScreenMediaCleaner from './templates/media_cleaner_settings.js';
-// Load General Screen.
 import LoadGeneralScreen from './templates/general.js';
-// Load General Screen.
 import LoadMediaCleanerScreen from './templates/media_cleaner.js';
-// Load Support Screen.
 import LoadMediaCleanerSupportScreen from './templates/support.js';
 
-import { LazyLoaderProvider } from './context/LazyLoaderContext.js';
+// Function to render a component into a DOM node
+const renderComponent = (selector, Component) => {
+    const domNode = document.querySelector(selector);
+    if (domNode) {
+        const root = createRoot(domNode);
+        root.render(<Component />);
+    }
+};
 
-
-// Due to the nature of WP we need to wait for the readystate.
-document.addEventListener('readystatechange', event => { 
-    // When HTML/DOM elements are ready:
+// Wait for the DOM to be fully loaded
+document.addEventListener('readystatechange', (event) => {
     if (event.target.readyState === "interactive") {
-        // Finally we check to see if the query selector is present.
-            // Support screen
-            if(document.querySelector("#ronik-base_support") !== null){
-                const domNode = document.getElementById('ronik-base_support');
-                const root = createRoot(domNode);
-                root.render(<LoadSupportScreen />);
-            }
-            // Integrations screen
-            if(document.querySelector("#ronik-base_integrations") !== null){
-                const domNode = document.getElementById('ronik-base_integrations');
-                const root = createRoot(domNode);
-                root.render(<LoadIntegrationsScreen />);
-            }
-            // Settings screen
-            if(document.querySelector("#ronik-base_settings") !== null){
-                const domNode = document.getElementById('ronik-base_settings');
-                const root = createRoot(domNode);
-                root.render(<LoadSettingsScreen />);
-            }
-
-            // Settings screen
-            if(document.querySelector("#ronik-base_settings-media-cleaner") !== null){
-                const domNode = document.getElementById('ronik-base_settings-media-cleaner');
-                const root = createRoot(domNode);
-                root.render(<LoadSettingsScreenMediaCleaner />);
-            }
-            // Support screen
-            if(document.querySelector("#ronik-base_support-media-cleaner") !== null){
-                const domNode = document.getElementById('ronik-base_support-media-cleaner');
-                const root = createRoot(domNode);
-                root.render(<LoadMediaCleanerSupportScreen />);
-            }
-           
-
-
-            // General screen
-            if(document.querySelector("#ronik-base_general") !== null){
-                const domNode = document.getElementById('ronik-base_general');
-                const root = createRoot(domNode);
-                root.render(<LoadGeneralScreen />);
-            }
-       
-            // General screen
-            if(document.querySelector("#ronik-base_media_cleaner") !== null){
-                const domNode = document.getElementById('ronik-base_media_cleaner');
-                const root = createRoot(domNode);
-                root.render(
-                    <LazyLoaderProvider>
-                        <LoadMediaCleanerScreen />
-                    </LazyLoaderProvider>
-                );
-            }
-
+        // Render components based on the presence of specific selectors
+        renderComponent('#ronik-base_support', LoadSupportScreen);
+        renderComponent('#ronik-base_integrations', LoadIntegrationsScreen);
+        renderComponent('#ronik-base_settings', LoadSettingsScreen);
+        renderComponent('#ronik-base_settings-media-cleaner', LoadSettingsScreenMediaCleaner);
+        renderComponent('#ronik-base_support-media-cleaner', LoadMediaCleanerSupportScreen);
+        renderComponent('#ronik-base_general', LoadGeneralScreen);
+        renderComponent('#ronik-base_media_cleaner', LoadMediaCleanerScreen);
     }
 });

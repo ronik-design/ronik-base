@@ -44,9 +44,20 @@ add_submenu_page(
     4 // menu position
 );
 
-function ronikbase_media_cleaner_callback(){ ?> 
+function ronikbase_media_cleaner_callback(){ 
+    $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+
+    if(!$progress){
+        $is_running = 'invalid';
+    } else {
+        // Use ternary operator to check $progress and assign the appropriate message
+        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE') 
+            ? 'invalid' 
+            : 'valid';
+    }    
+?> 
     <!-- The main container  --> 
-    <div id="ronik-base_media_cleaner" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
+    <div id="ronik-base_media_cleaner" data-sync="<?= $is_running; ?>" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
     <canvas></canvas>
     <?php
 }

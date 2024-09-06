@@ -5,6 +5,12 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
     const [increment, setIncrement] = useState(0);
     const [dataSync, setDataSync] = useState('');
     // const [dataSyncProgress, setDataSyncProgress] = useState('');
+    // Check if there is an element with data-sync="valid"
+    const syncIsRunning = document.querySelector('[data-sync="valid"]');
+    // Determine if the button should be disabled
+    const isButtonDisabled = syncIsRunning !== null;
+
+
 
     // Handle the state of the loader and initiate the sync process
     useEffect(() => {
@@ -31,13 +37,6 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
             handlePostData(formValues['user-option'], 'all', increment, 'inprogress');
         }
     };
-
-
-
-
-
-
-
     
     // Handle form changes
     const handleChange = (e) => {
@@ -148,8 +147,13 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" className="submit-btn">
-                                    {formValues['user-option'] === 'fetch-media' ? 'Sync Media' : 'Delete Media'}
+                                
+                                <button 
+                                    type="submit" 
+                                    className={isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn'}
+                                    disabled={isButtonDisabled}  // Disable the button if syncIsRunning is valid
+                                >
+                                    {formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Sync is inprogress' : 'Sync Media' : 'Delete Media'}
                                 </button>
                             </form>
                         </div>

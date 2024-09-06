@@ -1,179 +1,179 @@
 <?php
 /**
-* Init Unused Media Migration.
-*/
-	// Helper Guide
-	$helper = new RonikBaseHelper;
-	$rbp_media_cleaner_cron_last = get_option('rbp_media_cleaner_cron_last-ran' , 'false');
-	// This is a fallback solution incase user leaves the sync before completion.
-	// Or if some odd reason something cancels the sync process.
-	if($rbp_media_cleaner_cron_last){
-		if (strtotime('-1 day') > strtotime($rbp_media_cleaner_cron_last)) {
-			error_log(print_r( 'Cron Reset', true));
-			update_option('rbp_media_cleaner_sync_running', 'not-running');
-			delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-		}
-	}
-	sleep(1);
-	// Detect if the sync is already running. 
-	$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
-	// Lets get the progress bar.
-	$transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' );
-	// Lets get the finalized image id list.
-	$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
-	error_log(print_r( 'Running First Time: ' . $rbp_media_cleaner_sync_running, true));
-	error_log(print_r( 'Progress: ' . $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress, true));
-	// If running we return the inprogress and we send the stats..
-	if($rbp_media_cleaner_sync_running == 'running'){
-		error_log(print_r( 'Running', true));
-		// We kill the application.
-		$response = array(
-			"sync" => $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress,
-			"response" => "Collector-Sync-inprogress-".rand(),
-		);
-		wp_send_json_success($response);
-		die();
-	}
-	// Lets double check the progress is set and is not DONE..
-	if(empty($transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress) || $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress){
-		$this->rmc_media_sync();
-		sleep(2);
-		error_log(print_r( 'Sync is progress: ' . $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress, true));
-		$transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' );
-		// If media id is not in sync we have to recall and based on site size it can take between 5 minutes to 30 minutes.
-		error_log(print_r( 'TEST', true));
-		error_log(print_r( '$transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress', true));
-		error_log(print_r( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress, true));
-		sleep(1);
-		if( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress == 'DONE'  ){
-			// We kill the application.
-			// $response = array(
-			// 	"response" => "Collector-Sync-done",
-			// );
-			// wp_send_json_success($response);
-			wp_send_json_success('COMPLETED');
+ * Init Unused Media Migration.
+ */
 
-			die();
-		}
-		// We kill the application.
-		$response = array(
-			"sync" => '0%',
-			"response" => "Collector-Sync-inprogress-".rand(),
-		);
-		wp_send_json_success($response);
-		die();
-	}
-	// Last Check if the finalized image id list is set.
-	if(!$transient_rmc_media_cleaner_media_data_collectors_image_id_array || (isset($_POST['sync']) && $_POST['sync'] == 'inprogress')){
-		$transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' );
-		// If media id is not in sync we have to recall and based on site size it can take between 5 minutes to 30 minutes.
-		$this->rmc_media_sync();
-		sleep(1);
-		if( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress == 'DONE'  ){
-			// // We kill the application.
-			// $response = array(
-			// 	"response" => "Collector-Sync-done",
-			// );
-			// wp_send_json_success($response);
-			
-			wp_send_json_success('COMPLETED');
+// Create an instance of the helper class.
+$helper = new RonikBaseHelper;
 
-			die();
-		}
-		error_log(print_r( 'Collector-Sync-done ', true));
-	}
-	error_log(print_r($_POST['increment'] , true));
-		// Make sure increment is set and sync is not in progress!
-		if(isset($_POST['increment'])){
-			$increment = $_POST['increment'];
-			/**
-				* First we check to see if the rmc_media_cleaner_media_data_collectors_image_id_array is set. 
-				* If not we run the rmc_media_sync!
-			*/
-			if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array ) ) {
-				$rmc_media_cleaner_media_data_collectors_image_id_array = $transient_rmc_media_cleaner_media_data_collectors_image_id_array;
-			} else {
-				$transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' );
-				// We kill the application.
-				$response = array(
-					"sync" => $transient_rmc_media_cleaner_media_data_collectors_image_id_array_progress,
-					"response" => "Collector-Sync-inprogress-".rand(),
-				);
-				wp_send_json_success($response);
-				die();
-			}
-			error_log(print_r($_POST['mime_type'], true));
-			$rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
-			// Wait 1 Second.
-				sleep(1);
-			// Mime types
-				$select_attachment_type = cleaner_post_mime_type($_POST['mime_type']);
-			// Reformat all the ids to only show the desired mimetype!
-				$rbp_media_cleaner_media_data_collector_refomat_specific_id = array();
-				if ( $_POST['mime_type'] !== 'all' ) {
-					foreach ($rmc_media_cleaner_media_data_collectors_image_id_array as $image_id_array){			
-						if(array_search( get_post_mime_type($image_id_array) , $select_attachment_type)){
-							$rbp_media_cleaner_media_data_collector_refomat_specific_id[] = $image_id_array;
-						}
-					}
-				} else {
-					// If all we just reassign the variables..
-					$rbp_media_cleaner_media_data_collector_refomat_specific_id = $rmc_media_cleaner_media_data_collectors_image_id_array;
-				}
-			// Overall media counter...
-				$throttle_detector = count($rbp_media_cleaner_media_data_collector_refomat_specific_id);
-			// Set numberposts to a number that wont destroy the server resources.
-				$select_numberposts = 35;
-			// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
-				$maxIncrement = ceil($throttle_detector/$select_numberposts);
-			if($increment == 0){
-				// Simple function that resets everything before we continue processing all the files..
-				databaseScannerMedia__cleaner();
-				// Throttle after cleaner.
-				sleep(1);
-			}
-			error_log(print_r( $increment, true));
-			error_log(print_r( $maxIncrement, true));
-			if($increment >= $maxIncrement){
-				update_option('rbp_media_cleaner_increment', 1 );
-				$response = array(
-					"response" => "Reload",
-					"pageCounter" => $increment,
-					"pageTotalCounter" => $maxIncrement,
-				);
-				wp_send_json_success($response);
-				// wp_send_json_success('Reload');
-				die();
-			}
-		} else {
-			wp_send_json_error('Increment error.');
-			die();
-		}
-		$rmc_recursive_media_scanner_results_final = $rbp_media_cleaner_media_data_collector_refomat_specific_id;
-		if($rmc_recursive_media_scanner_results_final){
-			// Get the array count..
-			update_option( 'rbp_media_cleaner_counter' , count($rmc_recursive_media_scanner_results_final) );
-			foreach( $rmc_recursive_media_scanner_results_final as $key => $rmc_recursive_media_scanner_results ){
-				update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
-				update_option('rbp_media_cleaner_media_data', $rmc_recursive_media_scanner_results_final);
-	
-				if( $rmc_recursive_media_scanner_results == end($rmc_recursive_media_scanner_results_final) ){
-					$response = array(
-						"response" => "Done",
-						"pageCounter" => $increment,
-						"pageTotalCounter" => $maxIncrement,
-					);
-					wp_send_json_success($response);
-				}
-			}
-		} else {
-			$f_increment = $increment+1;
-			$response = array(
-				"response" => "Done",
-				"pageCounter" => $f_increment,
-				"pageTotalCounter" => $maxIncrement,
-			);
-			wp_send_json_success($response);
-		}
+// Retrieve the timestamp of the last cron run from the database, defaulting to 'false' if not set.
+$cronLastRun = get_option('rbp_media_cleaner_cron_last', 'false');
 
+// Get the current timestamp and timestamp for one day ago.
+$currentTimestamp = strtotime('now');
+$oneDayAgo = strtotime('-1 day');
+
+// Check if the cron job was last run more than a day ago.
+if ($cronLastRun && $currentTimestamp > strtotime($cronLastRun)) {
+    // Log the cron reset event.
+    error_log('Cron Reset');
+    
+    // Update the sync status to 'not-running' and delete the transient progress data.
+    update_option('rbp_media_cleaner_sync_running', 'not-running');
+    delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+}
+
+// Short delay to ensure the consistency of operations.
+sleep(1);
+
+// Retrieve the current sync status from the database.
+$syncRunning = get_option('rbp_media_cleaner_sync_running', 'not-running');
+
+// Retrieve the transient progress and finalized image ID lists.
+$progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+$finalizedImageIds = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
+
+// Log the initial sync status and progress.
+error_log('Running First Time: ' . $syncRunning);
+error_log('Progress: ' . $progress);
+
+// If the sync process is currently running, return the progress status.
+if ($syncRunning === 'running') {
+    error_log('Running');
+    wp_send_json_success([
+        'sync' => $progress,
+        'response' => 'Collector-Sync-inprogress-' . rand(),
+    ]);
+    exit;
+}
+
+// If progress is not set to 'DONE', initiate or continue the sync process.
+if (empty($progress) || $progress !== 'DONE') {
+    // Call the method to start or continue the media sync process.
+    $this->rmc_media_sync();
+    sleep(2); // Short delay to ensure the sync process is updated.
+
+    // Retrieve the updated progress status.
+    $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+
+    // If progress is 'DONE', send a success response indicating completion.
+    if ($progress === 'DONE') {
+        wp_send_json_success('COMPLETED');
+        exit;
+    }
+
+    // Return the sync progress status with a random response string.
+    wp_send_json_success([
+        'sync' => '0%',
+        'response' => 'Collector-Sync-inprogress-' . rand(),
+    ]);
+    exit;
+}
+
+// If the finalized image ID list is not set or the sync is in progress, check and proceed.
+if (!$finalizedImageIds || (isset($_POST['sync']) && $_POST['sync'] === 'inprogress')) {
+    // Retrieve the current progress status.
+    $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+    
+    // Call the sync method to ensure the image IDs are up-to-date.
+    $this->rmc_media_sync();
+    sleep(1); // Short delay to ensure the sync process is updated.
+
+    // If progress is 'DONE', send a success response indicating completion.
+    if ($progress === 'DONE') {
+        wp_send_json_success('COMPLETED');
+        exit;
+    }
+
+    // Log the completion status.
+    error_log('Collector-Sync-done');
+}
+
+// Log the increment value or indicate if it is not set.
+error_log($_POST['increment'] ?? 'No increment');
+
+// Handle the increment and update the sync progress accordingly.
+if (isset($_POST['increment'])) {
+    $increment = $_POST['increment'];
+
+    // Check if the finalized image IDs are available.
+    if (!empty($finalizedImageIds)) {
+        $imageIds = $finalizedImageIds;
+    } else {
+        // Retrieve the current progress status and return it with a sync-in-progress response if image IDs are not available.
+        $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+        wp_send_json_success([
+            'sync' => $progress,
+            'response' => 'Collector-Sync-inprogress-' . rand(),
+        ]);
+        exit;
+    }
+
+    // Retrieve the finalized image IDs and apply a short delay.
+    $imageIds = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
+    sleep(1); // Short delay to ensure the process is up-to-date.
+
+    // Get the MIME type filter and apply it to the image IDs.
+    $mimeType = cleaner_post_mime_type($_POST['mime_type']);
+    $filteredImageIds = $_POST['mime_type'] === 'all' ? $imageIds : array_filter($imageIds, function($id) use ($mimeType) {
+        return in_array(get_post_mime_type($id), $mimeType);
+    });
+
+    // Calculate the total count and pagination details.
+    $totalCount = count($filteredImageIds);
+    $postsPerPage = 35; // Number of posts to process per page.
+    $maxPages = ceil($totalCount / $postsPerPage); // Total number of pages required.
+
+    // Reset and clean up if increment is zero.
+    if ($increment == 0) {
+        databaseScannerMedia__cleaner();
+        sleep(1); // Short delay to ensure the clean-up process is complete.
+    }
+
+    // Log the current increment and maximum pages.
+    error_log('Increment: ' . $increment);
+    error_log('Max Increment: ' . $maxPages);
+
+    // If the increment has reached or exceeded the maximum number of pages, prompt for a reload.
+    if ($increment >= $maxPages) {
+        update_option('rbp_media_cleaner_increment', 1);
+        wp_send_json_success([
+            'response' => 'Reload',
+            'pageCounter' => $increment,
+            'pageTotalCounter' => $maxPages,
+        ]);
+        exit;
+    }
+
+    // Process and update the options for the remaining image IDs.
+    update_option('rbp_media_cleaner_counter', count($filteredImageIds));
+    foreach ($filteredImageIds as $key => $imageId) {
+        update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
+        update_option('rbp_media_cleaner_media_data', $filteredImageIds);
+
+        // If the current image ID is the last in the array, send a completion response.
+        if ($imageId === end($filteredImageIds)) {
+            wp_send_json_success([
+                'response' => 'Done',
+                'pageCounter' => $increment,
+                'pageTotalCounter' => $maxPages,
+            ]);
+            exit;
+        }
+    }
+
+    // Increment the counter for the next batch and send a response.
+    $nextIncrement = $increment + 1;
+    wp_send_json_success([
+        'response' => 'Done',
+        'pageCounter' => $nextIncrement,
+        'pageTotalCounter' => $maxPages,
+    ]);
+    exit;
+
+} else {
+    // Handle cases where the increment parameter is missing or incorrect.
+    wp_send_json_error('Increment error.');
+    exit;
+}
 ?>

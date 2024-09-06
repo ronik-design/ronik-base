@@ -1,5 +1,5 @@
 import ContentBlock from '../components/ContentBlock.jsx';
-import FetchAddon from '../components/FetchAddon.jsx';
+import FetchAddon from '../components/PluginBase/FetchApiAddon.jsx';
 
 function Integrations() {
 	return (

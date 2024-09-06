@@ -1,8 +1,29 @@
 (function($) {
     'use strict';
+    // Initialize a counter variable
+    let progressCounter = 0;
+    let progressTimerCounter = 0;
 
     // Function to initialize media progress
     function initRonikMediaProgress() {
+        // Increment the counter
+        progressCounter++;
+        progressTimerCounter++;
+        // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data. 
+        console.log("initRonikMediaProgress count:", progressCounter);
+        if(progressCounter > 60){
+            // Clear the console
+            console.clear();
+            // Reset the counter to 0.
+            progressCounter = 0;
+        }
+        // Pretty much this is a safe guard we simply reload the entire page incase things are acting wacky or slow.
+        // 60 seconds times 5. 5 minutes
+        if(progressTimerCounter > 60*5){
+            window.location.reload(true);
+        }
+
+
         $.ajax({
             type: 'post',
             url: wpVars.ajaxURL,
@@ -28,6 +49,31 @@
                             loaderElement.innerHTML = `Progress Status: Done`;
                         } else {
                             loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
+                        }
+                    }
+                } else {
+                    if(!data.data){
+
+                    } else{
+                        if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){       
+                            console.log('.progress-bar not present');
+                 
+                            var element = document.getElementById("wpwrap");
+                            element.classList.add("active-loader");
+                            const f_wpwrap = document.querySelector("#wpwrap");
+                            const f_wpcontent = document.querySelector("#wpcontent");
+                            if (f_wpwrap) {
+                                f_wpwrap.classList.add('loader');
+                                f_wpcontent.insertAdjacentHTML('beforebegin', `
+                                    <div class="progress-bar"></div>
+                                    <div class="centered-blob">
+                                        <div class="blob-1"></div>
+                                        <div class="blob-2"></div>
+                                    </div>
+                                    <div class="page-counter">Please do not refresh the page!</div>
+                                `);
+                            }
+                            console.log(data);
                         }
                     }
                 }
@@ -99,7 +145,7 @@
             function pingMediaProgressValidator() {
                 initRonikMediaProgress();
             }
-            setInterval(pingMediaProgressValidator, 3000);
+            setInterval(pingMediaProgressValidator, 1000);
         }
     }
 

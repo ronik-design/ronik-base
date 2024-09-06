@@ -103,6 +103,11 @@ html {
 .media-cleaner-block__inner .media-cleaner-item__inner .media-cleaner-item__content .media-cleaner-item__form .submit-btn {
   background-color: #00C666;
   color: #fff;
+  cursor: progress;
+}
+.media-cleaner-block__inner .media-cleaner-item__inner .media-cleaner-item__content .media-cleaner-item__form .submit-btn-disabled {
+  background-color: gray;
+  opacity: 0.2;
 }
 .media-cleaner-block__inner .media-cleaner-item__inner .media-cleaner-item__content .media-cleaner-item__form .media-cleaner-item__checkboxes {
   display: flex;

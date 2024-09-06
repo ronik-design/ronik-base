@@ -270,7 +270,13 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return id_reformatter_media_data(get_posts( $args ));
     }
 }
+
+function my_custom_permission_check() {
+    return current_user_can('manage_options'); // Adjust capability as needed
+}
+
 register_rest_route( 'mediacleaner/v1', '/mediacollector/(?P<slug>\w+)', array(
     'methods' => 'GET',
     'callback' => 'ronikdesignsbase_mediacleaner_data',
+    'permission_callback' => 'my_custom_permission_check', // Restrict access based on custom logic
 ));

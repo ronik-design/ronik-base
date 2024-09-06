@@ -1,6 +1,6 @@
 import ContentBlock from '../components/ContentBlock.jsx';
-import TriggerAjaxRequest from '../components/TriggerAjaxRequest.jsx';
-import MediaCollector from '../components/MediaCollector.jsx';
+import TriggerAjaxRequest from '../components/MediaCleaner/TriggerAjaxRequest.jsx';
+import MediaCollector from '../components/MediaCleaner/MediaCollector.jsx';
 
 function Mediacleaner() {
 

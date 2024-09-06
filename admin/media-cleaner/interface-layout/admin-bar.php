@@ -45,6 +45,35 @@ function add_item( $admin_bar ){
 add_action( 'admin_footer', 'mc_sync_action_js' );
 function mc_sync_action_js() { ?>
     <script type="text/javascript">
+        // Check if there is an element with data-sync="valid"
+        const syncIsRunning = document.querySelector('[data-sync="valid"]');
+        // Determine if the button should be disabled
+        const isButtonDisabled = syncIsRunning !== null;
+        // Get the element with the ID 'wp-admin-bar-rmc-sync'
+        const syncElement = document.getElementById('wp-admin-bar-rmc-sync');
+
+        // Check if the element exists
+        if (syncElement) {
+            // Find the <a> tag inside the element
+            const linkElement = syncElement.querySelector('a');
+
+            // Check if the <a> tag exists
+            if (linkElement) {
+                // Change the text content of the <a> tag
+                linkElement.textContent = 'Sync in Progress';
+                // Add inline styles to the <a> tag
+                linkElement.style.setProperty('background-color', 'navy', 'important'); // Change background color to lightgray with !important
+                linkElement.style.setProperty('color', 'gray', 'important'); // Change text color to gray with !important
+                linkElement.style.setProperty('pointer-events', 'none', 'important'); // Disable clicking with !important
+                linkElement.style.setProperty('text-decoration', 'none', 'important'); // Remove underline with !important
+                linkElement.style.setProperty('cursor', 'default', 'important'); // Change cursor to default with !important
+            } else {
+                console.error('No <a> tag found inside the element with ID "wp-admin-bar-rmc-sync".');
+            }
+        } else {
+            console.error('Element with ID "wp-admin-bar-rmc-sync" not found.');
+        }
+
         jQuery("#wp-admin-bar-rmc-sync a").unbind().click(function(e){
             e.preventDefault();
             const f_wpwrap = document.querySelector("#wpwrap");

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLazyLoader } from '../context/LazyLoaderContext';
-import MediaTable from './MediaCleaner/MediaTable';
+import MediaTable from './MediaTable';
 
 const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
 
@@ -229,11 +228,15 @@ const MediaCollector = () => {
     const removeLoader = () => {
         const wpwrap = document.querySelector("#wpwrap");
         const centeredBlob = document.querySelector(".centered-blob");
-        if (wpwrap) {
-            wpwrap.classList.remove('loader');
-        }
-        if (centeredBlob) {
-            centeredBlob.remove();
+
+        // For ping validator we need to add a class to the wpwrap to ensure user cant click call.
+        if(!wpwrap.classList.contains('active-loader')){
+            if (wpwrap) {
+                wpwrap.classList.remove('loader');
+            }
+            if (centeredBlob) {
+                centeredBlob.remove();
+            }
         }
     };
 

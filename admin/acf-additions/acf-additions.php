@@ -1,45 +1,50 @@
 <?php
 
-// Dynamic Post Loader to select.
-function ronikdesigns_acf_post_load($field)
-{
-    // render settings for other field types (hide/show settings based on whether multi-select is enabled)
+/**
+ * Adds a custom setting to the ACF 'select' field type to enable dynamic post loader.
+ *
+ * @param array $field The field settings array.
+ */
+function ronikdesigns_acf_post_load($field) {
+    // Add a custom setting for the 'select' field type to enable dynamic post loader
     acf_render_field_setting($field, array(
-        'label'    => 'Dynamic Post Loader to select.',
-        'name' => 'dyn_post_loader',
-        'type' => 'true_false',
-        'ui' => 1,
+        'label'    => 'Dynamic Post Loader',
+        'name'     => 'dyn_post_loader',
+        'type'     => 'true_false',
+        'ui'       => 1,
     ));
 }
-add_action('acf/render_field_settings/type=select', 'ronikdesigns_acf_post_load' , 10); // add Dynamic Post Loader to select
 
-// Dynamic Post Loader to select.
-function ronikdesigns_acf_post_loader($field)
-{
-    if( !array_key_exists('dyn_post_loader', $field)  ){
-        // return the field
-        return $field;
-    }
-    if ($field['dyn_post_loader']) {
+// Hook to ACF to add custom settings to 'select' field type
+add_action('acf/render_field_settings/type=select', 'ronikdesigns_acf_post_load', 10);
+
+/**
+ * Filters the choices for ACF 'select' fields to dynamically load post types.
+ *
+ * @param array $field The field settings array.
+ * @return array The updated field settings array with dynamic choices.
+ */
+function ronikdesigns_acf_post_loader($field) {
+    // Check if the 'dyn_post_loader' setting is enabled
+    if (isset($field['dyn_post_loader']) && $field['dyn_post_loader']) {
+        // Get public post types excluding built-in types
         $args = array(
-            'public' => true,
-            '_builtin' => false
+            'public'   => true,
+            '_builtin' => false,
         );
         $post_types = get_post_types($args);
-        $post_types['page'] = 'page';
-        $post_types['post'] = 'post';
-        // array_push($post_types, 'page');
-        // array_push($post_types, 'post');
 
-        $choices = array($post_types);
-        $field['choices'] = array();
-        if ($choices) {
-            foreach ($choices as $choice) {
-                $field['choices'] = $choice;
-            }
-        }
+        // Add 'page' and 'post' to the list of choices
+        $post_types['page'] = 'Page';
+        $post_types['post'] = 'Post';
+
+        // Set the choices for the field
+        $field['choices'] = $post_types;
     }
-    // return the field
+
+    // Return the modified field settings
     return $field;
 }
+
+// Hook to ACF to modify the choices of 'select' fields based on dynamic post loader setting
 add_filter('acf/load_field/type=select', 'ronikdesigns_acf_post_loader', 11);
