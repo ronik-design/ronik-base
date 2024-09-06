@@ -15,7 +15,6 @@ function ronikdesigns_timeout_extend( $time ){
 add_filter( 'http_request_timeout', 'ronikdesigns_timeout_extend' );
 
 
-
 // Simple function that erases all option data from plugin,
 function databaseScannerMedia__cleaner( ) {    
     global $wpdb;
@@ -23,7 +22,6 @@ function databaseScannerMedia__cleaner( ) {
     // Remove the original post value to null..
     $_POST['imageDirFound'] = '';
     $tablename = $wpdb->prefix . "posts";
-
     $sql = $wpdb->prepare( "SELECT * FROM wp_options WHERE option_name LIKE '%rbp_media_cleaner_%' ORDER BY option_name ASC", $tablename );
     $results = $wpdb->get_results( $sql , ARRAY_A );
     if($results){
@@ -40,8 +38,6 @@ function databaseScannerMedia__cleaner( ) {
         }
     }
 }
-
-
 if ($_POST['post_overide'] == 'media-preserve'){
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
 		include $file;
@@ -63,7 +59,6 @@ if ($_POST['post_overide'] == 'media-preserve'){
 	} 
 	if($_POST['user_option'] == 'delete-media'){
 		error_log(print_r('delete-media', true));
-
 		foreach (glob(dirname(__FILE__) . '/media-cleaner-remove.php') as $file) {
 			include $file;
 		}

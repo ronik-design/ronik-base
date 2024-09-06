@@ -1,4 +1,6 @@
 {
+    "/public/assets/dist/app.js": "/public/assets/dist/app.js",
     "/admin/interface/dist/index.js": "/admin/interface/dist/index.js",
-    "/admin/interface/dist/main.css": "/admin/interface/dist/main.css"
+    "/admin/interface/dist/main.css": "/admin/interface/dist/main.css",
+    "/public/assets/dist/main.css": "/public/assets/dist/main.css"
 }

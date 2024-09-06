@@ -1,4 +1,5 @@
 <?php 
+    $helper = new RonikBaseHelper;
     update_post_meta( $_POST['id'], 'mediaSwapFileTimestamp', time() );
     $image_id = $_POST['id'];
     $wp_post_ids_found = array();
@@ -44,13 +45,13 @@
              if($posts){
                  
                  //  We do a loose comparison if the meta value has any keyword of en.
-                if(ronik_compare_like( get_post_field('post_content', $posts) , basename(get_attached_file($image_id)))){
+                if($helper->ronik_compare_like( get_post_field('post_content', $posts) , basename(get_attached_file($image_id)))){
                      $wp_post_ids_found[] = $posts;
                 }
-                if(ronik_compare_like( get_post_field('post_content', $posts) , 'wp-image-'.$image_id )){
+                if($helper->ronik_compare_like( get_post_field('post_content', $posts) , 'wp-image-'.$image_id )){
                     $wp_post_ids_found[] = $posts;
                 }
-                if(ronik_compare_like( get_post_field('post_content', $posts) , 'i:'.$image_id.';' )){
+                if($helper->ronik_compare_like( get_post_field('post_content', $posts) , 'i:'.$image_id.';' )){
                     $wp_post_ids_found[] = $posts;
                 }
              }
@@ -89,34 +90,13 @@
 
 
                     
-                    if(ronik_compare_like($f_meta_val ,  'i:'.$image_id.';' )){
+                    if($helper->ronik_compare_like($f_meta_val ,  'i:'.$image_id.';' )){
 
                         // $string = explode('[:zh]', (explode('[:en]', $f_meta_val)[1]))[0];
                         // update_post_meta($f_post_id, $meta_key, wp_slash($string));
                     }
-
-
-
-
                 }
             }
         }
     }
-
-
-
-
-
-    // error_log(print_r('wp_post_ids_found', true));
-    // error_log(print_r($wp_post_ids_found, true));
-
-
-
-    // error_log(print_r('SWAP', true));
-    // error_log(print_r($_POST['id'], true));
-    // error_log(print_r($_POST['mediaSwapFileId'], true));
-
-
-
-    
 ?>

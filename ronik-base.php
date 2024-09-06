@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://www.ronikdesign.com/
- * @since             1.1.1
+ * @since             1.1.2
  * @package           Ronik_Base
  *
  * @wordpress-plugin
  * Plugin Name:       Ronik
  * Plugin URI:        https://www.ronikdesign.com/
  * Description:       This is a description of the plugin.
- * Version:           1.1.1
+ * Version:           1.1.2
  * Author:            Kevin Mancuso
  * Author URI:        https://www.ronikdesign.com/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'RONIK_BASE_VERSION', '1.1.1' );
+define( 'RONIK_BASE_VERSION', '1.1.2' );
 
 
 /**

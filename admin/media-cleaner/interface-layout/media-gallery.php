@@ -2,30 +2,17 @@
 
 function rbp_delete_attachment( $post_id ) {			
     error_log(print_r( $post_id, true));
-
     // get attached file dir
-    $file = get_attached_file( $post_id );
-
+    $file = get_attached_file( $post_id );  
     // get file name of attachment to be deleted
     $file_name = wp_basename( $file );
 }
 add_action( 'delete_attachment', 'rbp_delete_attachment' );
 
-
-
-
-
-// Image Dimensions.
-// function rmc_media_column_dimensions( $cols ) {
-//     $cols["rmc_filesize"] = "File Size";
-//     return $cols;
-// }
 // Image Isdetached.
 function rmc_media_column_isdetached( $cols ) {
     $cols["rmc_detached"] = "Ronik Media Cleaner Detached";
-
     $cols["rmc_swap"] = "Media Swap";
-
     return $cols;
 }
 add_filter( 'manage_media_columns', 'rmc_media_column_isdetached' );
@@ -36,9 +23,6 @@ function rmc_media_column_value( $column_name, $id ) {
     if( $column_name == 'rmc_detached' ){
         $f_detector = get_option('rbp_media_cleaner_counter');
         $f_sync = get_option('rbp_media_cleaner_sync-time');
-
-        
-
         if (strtotime('-1 day') > strtotime($f_sync)) {
             echo 'Please re-synchronization. <br>Due to outdated synchronization. <br><a href="/wp-admin/admin.php?page=options-ronik-base_media_cleaner">Re-sync</a>';
             echo '<br /><br />';
@@ -47,7 +31,6 @@ function rmc_media_column_value( $column_name, $id ) {
 
     <?php if($f_detector && $f_detector > 0){
             echo formatSizeUnits($data['filesize']) . ' <br>';
-
             if( isset($data['rbp_media_cleaner_isdetached'])  ){
                 if($data['rbp_media_cleaner_isdetached'] == 'rbp_media_cleaner_isdetached_true'){
                     echo 'Media Detection last ran: <br>'.$f_sync.'<br><br>
@@ -69,9 +52,6 @@ function rmc_media_column_value( $column_name, $id ) {
             echo 'Please visit the media cleaner to start synchronization. <a href="/wp-admin/admin.php?page=options-ronik-base_media_cleaner">TEST</a>';
         }
     }
-    // if( $column_name == 'rmc_filesize' ){
-    //     echo formatSizeUnits($data['filesize']);
-    // }
 
     if( $column_name == 'rmc_swap' ) { ?>
         <script type="text/javascript">
@@ -135,9 +115,8 @@ function rmc_media_column_value( $column_name, $id ) {
 
         <?php 
             $f_mediaSwapFileTimestamp = get_post_meta($id , 'mediaSwapFileTimestamp', true );
-
-            echo $id;
-            
+            echo 'Media ID: ' . $id . '<br>';
+            echo 'Media Swap Status: <br>';
             if($f_mediaSwapFileTimestamp){
                 echo 'Last Swapped: <br>' . date("F j, Y, g:i a", $f_mediaSwapFileTimestamp);
             } else {
@@ -168,7 +147,7 @@ function rmc_media_column_value( $column_name, $id ) {
                     <tr class="compat-field-acf-blank"><td></td></tr>
                     </tbody>
                 </table>
-                <button id="media-swap">Click me</button>
+                <button id="media-swap">Swap Media</button>
             ';
     }
 }

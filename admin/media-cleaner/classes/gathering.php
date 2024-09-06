@@ -1,16 +1,5 @@
 <?php 
 class RmcDataGathering{
-
-
-    // Semi Imitates the loose LIKE%% Comparison
-    public function ronik_compare_like($a_value , $b_value){
-        if(stripos($a_value, $b_value) !== FALSE){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public function rmc_getLineWithString_ronikdesigns($fileName, $id) {
         $f_attached_file = get_attached_file( $id );
         $pieces = explode('/', $f_attached_file ) ;
@@ -352,29 +341,7 @@ class RmcDataGathering{
                     error_log(print_r( $j , true));
                     foreach($f_posts as $key => $posts){
                         if($posts){
-
-
-
-                                    // // Lets search the post meta of all posts...
-                                    // $postmetas = get_post_meta( $posts );
-                                    // // First we get all the meta values & keys from the current post.
-                                    // if($postmetas){
-                                    //     foreach($postmetas as $meta_key => $meta_value) {
-                                    //         $f_meta_val = $meta_value[0];
-                                    //         if(ronik_compare_like($f_meta_val , 'i:'.$image_id.';')){
-                                    //             if($meta_key !== 'wp-smpro-smush-data'){
-                                    //                 $wp_postsmeta_id_audit_array[] = $image_id;
-                                    //             }
-                                    //         } else {
-                                    //             $wp_postsmeta_id_audit_array[] = $image_id;
-                                    //         }
-                                    //     }
-                                    // }
-
-                                    $wp_postsmeta_id_audit_array[] = $image_id;
-
-
-
+                            $wp_postsmeta_id_audit_array[] = $image_id;
                         }
                     }
                 }
@@ -428,26 +395,6 @@ class RmcDataGathering{
                     error_log(print_r( $j , true));
                     foreach($f_posts as $key => $posts){
                         if($posts){
-
-
-
-                                    // // Lets search the post meta of all posts...
-                                    // $postmetas = get_post_meta( $posts );
-                                    // // First we get all the meta values & keys from the current post.
-                                    // if($postmetas){
-                                    //     foreach($postmetas as $meta_key => $meta_value) {
-                                    //         $f_meta_val = $meta_value[0];
-                                    //         if(ronik_compare_like($f_meta_val , 'i:'.$image_id.';')){
-                                    //             if($meta_key !== 'wp-smpro-smush-data'){
-                                    //                 $wp_postsmeta_id_audit_array[] = $image_id;
-                                    //             }
-                                    //         } else {
-                                    //             $wp_postsmeta_id_audit_array[] = $image_id;
-                                    //         }
-                                    //     }
-                                    // }
-
-
                             $wp_postsmeta_id_audit_array[] = $image_id;
                         }
                     }
@@ -466,6 +413,7 @@ class RmcDataGathering{
 
     // Check the post content and do a loose find if the basename is within the post content. This is most ideal for gutenberg blocks.
     public function specificImagePostContentAuditor( $allimagesid , $post_id ){
+        $helper = new RonikBaseHelper;
         error_log(print_r('imagePostContentAuditor Started' , true));
         // This searches the posts content
         // Lets get the post meta of all posts...
@@ -474,7 +422,7 @@ class RmcDataGathering{
         if($allimagesid){
             foreach($allimagesid as $k => $image_id){
                 //  We do a loose comparison if the meta value has any keyword of en.
-                if(ronik_compare_like( get_post_field('post_content', $post_id) , basename(get_attached_file($image_id)))){
+                if($helper->ronik_compare_like( get_post_field('post_content', $post_id) , basename(get_attached_file($image_id)))){
                     error_log(print_r( $k , true));
                     $wp_postsmeta_wp_content_id_audit_array[] = $image_id;
                 }
@@ -497,6 +445,8 @@ class RmcDataGathering{
 
     // Check the post content and do a loose find if the basename is within the post content. This is most ideal for gutenberg blocks.
     public function imagePostContentAuditor( $allimagesid , $all_post_pages ){
+        $helper = new RonikBaseHelper;
+
         error_log(print_r('imagePostContentAuditor Started' , true));
         // This searches the posts content
         // Lets get the post meta of all posts...
@@ -506,7 +456,7 @@ class RmcDataGathering{
                 if($allimagesid){
                     foreach($allimagesid as $k => $image_id){
                         //  We do a loose comparison if the meta value has any keyword of en.
-                        if(ronik_compare_like( get_post_field('post_content', $post_id) , basename(get_attached_file($image_id)))){
+                        if( $helper->ronik_compare_like( get_post_field('post_content', $post_id) , basename(get_attached_file($image_id)))){
                             error_log(print_r( $k , true));
                             $wp_postsmeta_wp_content_id_audit_array[] = $image_id;
                         }
@@ -580,6 +530,7 @@ class RmcDataGathering{
             }
         }
 
+        error_log(print_r('$meta_temp_saved_array ', true));
 
         error_log(print_r($meta_temp_saved_array , true));
 
@@ -613,15 +564,9 @@ class RmcDataGathering{
     public function imageCloneSave( $is_array , $imagesid ) {
         $f_file_import = get_option( 'rbp_media_cleaner_file_import' );
 
-        // Lets us set the max_execution_time to 1hr
-        error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-        @set_time_limit( intval( 3600*2 ) );
-        error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
-
-        error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
-        ini_set('memory_limit', '100024M');
-        error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
-
+        // Update the memory option.
+        $helper = new RonikBaseHelper;
+        $helper->ronikdesigns_increase_memory();
 
 
         if(!$is_array){

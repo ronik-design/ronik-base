@@ -2555,6 +2555,407 @@ var FetchAddon = function FetchAddon(_ref) {
 
 /***/ }),
 
+/***/ "./admin/interface/components/MediaCleaner/MediaTable.jsx":
+/*!****************************************************************!*\
+  !*** ./admin/interface/components/MediaCleaner/MediaTable.jsx ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
+/* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+
+
+ // Importing HTML parser
+
+// MediaCollectorTable component
+
+
+
+var MediaCollectorTable = function MediaCollectorTable(_ref) {
+  var _output;
+  var mediaCollector = _ref.mediaCollector,
+    selectedFormValues = _ref.selectedFormValues,
+    filterMode = _ref.filterMode,
+    setFilterMode = _ref.setFilterMode,
+    setSelectedFormValues = _ref.setSelectedFormValues,
+    setSelectedDataFormValues = _ref.setSelectedDataFormValues,
+    filter_size = _ref.filter_size,
+    filterPager = _ref.filterPager,
+    filterType = _ref.filterType,
+    mediaCollectorHigh = _ref.mediaCollectorHigh,
+    mediaCollectorLow = _ref.mediaCollectorLow,
+    activateDelete = _ref.activateDelete,
+    activatePreserve = _ref.activatePreserve;
+  // Options for the select input
+  var options = [{
+    value: 'all',
+    label: 'All'
+  }, {
+    value: 'jpg',
+    label: 'JPG'
+  }, {
+    value: 'gif',
+    label: 'GIF'
+  }, {
+    value: 'png',
+    label: 'PNG'
+  }, {
+    value: 'video',
+    label: 'Video'
+  }, {
+    value: 'misc',
+    label: 'Misc'
+  }];
+
+  // FilterType component
+  var FilterType = function FilterType() {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "select select-multiple",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        closeMenuOnSelect: false,
+        defaultValue: selectedFormValues,
+        isMulti: true,
+        options: options,
+        onChange: function onChange(e) {
+          setFilterMode('all');
+          var params = new URLSearchParams(window.location.search);
+          var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
+            return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
+          }, {});
+          if (window.history.pushState) {
+            var newURL = new URL(window.location.href);
+            newURL.search = "?page=options-ronik-base_media_cleaner&page_number=".concat(paramsObj['page_number']);
+            window.history.pushState({
+              path: newURL.href
+            }, '', newURL.href);
+          }
+          var newArr = e.map(function (option) {
+            return option;
+          });
+          setSelectedFormValues(newArr);
+          var newDataArr = e.map(function (option) {
+            return option.value;
+          });
+          setSelectedDataFormValues(newDataArr);
+        }
+      })
+    });
+  };
+
+  // Guard clause to handle cases where mediaCollector is 'no-images' or null
+  if (!mediaCollector || mediaCollector === 'no-images') {
+    // Remove loading elements from the DOM if no images are found
+    var f_wpwrap = document.querySelector("#wpwrap");
+    var element = document.getElementsByClassName("centered-blob");
+    if (f_wpwrap) f_wpwrap.classList.remove('loader');
+    if (element[0]) element[0].remove(); // Removes the 'centered-blob' div
+    if (element[1]) element[1].remove(); // Removes the second 'centered-blob' div
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {
+        filterType: filterType
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: "No Media Found!"
+      })]
+    });
+  }
+
+  // Pagination setup
+  var urlParams = new URLSearchParams(window.location.search);
+  var page = parseInt(filterPager) || 0;
+  var itemsPerPage = 20;
+  var paginatedData = function paginatedData(data) {
+    return data.reduce(function (resultArray, item, index) {
+      var chunkIndex = Math.floor(index / itemsPerPage);
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = []; // Start a new chunk
+      }
+
+      resultArray[chunkIndex].push(item);
+      return resultArray;
+    }, []);
+  };
+
+  // Determine which media collector data to use based on filterMode
+  var output = paginatedData(mediaCollector)[page];
+  if (filterMode === 'high' && mediaCollectorHigh) {
+    output = paginatedData(mediaCollectorHigh)[page];
+  } else if (filterMode === 'low' && mediaCollectorLow) {
+    output = paginatedData(mediaCollectorLow)[page];
+  }
+
+  // FilterNav component
+  var FilterNav = function FilterNav() {
+    var totalSize = mediaCollector.reduce(function (acc, item) {
+      var size = parseFloat(item['media_size']);
+      if (item['media_size'].includes('KB')) size /= 1024;
+      if (item['media_size'].includes('GB')) size *= 1000;
+      if (item['media_size'].includes('bytes')) size *= 1e-6;
+      return acc + (isNaN(size) ? 0 : size);
+    }, 0);
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "filter-nav",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          type: "button",
+          title: "Filter All",
+          onClick: filter_size,
+          "data-filter": "all",
+          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'all' ? 'active' : 'inactive'),
+          children: "Filter All"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          type: "button",
+          title: "Filter High",
+          onClick: filter_size,
+          "data-filter": "high",
+          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'high' ? 'active' : 'inactive'),
+          children: "Filter High"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          type: "button",
+          title: "Filter Low",
+          onClick: filter_size,
+          "data-filter": "low",
+          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'low' ? 'active' : 'inactive'),
+          children: "Filter Low"
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+        className: "overall-number",
+        children: ["Overall Unattached Media Found: ", mediaCollector.length]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+        className: "overall-number",
+        children: ["Overall Unattached Media File Size: ", Math.round(totalSize * 100) / 100, " MB"]
+      })]
+    });
+  };
+
+  // PagerNav component
+  var PagerNav = function PagerNav(_ref2) {
+    var pager = _ref2.pager;
+    var handlePager = function handlePager(e) {
+      var direction = e.target.getAttribute("data-pager");
+      setFilterPager(function (prev) {
+        return prev + (direction === 'next' ? 1 : -1);
+      });
+    };
+    var totalPages = Math.ceil(mediaCollector.length / itemsPerPage);
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "filter-nav filter-nav--no-space-top",
+      children: [pager > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        className: "filter-nav__button",
+        onClick: handlePager,
+        "data-pager": "previous",
+        children: "Previous Page"
+      }), pager < totalPages - 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        className: "filter-nav__button",
+        onClick: handlePager,
+        "data-pager": "next",
+        children: "Next Page"
+      })]
+    });
+  };
+
+  // Render media items
+  var mediaCollectorItems = (_output = output) === null || _output === void 0 ? void 0 : _output.map(function (collector) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+      className: "media-collector-table__tr",
+      "data-media-id": collector['id'],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          onClick: activateDelete,
+          "data-delete-media": collector['id'],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+            src: "/wp-content/plugins/".concat(document.querySelector('#ronik-base_media_cleaner').getAttribute("data-plugin-name"), "/admin/media-cleaner/image/big-trash-can.svg"),
+            alt: "Delete"
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--img-thumb",
+        children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td file-type",
+        children: collector['media_file_type']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td file-size",
+        children: collector['media_size']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: collector['id']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+          target: "_blank",
+          rel: "noopener noreferrer",
+          href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
+          children: "Edit"
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--img-url",
+        children: collector['media_file']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--preserve",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          onClick: activatePreserve,
+          "data-preserve-media": collector['id'],
+          children: "Preserve Row"
+        })
+      })]
+    }, collector['id']);
+  });
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterNav, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PagerNav, {
+      pager: filterPager
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
+      className: "media-collector-table",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+        className: "media-collector-table__tbody",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+          className: "media-collector-table__tr",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "Trash"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th media-collector-table__th--img-thumb",
+            children: "Thumbnail Image"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "File Type"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "File Size"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "Image ID"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "Image Edit"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+            className: "media-collector-table__th media-collector-table__th--img-url",
+            children: "Image Url"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
+            className: "media-collector-table__th media-collector-table__th--preserve",
+            children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
+              children: "Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily."
+            })]
+          })]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+        className: "media-collector-table__tbody",
+        children: mediaCollectorItems
+      })]
+    })]
+  });
+};
+
+// PreservedMediaCollectorTable component
+var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) {
+  var mediaCollectorPreserved = _ref3.mediaCollectorPreserved,
+    activatePreserve = _ref3.activatePreserve;
+  if (!mediaCollectorPreserved) return null;
+
+  // Render preserved media items
+  var mediaCollectorItems = mediaCollectorPreserved.map(function (collector) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+      className: "media-collector-table__tr",
+      "data-media-id": collector['id'],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: "Trash"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--img-thumb",
+        children: collector['img-thumb'] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb']) : 'No Image Found'
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td file-type",
+        children: collector['media_file_type']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td file-size",
+        children: collector['media_size']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: collector['id']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+          target: "_blank",
+          rel: "noopener noreferrer",
+          href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
+          children: "Edit"
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--img-url",
+        children: collector['media_file']
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+        className: "media-collector-table__td media-collector-table__td--preserve",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          onClick: activatePreserve,
+          "data-unpreserve-media": collector['id'],
+          children: "Unpreserve Row"
+        })
+      })]
+    }, collector['id']);
+  });
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
+    className: "media-collector-table",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+      className: "media-collector-table__tbody",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+        className: "media-collector-table__tr",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th",
+          children: "Trash"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th media-collector-table__th--img-thumb",
+          children: "Thumbnail Image"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th",
+          children: "File Type"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th",
+          children: "File Size"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th",
+          children: "Image ID"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th",
+          children: "Image Edit"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          className: "media-collector-table__th media-collector-table__th--img-url",
+          children: "Image Url"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
+          className: "media-collector-table__th media-collector-table__th--preserve",
+          children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
+            children: "Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily."
+          })]
+        })]
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+      className: "media-collector-table__tbody",
+      children: mediaCollectorItems
+    })]
+  });
+};
+
+// Export components as default with named export syntax
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  MediaCollectorTable: MediaCollectorTable,
+  PreservedMediaCollectorTable: PreservedMediaCollectorTable
+});
+
+/***/ }),
+
 /***/ "./admin/interface/components/MediaCollector.jsx":
 /*!*******************************************************!*\
   !*** ./admin/interface/components/MediaCollector.jsx ***!
@@ -2568,15 +2969,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
-/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _context_LazyLoaderContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../context/LazyLoaderContext */ "./admin/interface/context/LazyLoaderContext.js");
+/* harmony import */ var _MediaCleaner_MediaTable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MediaCleaner/MediaTable */ "./admin/interface/components/MediaCleaner/MediaTable.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -2592,8 +2988,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var MediaCollector = function MediaCollector(_ref) {
-  var items = _ref.items;
+var MediaCollectorTable = _MediaCleaner_MediaTable__WEBPACK_IMPORTED_MODULE_2__["default"].MediaCollectorTable,
+  PreservedMediaCollectorTable = _MediaCleaner_MediaTable__WEBPACK_IMPORTED_MODULE_2__["default"].PreservedMediaCollectorTable;
+var MediaCollector = function MediaCollector() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     hasLoaded = _useState2[0],
@@ -2602,18 +2999,15 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     mediaCollector = _useState4[0],
     setMediaCollector = _useState4[1];
-  var urlParams = new URLSearchParams(window.location.search);
-  var rbp_media_cleaner_media_data_page = urlParams.get('page_number') ? urlParams.get('page_number') : 0;
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(rbp_media_cleaner_media_data_page),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('page_number', 0)),
     _useState6 = _slicedToArray(_useState5, 2),
     filterPager = _useState6[0],
     setFilterPager = _useState6[1];
-  var rbp_media_cleaner_media_data_filter = urlParams.get('filter_size') ? urlParams.get('filter_size') : 'all';
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(rbp_media_cleaner_media_data_filter),
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_size', 'all')),
     _useState8 = _slicedToArray(_useState7, 2),
     filterMode = _useState8[0],
     setFilterMode = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(urlParams.get('filter_type') ? urlParams.get('filter_type') : 'all'),
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_type', 'all')),
     _useState10 = _slicedToArray(_useState9, 2),
     filterType = _useState10[0],
     setFilterType = _useState10[1];
@@ -2628,19 +3022,19 @@ var MediaCollector = function MediaCollector(_ref) {
   var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState16 = _slicedToArray(_useState15, 2),
     unPreserveImageId = _useState16[0],
-    setUnImageId = _useState16[1];
+    setUnPreserveImageId = _useState16[1];
   var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState18 = _slicedToArray(_useState17, 2),
     preserveImageId = _useState18[0],
-    setImageId = _useState18[1];
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(),
+    setPreserveImageId = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState20 = _slicedToArray(_useState19, 2),
     deleteImageId = _useState20[0],
     setDeleteImageId = _useState20[1];
   var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(['all']),
     _useState22 = _slicedToArray(_useState21, 2),
     selectedDataFormValues = _useState22[0],
-    setSelecDatatedFormValues = _useState22[1];
+    setSelectedDataFormValues = _useState22[1];
   var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
       value: 'all',
       label: 'All'
@@ -2652,6 +3046,13 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState26 = _slicedToArray(_useState25, 2),
     mediaCollectorPreserved = _useState26[0],
     setMediaCollectorPreserved = _useState26[1];
+  // const { lazyLoader } = useLazyLoader();
+
+  // Utility function to get query parameters
+  function getQueryParam(param, defaultValue) {
+    var params = new URLSearchParams(window.location.search);
+    return params.get(param) || defaultValue;
+  }
 
   // Lazy load images in aswell as image compression.
   function lazyLoader() {
@@ -2692,255 +3093,182 @@ var MediaCollector = function MediaCollector(_ref) {
   setTimeout(function () {
     lazyLoader();
   }, 50);
-  var activatePreserve = function activatePreserve(e) {
-    var f_wpwrap = document.querySelector("#wpwrap");
-    var f_wpcontent = document.querySelector("#wpcontent");
-    f_wpwrap.classList.add('loader');
-    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-    if (e.target.getAttribute("data-unpreserve-media")) {
-      e.target.textContent = 'Row is Removed!';
-      setUnImageId([e.target.getAttribute("data-unpreserve-media")]);
-      // Lets remove the row.
-      e.currentTarget.parentNode.parentNode.remove();
-      return;
-    } else if (e.target.getAttribute("data-preserve-media")) {
-      e.target.textContent = 'Row is Removed!';
-      setImageId([e.target.getAttribute("data-preserve-media")]);
-      // Lets remove the row.
-      e.currentTarget.parentNode.parentNode.remove();
-      return;
-    }
-  };
-  var activateDelete = function activateDelete(e) {
-    var f_wpwrap = document.querySelector("#wpwrap");
-    var f_wpcontent = document.querySelector("#wpcontent");
-    f_wpwrap.classList.add('loader');
-    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-    console.log(e.target.getAttribute("data-delete-media"));
-    console.log(e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id"));
-    if (e.target.getAttribute("data-delete-media")) {
-      var MediaId = e.target.getAttribute("data-delete-media");
-    } else if (e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id")) {
-      var MediaId = e.target.parentNode.parentNode.parentNode.getAttribute("data-media-id");
-    } else {
-      f_wpwrap.classList.remove('loader');
-      var element = document.getElementsByClassName("centered-blob");
-      element[0].remove(); // Removes the div with the 'div-02' id
-    }
 
-    var userPreference;
-    if (confirm("Are you sure you want to continue?") == true) {
-      userPreference = "Data saved successfully!";
-      setDeleteImageId(MediaId);
-    } else {
-      userPreference = "Save Canceled!";
-      f_wpwrap.classList.remove('loader');
-      var _element = document.getElementsByClassName("centered-blob");
-      _element[0].remove(); // Removes the div with the 'div-02' id
+  // Effect to handle image deletion
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (deleteImageId) {
+      handlePostDataDelete(deleteImageId);
     }
+  }, [deleteImageId]);
 
-    return;
-  };
-  var handlePostDataDelete = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(imageId) {
-      var data;
+  // Effect to handle preserving images
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (preserveImageId.length > 0) {
+      handlePostDataPreserve(preserveImageId, 'invalid');
+    }
+  }, [preserveImageId]);
+
+  // Effect to handle un-preserving images and fetching preserved media
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (unPreserveImageId.length > 0) {
+      handlePostDataPreserve('invalid', unPreserveImageId);
+    }
+    fetchPreservedMedia();
+    lazyLoader();
+  }, [unPreserveImageId]);
+
+  // Fetch preserved media and update the loading state
+  var fetchPreservedMedia = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+    setHasLoaded(false);
+    fetch("/wp-json/mediacleaner/v1/mediacollector/tempsaved").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (data.length) {
+        setMediaCollectorPreserved(data);
+      }
+      // Ensure loader is removed after data is fetched
+      setHasLoaded(true);
+      removeLoader();
+    })["catch"](function (error) {
+      console.error('Error fetching preserved media:', error);
+      setHasLoaded(true);
+      removeLoader();
+    });
+  }, []);
+
+  // Effect to fetch media collector data based on filters
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    setHasLoaded(false);
+    var route = selectedDataFormValues.includes("all") ? 'all' : selectedDataFormValues.join('?');
+    var endpoint = filterMode ? "".concat(filterMode, "?filter=").concat(route) : "all?filter=".concat(route);
+    fetch("/wp-json/mediacleaner/v1/mediacollector/".concat(endpoint)).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (data.length) {
+        setMediaCollector(data);
+        setTimeout(function () {
+          setHasLoaded(true); // Simulate delay
+          removeLoader();
+        }, 1000);
+      }
+    })["catch"](function (error) {
+      console.error('Error fetching media collector data:', error);
+      setHasLoaded(true);
+      removeLoader();
+    });
+  }, [selectedDataFormValues, filterMode]);
+
+  // Effect to update URL based on filter mode
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var params = new URLSearchParams(window.location.search);
+    params.set('filter_size', filterMode);
+    params.set('page_number', getQueryParam('page_number', 0));
+    var newURL = new URL(window.location.href);
+    newURL.search = params.toString();
+    window.history.pushState({
+      path: newURL.href
+    }, '', newURL.href);
+  }, [filterMode]);
+
+  // Effect to update URL based on filter pager
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var params = new URLSearchParams(window.location.search);
+    params.set('page_number', filterPager);
+    var newURL = new URL(window.location.href);
+    newURL.search = params.toString();
+    window.history.pushState({
+      path: newURL.href
+    }, '', newURL.href);
+  }, [filterPager]);
+
+  // Function to handle filter size changes
+  var filter_size = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)( /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
+      var filter, route, endpoint;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
+          case 0:
+            setHasLoaded(false);
+            filter = e.target.getAttribute("data-filter");
+            if (filter) {
+              setFilterMode(filter);
+              route = filter === 'high' ? 'large' : 'small';
+              endpoint = "/wp-json/mediacleaner/v1/mediacollector/".concat(route, "?filter=").concat(selectedDataFormValues.join('?'));
+              fetch(endpoint).then(function (response) {
+                return response.json();
+              }).then(function (data) {
+                if (data.length) {
+                  filter === 'high' ? setMediaCollectorHigh(data) : setMediaCollectorLow(data);
+                }
+              })["catch"](function (error) {
+                return console.error("Error fetching ".concat(filter, " media:"), error);
+              })["finally"](function () {
+                setHasLoaded(true);
+                removeLoader();
+              });
+            }
+          case 3:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }));
+    return function (_x2) {
+      return _ref.apply(this, arguments);
+    };
+  }(), [selectedDataFormValues]);
+
+  // Function to handle post data deletion
+  var handlePostDataDelete = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(imageId) {
+      var data, response, result;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
           case 0:
             data = new FormData();
             data.append('action', 'rmc_ajax_media_cleaner');
             data.append('nonce', wpVars.nonce);
             data.append('post_overide', "media-delete-indiv");
             data.append('imageId', imageId);
-            fetch(wpVars.ajaxURL, {
+            _context2.prev = 5;
+            _context2.next = 8;
+            return fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
               body: data
-            }).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data) {
-                console.log(data);
-                if (data.data == 'Reload') {
-                  setTimeout(function () {
-                    // Lets remove the form
-                    location.reload();
-                  }, 1000);
-                }
-              }
-            })["catch"](function (error) {
-              console.log('[WP Pageviews Plugin]');
-              console.error(error);
             });
-          case 6:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function handlePostDataDelete(_x2) {
-      return _ref2.apply(this, arguments);
-    };
-  }();
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (deleteImageId) {
-      console.log('deleteImageId');
-      console.log(deleteImageId);
-      handlePostDataDelete(deleteImageId);
-    }
-  }, deleteImageId);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (preserveImageId) {
-      console.log('preserveImageId');
-      console.log(preserveImageId);
-      handlePostDataPreserve(preserveImageId, 'invalid');
-    }
-  }, [preserveImageId]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (unPreserveImageId) {
-      console.log('unpreserveImageId');
-      console.log(unPreserveImageId);
-      handlePostDataPreserve('invalid', unPreserveImageId);
-    }
-    setHasLoaded(false);
-    fetch("/wp-json/mediacleaner/v1/mediacollector/tempsaved", {
-      method: "GET"
-    }).then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      if (data.length !== 0) {
-        setMediaCollectorPreserved(data);
-      }
-    })["catch"](function (error) {
-      return console.log(error);
-    });
-    setHasLoaded(true);
-  }, [unPreserveImageId]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    setHasLoaded(false);
-    var route = 'all';
-    var $endpoint = "all?filter=all";
-    if (!selectedDataFormValues.includes("all")) {
-      console.log('selectedDataFormValues');
-      console.log(selectedDataFormValues);
-      route = selectedDataFormValues.join('?');
-      if (!filterMode) {
-        $endpoint = "all?filter=" + route;
-      } else {
-        $endpoint = filterMode + "?filter=" + route;
-      }
-    }
-    if (selectedDataFormValues.length == 0) {
-      $endpoint = "all?filter=all";
-    }
-
-    // fetch("/wp-json/mediacleaner/v1/mediacollector/all?filter="+route, {
-    fetch("/wp-json/mediacleaner/v1/mediacollector/" + $endpoint, {
-      method: "GET"
-    }).then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      if (data.length !== 0) {
-        setMediaCollector(data);
-        setTimeout(function () {
-          console.log("Delayed for 1 second.");
-          setHasLoaded(true);
-        }, 1000);
-      }
-    })["catch"](function (error) {
-      return console.log(error);
-    });
-  }, [selectedDataFormValues, filterMode]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    filter_size();
-    var params = new URLSearchParams(window.location.search);
-    var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
-      return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
-    }, {});
-    if (window.history.pushState) {
-      var newURL = new URL(window.location.href);
-      newURL.search = '?page=options-ronik-base_media_cleaner&filter_size=' + filterMode + '&page_number=' + paramsObj['page_number'];
-      window.history.pushState({
-        path: newURL.href
-      }, '', newURL.href);
-    }
-  }, [filterMode]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var params = new URLSearchParams(window.location.search);
-    var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
-      return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
-    }, {});
-    if (window.history.pushState) {
-      var newURL = new URL(window.location.href);
-      newURL.search = '?page=options-ronik-base_media_cleaner&filter_size=' + paramsObj['filter_size'] + '&page_number=' + filterPager;
-      window.history.pushState({
-        path: newURL.href
-      }, '', newURL.href);
-    }
-  }, [filterPager]);
-  var filter_size = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
-      var route;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            setHasLoaded(false);
-            // setHasLoaded(true);
-            if (e) {
-              setFilterMode(e.target.getAttribute("data-filter"));
-              if (e.target.getAttribute("data-filter")) {
-                setHasLoaded(false);
-                if (e.target.getAttribute("data-filter") == 'high') {
-                  route = 'large';
-                  if (!selectedDataFormValues.includes("large")) {
-                    route = selectedDataFormValues.join('?');
-                  }
-                  fetch("/wp-json/mediacleaner/v1/mediacollector/large?filter=" + route, {
-                    // fetch("/wp-json/mediacleaner/v1/mediacollector/large", {
-                    method: "GET"
-                  }).then(function (response) {
-                    return response.json();
-                  }).then(function (data) {
-                    if (data.length !== 0) {
-                      setMediaCollectorHigh(data);
-                    }
-                  })["catch"](function (error) {
-                    return console.log(error);
-                  });
-                } else {
-                  route = 'small';
-                  if (!selectedDataFormValues.includes("small")) {
-                    route = selectedDataFormValues.join('?');
-                  }
-                  fetch("/wp-json/mediacleaner/v1/mediacollector/small?filter=" + route, {
-                    // fetch("/wp-json/mediacleaner/v1/mediacollector/small", {
-                    method: "GET"
-                  }).then(function (response) {
-                    return response.json();
-                  }).then(function (data) {
-                    if (data.length !== 0) {
-                      setMediaCollectorLow(data);
-                    }
-                  })["catch"](function (error) {
-                    return console.log(error);
-                  });
-                }
-                setHasLoaded(true);
-              }
+          case 8:
+            response = _context2.sent;
+            _context2.next = 11;
+            return response.json();
+          case 11:
+            result = _context2.sent;
+            if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
+              setTimeout(function () {
+                return location.reload();
+              }, 1000);
             }
-          case 2:
+            _context2.next = 18;
+            break;
+          case 15:
+            _context2.prev = 15;
+            _context2.t0 = _context2["catch"](5);
+            console.error('[WP Pageviews Plugin]', _context2.t0);
+          case 18:
           case "end":
             return _context2.stop();
         }
-      }, _callee2);
+      }, _callee2, null, [[5, 15]]);
     }));
-    return function filter_size(_x3) {
-      return _ref3.apply(this, arguments);
+    return function handlePostDataDelete(_x3) {
+      return _ref2.apply(this, arguments);
     };
   }();
+
+  // Function to handle post data preservation
   var handlePostDataPreserve = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(preserveImageId, unPreserveImageId) {
-      var data;
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(preserveImageId, unPreserveImageId) {
+      var data, response, result;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
@@ -2950,460 +3278,116 @@ var MediaCollector = function MediaCollector(_ref) {
             data.append('post_overide', "media-preserve");
             data.append('preserveImageId', preserveImageId);
             data.append('unPreserveImageId', unPreserveImageId);
-            fetch(wpVars.ajaxURL, {
+            _context3.prev = 6;
+            _context3.next = 9;
+            return fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
               body: data
-            }).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data) {
-                console.log(data);
-                if (data.data == 'Reload') {
-                  setTimeout(function () {
-                    // Lets remove the form
-                    location.reload();
-                  }, 1000);
-                }
-              }
-            })["catch"](function (error) {
-              console.log('[WP Pageviews Plugin]');
-              console.error(error);
             });
-          case 7:
+          case 9:
+            response = _context3.sent;
+            _context3.next = 12;
+            return response.json();
+          case 12:
+            result = _context3.sent;
+            if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
+              setTimeout(function () {
+                return location.reload();
+              }, 50);
+            }
+            _context3.next = 19;
+            break;
+          case 16:
+            _context3.prev = 16;
+            _context3.t0 = _context3["catch"](6);
+            console.error('[WP Pageviews Plugin]', _context3.t0);
+          case 19:
           case "end":
             return _context3.stop();
         }
-      }, _callee3);
+      }, _callee3, null, [[6, 16]]);
     }));
     return function handlePostDataPreserve(_x4, _x5) {
-      return _ref4.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
-  var MediaCollectorTable = function MediaCollectorTable(props) {
-    console.log(mediaCollector);
-    if (mediaCollector) {
-      var _urlParams = new URLSearchParams(window.location.search);
-      var _rbp_media_cleaner_media_data_page = parseInt(filterPager);
-      var page_counter = 20;
-      var page_counter_offset = page_counter * _rbp_media_cleaner_media_data_page;
-      if (mediaCollector !== 'no-images') {
-        // items per chunk 
-        var perChunk = page_counter;
-        var inputArray = mediaCollector;
-        var result = inputArray.reduce(function (resultArray, item, index) {
-          var chunkIndex = Math.floor(index / perChunk);
-          if (!resultArray[chunkIndex]) {
-            resultArray[chunkIndex] = []; // start a new chunk
-          }
 
-          resultArray[chunkIndex].push(item);
-          return resultArray;
-        }, []);
-        var output;
-        output = result[_rbp_media_cleaner_media_data_page];
-        if (filterMode == 'high') {
-          if (mediaCollectorHigh) {
-            var resultHigh = mediaCollectorHigh.reduce(function (resultArray, item, index) {
-              var chunkIndex = Math.floor(index / page_counter);
-              if (!resultArray[chunkIndex]) {
-                resultArray[chunkIndex] = []; // start a new chunk
-              }
+  // Helper function to remove loader class and HTML
+  var removeLoader = function removeLoader() {
+    var wpwrap = document.querySelector("#wpwrap");
+    var centeredBlob = document.querySelector(".centered-blob");
+    if (wpwrap) {
+      wpwrap.classList.remove('loader');
+    }
+    if (centeredBlob) {
+      centeredBlob.remove();
+    }
+  };
 
-              resultArray[chunkIndex].push(item);
-              return resultArray;
-            }, []);
-            output = resultHigh[_rbp_media_cleaner_media_data_page];
-          }
-        } else if (filterMode == 'low') {
-          if (mediaCollectorLow) {
-            var resultLow = mediaCollectorLow.reduce(function (resultArray, item, index) {
-              var chunkIndex = Math.floor(index / page_counter);
-              if (!resultArray[chunkIndex]) {
-                resultArray[chunkIndex] = []; // start a new chunk
-              }
+  // Define activation functions
+  var activatePreserve = function activatePreserve(e) {
+    e.stopPropagation(); // Prevents event bubbling, if necessary
 
-              resultArray[chunkIndex].push(item);
-              return resultArray;
-            }, []);
-            output = resultLow[_rbp_media_cleaner_media_data_page];
-          }
-        }
-      }
-      var options = [{
-        value: 'all',
-        label: 'All'
-      }, {
-        value: 'jpg',
-        label: 'JPG'
-      }, {
-        value: 'gif',
-        label: 'GIF'
-      }, {
-        value: 'png',
-        label: 'PNG'
-      }, {
-        value: 'video',
-        label: 'Video'
-      }, {
-        value: 'misc',
-        label: 'Misc'
-      }];
-      var FilterType = function FilterType(props) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-          className: "select select-multiple",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_3__["default"], {
-            closeMenuOnSelect: false
-            // components={animatedComponents}
-            ,
-            defaultValue: selectedFormValues,
-            isMulti: true,
-            options: options,
-            onChange: function onChange(e) {
-              setFilterMode('all');
-              var params = new URLSearchParams(window.location.search);
-              var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
-                return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
-              }, {});
-              if (window.history.pushState) {
-                var newURL = new URL(window.location.href);
-                newURL.search = '?page=options-ronik-base_media_cleaner&page_number=' + paramsObj['page_number'];
-                window.history.pushState({
-                  path: newURL.href
-                }, '', newURL.href);
-              }
-              var newArr = e.map(myFunction);
-              function myFunction(num) {
-                return num;
-              }
-              setSelectedFormValues(newArr);
-              var newDataArr = e.map(myDataFunction);
-              function myDataFunction(num) {
-                return num['value'];
-              }
-              setSelecDatatedFormValues(newDataArr);
-            }
-          })
-        });
-      };
-      var FilterNav = function FilterNav(props) {
-        var mediaCollectorItemsCounterOverall = 0;
-        for (var i = 0; i < mediaCollector.length; i++) {
-          var number = 0;
-          if (mediaCollector[i]['media_size'].includes("MB")) {
-            number = Number(mediaCollector[i]['media_size'].replace(" MB", ""));
-          } else if (mediaCollector[i]['media_size'].includes("KB")) {
-            number = Number(mediaCollector[i]['media_size'].replace(" KB", ""));
-            number = number / 1024;
-          } else if (mediaCollector[i]['media_size'].includes("GB")) {
-            number = Number(mediaCollector[i]['media_size'].replace(" GB", ""));
-            number = number * 1000;
-          } else if (mediaCollector[i]['media_size'].includes("bytes")) {
-            number = Number(mediaCollector[i]['media_size'].replace(" bytes", ""));
-            number = number * 1e+6;
-          }
-          if (!isNaN(number)) {
-            console.log(number);
-            mediaCollectorItemsCounterOverall += number;
-          }
-        }
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            className: "filter-nav",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              type: "button",
-              title: "Filter All",
-              onClick: filter_size,
-              "data-filter": "all",
-              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'all' ? 'active' : 'inactive'),
-              children: "Filter All"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              type: "button",
-              title: "Filter High",
-              onClick: filter_size,
-              "data-filter": "high",
-              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'high' ? 'active' : 'inactive'),
-              children: "Filter High"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              type: "button",
-              title: "Filter Low",
-              onClick: filter_size,
-              "data-filter": "low",
-              className: 'filter-nav__button filter-nav__button--' + (filterMode == 'low' ? 'active' : 'inactive'),
-              children: "Filter Low"
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-            className: "overall-number",
-            children: ["Overall Unattached Media Found: ", mediaCollector.length]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-            className: "overall-number",
-            children: ["Overall Unattached Media File Size: ", Math.round(mediaCollectorItemsCounterOverall * 100) / 100, " MB"]
-          })]
-        });
-      };
-      var PagerNav = function PagerNav(props) {
-        var pager = function pager(e) {
-          if (e.target.getAttribute("data-pager") == 'next') {
-            setFilterPager(Number(filterPager) + 1);
-          }
-          if (e.target.getAttribute("data-pager") == 'previous') {
-            setFilterPager(Number(filterPager) - 1);
-          }
-        };
-        if (props.pager == '0') {
-          if (mediaCollector.length > 20) {
-            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-              className: "filter-nav filter-nav--no-space-top",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                className: "filter-nav__button",
-                onClick: pager,
-                "data-pager": "next",
-                children: "Next Page"
-              })
-            });
-          }
-        } else if (Number(props.pager) + 2 <= Math.floor(mediaCollector.length / page_counter)) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            className: "filter-nav filter-nav--no-space-top",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              className: "filter-nav__button",
-              onClick: pager,
-              "data-pager": "previous",
-              children: "Previous Page"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              className: "filter-nav__button",
-              onClick: pager,
-              "data-pager": "next",
-              children: "Next Page"
-            })]
-          });
-        } else {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              onClick: pager,
-              "data-pager": "previous",
-              children: "Previous Page"
-            })
-          });
-        }
-      };
-      if (mediaCollector !== 'no-images') {
-        var dataPluginName = document.querySelector('#ronik-base_media_cleaner').getAttribute("data-plugin-name");
-        var mediaCollectorItems = output.map(function (collector) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-              className: "media-collector-table__tr",
-              "data-media-id": collector['id'],
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                  onClick: activateDelete,
-                  "data-delete-media": collector['id'],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-                    src: "/wp-content/plugins/".concat(dataPluginName, "/admin/media-cleaner/image/big-trash-can.svg")
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td media-collector-table__td--img-thumb",
-                children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td file-type",
-                children: collector['media_file_type']
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td file-size",
-                children: collector['media_size']
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td",
-                children: collector['id']
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                  target: "_blank",
-                  href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
-                  children: "Edit"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td media-collector-table__td--img-url",
-                children: collector['media_file']
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-                className: "media-collector-table__td media-collector-table__td--preserve",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                  onClick: activatePreserve,
-                  "data-preserve-media": collector['id'],
-                  children: "Preserve Row"
-                })
-              })]
-            }, collector['id'])
-          });
-        });
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {
-            filterType: filterType
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterNav, {
-            filterType: filterMode
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PagerNav, {
-            pager: _rbp_media_cleaner_media_data_page
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("table", {
-            className: "media-collector-table",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tbody", {
-              className: "media-collector-table__tbody",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-                className: "media-collector-table__tr",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th",
-                  children: "Trash"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th media-collector-table__th--img-thumb",
-                  children: "Thumbnail Image"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th",
-                  children: "File Type"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th",
-                  children: "File Size"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th",
-                  children: "Image ID"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th",
-                  children: "Image Edit"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                  className: "media-collector-table__th media-collector-table__th--img-url",
-                  children: "Image Url"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
-                  className: "media-collector-table__th media-collector-table__th--preserve",
-                  children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
-                    children: "Clicking the button will not delete the image it will just exclude the selected image from the media list temporarily."
-                  })]
-                })]
-              }), mediaCollectorItems]
-            })
-          })]
-        });
-      } else {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {
-            filterType: filterType
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-            children: "No Media Found!"
-          })]
-        });
+    var target = e.target;
+    var mediaId = target.getAttribute("data-preserve-media");
+    if (mediaId) {
+      alert('Media is preserved!');
+      setPreserveImageId([mediaId]);
+    } else {
+      alert('Media is unpreserved!');
+      setUnPreserveImageId([target.getAttribute("data-unpreserve-media")]);
+    }
+    // Find the closest <tr> element
+    var row = target.closest('tr');
+    if (row) {
+      // Remove the row if found
+      row.remove();
+    } else {
+      console.error('No <tr> ancestor found.');
+    }
+  };
+  var activateDelete = function activateDelete(e) {
+    var target = e.target;
+    var mediaId = target.getAttribute("data-delete-media") || target.closest('tr').getAttribute("data-media-id");
+    if (mediaId) {
+      if (confirm("Are you sure you want to continue?")) {
+        setDeleteImageId(mediaId);
       }
     }
   };
-  var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(props) {
-    if (mediaCollectorPreserved) {
-      // We might make pagination for the 
-      // const urlParams = new URLSearchParams(window.location.search);
-      // const rbp_media_cleaner_media_data_page = filterPager;
-      // let page_counter = 20;
-      // let page_counter_offset = page_counter*rbp_media_cleaner_media_data_page;
-      // let output = mediaCollectorPreserved.slice(page_counter_offset, -(mediaCollectorPreserved.length - (page_counter_offset + 20)));
 
-      var output = mediaCollectorPreserved;
-      var mediaCollectorItems = output.map(function (collector) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-          className: "media-collector-table__tr",
-          "data-media-id": collector['id'],
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td",
-            children: "Trash"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td media-collector-table__td--img-thumb",
-            children: collector['img-thumb'] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb']) : 'No Image Found'
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td file-type",
-            children: collector['media_file_type']
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td file-size",
-            children: collector['media_size']
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td",
-            children: collector['id']
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-              target: "_blank",
-              href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
-              children: "Edit"
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td media-collector-table__td--img-url",
-            children: collector['media_file']
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-            className: "media-collector-table__td media-collector-table__td--preserve",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              onClick: activatePreserve,
-              "data-unpreserve-media": collector['id'],
-              children: "Unpreserve Row"
-            })
-          })]
-        }, collector['id']);
-      });
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("table", {
-          className: "media-collector-table",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tbody", {
-            className: "media-collector-table__tbody",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-              className: "media-collector-table__tr",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th",
-                children: "Trash"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th media-collector-table__th--img-thumb",
-                children: "Thumbnail Image"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th",
-                children: "File Type"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th",
-                children: "File Size"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th",
-                children: "Image ID"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th",
-                children: "Image Edit"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-                className: "media-collector-table__th media-collector-table__th--img-url",
-                children: "Image Url"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
-                className: "media-collector-table__th media-collector-table__th--preserve",
-                children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
-                  children: "Clicking the button will not delete the image it will just exclude the selected image from the media list temporarily."
-                })]
-              })]
-            }), mediaCollectorItems]
-          })
-        })
-      });
-    }
-  };
-  var f_wpwrap = document.querySelector("#wpwrap");
-  var f_wpcontent = document.querySelector("#wpcontent");
-  if (hasLoaded) {
-    f_wpwrap.classList.remove('loader');
-    var element = document.getElementsByClassName("centered-blob");
-    element[0].remove(); // Removes the div with the 'div-02' id
-
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        className: "message",
-        children: " "
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(MediaCollectorTable, {
-        filter: filterMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-        children: "Preserved Images"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PreservedMediaCollectorTable, {
-        filter: filterMode
-      })]
-    });
-  } else {
-    f_wpwrap.classList.add('loader');
-    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+  // Render component
+  if (!hasLoaded) {
     return 'Loading...';
   }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+      className: "message",
+      children: " "
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(MediaCollectorTable, {
+      mediaCollector: mediaCollector,
+      selectedFormValues: selectedFormValues,
+      filterMode: filterMode,
+      setFilterMode: setFilterMode,
+      setSelectedFormValues: setSelectedFormValues,
+      setSelectedDataFormValues: setSelectedDataFormValues,
+      filter_size: filter_size,
+      filterPager: filterPager,
+      filter: filterMode,
+      filterType: filterType,
+      mediaCollectorHigh: mediaCollectorHigh,
+      mediaCollectorLow: mediaCollectorLow,
+      activateDelete: activateDelete,
+      activatePreserve: activatePreserve
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+      children: "Preserved Images"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PreservedMediaCollectorTable, {
+      mediaCollectorPreserved: mediaCollectorPreserved,
+      filter: filterMode,
+      activatePreserve: activatePreserve
+    })]
+  });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MediaCollector);
 
@@ -3422,17 +3406,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -3442,110 +3420,62 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-
 var FetchAddon = function FetchAddon(_ref) {
   var requestType = _ref.requestType,
     _ref$postOveride = _ref.postOveride,
     postOveride = _ref$postOveride === void 0 ? null : _ref$postOveride;
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_defineProperty({}, 'user-option', 'fetch-media')),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      'user-option': 'fetch-media'
+    }),
     _useState2 = _slicedToArray(_useState, 2),
     formValues = _useState2[0],
     setFormValues = _useState2[1];
-  var _useState4 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
-    _useState5 = _slicedToArray(_useState4, 2),
-    pageCount = _useState5[0],
-    setPageCount = _useState5[1];
-  var _useState6 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
-    _useState7 = _slicedToArray(_useState6, 2),
-    pageTotalCount = _useState7[0],
-    setPageTotalCount = _useState7[1];
-  var _useState8 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
-    _useState9 = _slicedToArray(_useState8, 2),
-    increment = _useState9[0],
-    setIncrement = _useState9[1];
-  var _useState10 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-    _useState11 = _slicedToArray(_useState10, 2),
-    dataResponse = _useState11[0],
-    setDataResponse = _useState11[1];
-  var _useState12 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-    _useState13 = _slicedToArray(_useState12, 2),
-    dataSync = _useState13[0],
-    setDataSync = _useState13[1];
-  var _useState14 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-    _useState15 = _slicedToArray(_useState14, 2),
-    dataSyncProgress = _useState15[0],
-    setDataSyncProgress = _useState15[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState4 = _slicedToArray(_useState3, 2),
+    increment = _useState4[0],
+    setIncrement = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState6 = _slicedToArray(_useState5, 2),
+    dataSync = _useState6[0],
+    setDataSync = _useState6[1];
+  // const [dataSyncProgress, setDataSyncProgress] = useState('');
 
-  // On page render lets detect if the option field is populated.
+  // Handle the state of the loader and initiate the sync process
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (dataResponse == 'incomplete') {
-      setDataResponse('incomplete_half');
-    }
-  }, [dataResponse, formValues]);
+    // if (dataSync) {
+    //     handleLoaderState(dataSync, dataSyncProgress);
+    // }
+  }, [dataSync]);
 
-  // On page render lets detect if the option field is populated.
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log(dataSync);
-    if (dataSync) {
-      console.log('dataSync, dataSyncProgress');
-      var f_wpwrap = document.querySelector("#wpwrap");
-      if (f_wpwrap) {
-        var _f_wpwrap = document.querySelector("#wpwrap");
-        var f_wpcontent = document.querySelector("#wpcontent");
-        _f_wpwrap.classList.add('loader');
-        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-        if (document.contains(document.querySelector(".page-counter"))) {
-          document.querySelector(".page-counter").remove();
-        }
-        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter"> Please do not refresh the page! </div>');
-      }
-      console.log('USE-EFFECT');
-      if (dataSync == 'DONE') {
-        // alert('done');
-        handlePostData(formValues['user-option'], 'all', increment, false);
-      } else {
-        console.log(dataSyncProgress);
-        console.log(dataSync);
-        // alert('SYNC In Progress');
-        handlePostData(formValues['user-option'], 'all', increment, 'inprogress');
-      }
-    }
-  }, [dataSync, dataSyncProgress]);
-
-  // On page render lets detect if the option field is populated.
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var f_wpwrap = document.querySelector("#wpwrap");
-    if (f_wpwrap.classList.contains('loader')) {
-      var f_wpcontent = document.querySelector(".centered-blob");
-      if (document.contains(document.querySelector(".page-counter"))) {
-        document.querySelector(".page-counter").remove();
-      }
-      if (pageTotalCount !== 0) {
-        f_wpcontent.insertAdjacentHTML('beforebegin', '<div class="page-counter">Page ' + pageCount + ' of ' + pageTotalCount + '</div>');
-      }
-    }
-  }, [pageCount, pageTotalCount]);
-
-  // Lets handle the input changes and store the changes to form values.
-  var handleChange = function handleChange(e) {
-    setFormValues(_objectSpread(_objectSpread({}, formValues), {}, {
-      'user-option': e.target.value
-    }));
-  };
-
-  // Handlefetch data from server and update option values.
-  var handleSubmit = function handleSubmit(e) {
-    e.preventDefault();
+  // Toggle the loader and initiate data post
+  var handleLoaderState = function handleLoaderState(syncStatus, syncProgress) {
     var f_wpwrap = document.querySelector("#wpwrap");
     var f_wpcontent = document.querySelector("#wpcontent");
-    f_wpwrap.classList.add('loader');
-    f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
-    handlePostData(formValues['user-option'], 'all', increment, false);
-    e.preventDefault();
+    if (f_wpwrap) {
+      f_wpwrap.classList.add('loader');
+      f_wpcontent.insertAdjacentHTML('beforebegin', "\n                <div class=\"progress-bar\"></div>\n                <div class=\"centered-blob\">\n                    <div class=\"blob-1\"></div>\n                    <div class=\"blob-2\"></div>\n                </div>\n                <div class=\"page-counter\">Please do not refresh the page!</div>\n            ");
+      handlePostData(formValues['user-option'], 'all', increment, 'inprogress');
+    }
   };
+
+  // Handle form changes
+  var handleChange = function handleChange(e) {
+    setFormValues({
+      'user-option': e.target.value
+    });
+  };
+
+  // Handle form submission
+  var handleSubmit = function handleSubmit(e) {
+    e.preventDefault();
+    console.log('clicked submit');
+    handleLoaderState(dataSync);
+  };
+
+  // Perform the POST request
   var handlePostData = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(userOptions, mimeType, f_increment, f_sync) {
-      var data;
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(userOptions, mimeType, increment, sync) {
+      var data, response, result;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -3555,120 +3485,129 @@ var FetchAddon = function FetchAddon(_ref) {
             data.append('post_overide', postOveride);
             data.append('user_option', userOptions);
             data.append('mime_type', mimeType);
-            data.append('increment', f_increment);
-            data.append('sync', f_sync);
-            fetch(wpVars.ajaxURL, {
+            data.append('increment', increment);
+            data.append('sync', sync);
+            _context.prev = 8;
+            _context.next = 11;
+            return fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: 'same-origin',
               body: data
-            }).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data) {
-                console.log(data);
-                if (data.data['response'] == 'Reload') {
-                  setTimeout(function () {
-                    alert('Synchronization is complete! Page will auto reload.');
-                    location.reload();
-                  }, 50);
-                }
-                if (data.data['response'] == 'Done') {
-                  setTimeout(function () {
-                    // Lets remove the form
-                    location.reload();
-                    setIncrement(increment + 1);
-                  }, 50);
-                  setTimeout(function () {
-                    setDataResponse('incomplete');
-                    setPageCount(increment);
-                    setPageTotalCount(data.data['pageTotalCounter']);
-                  }, 50);
-                }
-                console.log(data.data['response']);
-                if (data.data == 'Cleaner-Done') {
-                  setTimeout(function () {
-                    // Lets remove the form
-                    alert('Media cleanup complete! Page will auto reload.');
-                    location.reload();
-                  }, 50);
-                }
-                if (data.data['response'].includes("Collector-Sync-inprogress")) {
-                  // alert("Sync is in Progress... Please do not refresh the page!");
-                  setTimeout(function () {
-                    setDataSyncProgress(data.data['sync']);
-                    setDataSync(data.data['response']);
-                  }, 5000);
-                }
-                if (data.data['response'] == 'Collector-Sync-done') {
-                  // alert("Sync is completed! Please do not refresh the page!");
-                  setTimeout(function () {
-                    setDataSync('DONE');
-                  }, 500);
-                }
-              }
-            })["catch"](function (error) {
-              console.log('[WP Pageviews Plugin]');
-              console.error(error);
-              location.reload();
             });
-          case 9:
+          case 11:
+            response = _context.sent;
+            _context.next = 14;
+            return response.json();
+          case 14:
+            result = _context.sent;
+            handleResponse(result);
+            _context.next = 21;
+            break;
+          case 18:
+            _context.prev = 18;
+            _context.t0 = _context["catch"](8);
+            console.error('Error:', _context.t0);
+            // location.reload(); // Consider handling errors more gracefully
+          case 21:
           case "end":
             return _context.stop();
         }
-      }, _callee);
+      }, _callee, null, [[8, 18]]);
     }));
     return function handlePostData(_x2, _x3, _x4, _x5) {
       return _ref2.apply(this, arguments);
     };
   }();
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+
+  // Handle the server response
+  var handleResponse = function handleResponse(data) {
+    console.log('handleResponse');
+    console.log(data);
+    if (!data || !data.data) return;
+    var response = data.data['response'];
+    switch (response) {
+      case 'Reload':
+        setTimeout(function () {
+          alert('Synchronization is complete! Page will auto reload.');
+          location.reload();
+        }, 50);
+        break;
+      case 'Done':
+        setTimeout(function () {
+          location.reload();
+          setIncrement(function (prev) {
+            return prev + 1;
+          });
+        }, 50);
+        break;
+      case 'Cleaner-Done':
+        setTimeout(function () {
+          alert('Media cleanup complete! Page will auto reload.');
+          location.reload();
+        }, 50);
+        break;
+      default:
+        if (response.includes("Collector-Sync-inprogress")) {
+          // setDataSyncProgress(data.data['sync']);
+          setDataSync(response);
+        } else if (response === 'Collector-Sync-done') {
+          alert("Sync is completed! Please do not refresh the page!");
+          setTimeout(function () {
+            return setDataSync('DONE');
+          }, 500);
+        }
+    }
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     className: "media-cleaner-block",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
       className: "media-cleaner-block__inner",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
         className: "media-cleaner-item",
         id: requestType,
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
           className: "media-cleaner-item__inner",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
             className: "media-cleaner-item__content",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
               className: "media-cleaner-item__form",
               onSubmit: handleSubmit,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
                 className: "media-cleaner-item__input-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
                   className: "radio-switch",
-                  onChange: handleChange,
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
                     className: "radio-switch-field",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
                       id: "switch-off",
                       type: "radio",
                       name: "radio-switch",
                       value: "fetch-media",
-                      defaultChecked: true
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      checked: formValues['user-option'] === 'fetch-media',
+                      onChange: handleChange
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
                       htmlFor: "switch-off",
                       children: "Init Unused Media Migration"
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
                     className: "radio-switch-field",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
                       id: "switch-on",
                       type: "radio",
                       name: "radio-switch",
-                      value: "delete-media"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      value: "delete-media",
+                      checked: formValues['user-option'] === 'delete-media',
+                      onChange: handleChange
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
                       htmlFor: "switch-on",
                       children: "Delete Unused Media"
                     })]
                   })]
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 type: "submit",
                 className: "submit-btn",
-                children: "Submit"
+                children: formValues['user-option'] === 'fetch-media' ? 'Sync Media' : 'Delete Media'
               })]
             })
           })
@@ -6319,19 +6258,6 @@ module.exports = function(style, options) {
 function trim(str) {
   return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
 }
-
-
-/***/ }),
-
-/***/ "./admin/interface/src/sass/main.scss":
-/*!********************************************!*\
-  !*** ./admin/interface/src/sass/main.scss ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
 
 
 /***/ }),
@@ -49485,86 +49411,90 @@ function rectToClientRect(rect) {
 
 /***/ }),
 
-/***/ "./admin/interface/index.js":
-/*!**********************************!*\
-  !*** ./admin/interface/index.js ***!
-  \**********************************/
+/***/ "./admin/interface/context/LazyLoaderContext.js":
+/*!******************************************************!*\
+  !*** ./admin/interface/context/LazyLoaderContext.js ***!
+  \******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LazyLoaderProvider": () => (/* binding */ LazyLoaderProvider),
+/* harmony export */   "useLazyLoader": () => (/* binding */ useLazyLoader)
+/* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
-/* harmony import */ var _templates_support_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./templates/support.js */ "./admin/interface/templates/support.js");
-/* harmony import */ var _templates_integrations_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./templates/integrations.js */ "./admin/interface/templates/integrations.js");
-/* harmony import */ var _templates_settings_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./templates/settings.js */ "./admin/interface/templates/settings.js");
-/* harmony import */ var _templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./templates/media_cleaner_settings.js */ "./admin/interface/templates/media_cleaner_settings.js");
-/* harmony import */ var _templates_general_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./templates/general.js */ "./admin/interface/templates/general.js");
-/* harmony import */ var _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./templates/media_cleaner.js */ "./admin/interface/templates/media_cleaner.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
+// Create the context
 
-// Load Support Screen.
+var LazyLoaderContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.createContext)();
 
-// Load Integrations Screen.
+// Create a provider component
+var LazyLoaderProvider = function LazyLoaderProvider(_ref) {
+  var children = _ref.children;
+  // Define the lazyLoader function
+  var lazyLoader = function lazyLoader() {
+    var imageObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var lazyImage = entry.target;
+          var _lazyImage$dataset = lazyImage.dataset,
+            src = _lazyImage$dataset.src,
+            type = _lazyImage$dataset.type;
+          var imageSelector = document.querySelector("[data-id=\"".concat(lazyImage.getAttribute('data-id'), "\"]"));
 
-// Load Settings Screen.
+          // Load image and process it
+          fetch(src).then(function (response) {
+            return response.blob();
+          }).then(function (blob) {
+            return new Promise(function (resolve, reject) {
+              var img = new Image();
+              img.crossOrigin = ''; // Handle CORS if from different origin
+              img.src = src;
+              img.onload = function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(resolve, type, 0.5);
+              };
+              img.onerror = reject;
+            });
+          }).then(function (blob) {
+            if (imageSelector) {
+              imageSelector.src = URL.createObjectURL(blob);
+            }
+            lazyImage.classList.add('reveal-enabled');
+          })["catch"](function (error) {
+            return console.error('Image processing error:', error);
+          });
+        }
+      });
+    });
+    document.querySelectorAll('img.lzy_img').forEach(function (img) {
+      return imageObserver.observe(img);
+    });
+  };
 
-// Load Settings Screen.
+  // Optionally, run the lazyLoader function when the provider mounts
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    lazyLoader();
+  }, []);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(LazyLoaderContext.Provider, {
+    value: {
+      lazyLoader: lazyLoader
+    },
+    children: children
+  });
+};
 
-// Load General Screen.
-
-// Load General Screen.
-
-
-// Due to the nature of WP we need to wait for the readystate.
-
-document.addEventListener('readystatechange', function (event) {
-  // When HTML/DOM elements are ready:
-  if (event.target.readyState === "interactive") {
-    // Finally we check to see if the query selector is present.
-    // Support screen
-    if (document.querySelector("#ronik-base_support") !== null) {
-      var domNode = document.getElementById('ronik-base_support');
-      var root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(domNode);
-      root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_support_js__WEBPACK_IMPORTED_MODULE_2__["default"], {}));
-    }
-    // Integrations screen
-    if (document.querySelector("#ronik-base_integrations") !== null) {
-      var _domNode = document.getElementById('ronik-base_integrations');
-      var _root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode);
-      _root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_integrations_js__WEBPACK_IMPORTED_MODULE_3__["default"], {}));
-    }
-    // Settings screen
-    if (document.querySelector("#ronik-base_settings") !== null) {
-      var _domNode2 = document.getElementById('ronik-base_settings');
-      var _root2 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode2);
-      _root2.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_settings_js__WEBPACK_IMPORTED_MODULE_4__["default"], {}));
-    }
-
-    // Settings screen
-    if (document.querySelector("#ronik-base_settings-media-cleaner") !== null) {
-      var _domNode3 = document.getElementById('ronik-base_settings-media-cleaner');
-      var _root3 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode3);
-      _root3.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__["default"], {}));
-    }
-
-    // General screen
-    if (document.querySelector("#ronik-base_general") !== null) {
-      var _domNode4 = document.getElementById('ronik-base_general');
-      var _root4 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode4);
-      _root4.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_general_js__WEBPACK_IMPORTED_MODULE_6__["default"], {}));
-    }
-
-    // General screen
-    if (document.querySelector("#ronik-base_media_cleaner") !== null) {
-      var _domNode5 = document.getElementById('ronik-base_media_cleaner');
-      var _root5 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode5);
-      _root5.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__["default"], {}));
-    }
-  }
-});
+// Custom hook for using the context
+var useLazyLoader = function useLazyLoader() {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(LazyLoaderContext);
+};
 
 /***/ }),
 
@@ -49744,7 +49674,6 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     }
   }, [formValues]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    // alert('dd');
     var filebackupenabled = document.querySelector('#ronik-base_settings-media-cleaner').getAttribute("data-file-backup");
     if (filebackupenabled == 'on') {
       // filebackupenabled = true;
@@ -51052,42 +50981,7 @@ function combine (array, callback) {
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = __webpack_modules__;
-/******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/chunk loaded */
-/******/ 	(() => {
-/******/ 		var deferred = [];
-/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
-/******/ 			if(chunkIds) {
-/******/ 				priority = priority || 0;
-/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
-/******/ 				deferred[i] = [chunkIds, fn, priority];
-/******/ 				return;
-/******/ 			}
-/******/ 			var notFulfilled = Infinity;
-/******/ 			for (var i = 0; i < deferred.length; i++) {
-/******/ 				var [chunkIds, fn, priority] = deferred[i];
-/******/ 				var fulfilled = true;
-/******/ 				for (var j = 0; j < chunkIds.length; j++) {
-/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
-/******/ 						chunkIds.splice(j--, 1);
-/******/ 					} else {
-/******/ 						fulfilled = false;
-/******/ 						if(priority < notFulfilled) notFulfilled = priority;
-/******/ 					}
-/******/ 				}
-/******/ 				if(fulfilled) {
-/******/ 					deferred.splice(i--, 1)
-/******/ 					var r = fn();
-/******/ 					if (r !== undefined) result = r;
-/******/ 				}
-/******/ 			}
-/******/ 			return result;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -51149,68 +51043,100 @@ function combine (array, callback) {
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/jsonp chunk loading */
-/******/ 	(() => {
-/******/ 		// no baseURI
-/******/ 		
-/******/ 		// object to store loaded and loading chunks
-/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 		var installedChunks = {
-/******/ 			"/admin/interface/dist/index": 0,
-/******/ 			"admin/interface/dist/main": 0
-/******/ 		};
-/******/ 		
-/******/ 		// no chunk on demand loading
-/******/ 		
-/******/ 		// no prefetching
-/******/ 		
-/******/ 		// no preloaded
-/******/ 		
-/******/ 		// no HMR
-/******/ 		
-/******/ 		// no HMR manifest
-/******/ 		
-/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
-/******/ 		
-/******/ 		// install a JSONP callback for chunk loading
-/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
-/******/ 			var [chunkIds, moreModules, runtime] = data;
-/******/ 			// add "moreModules" to the modules object,
-/******/ 			// then flag all "chunkIds" as loaded and fire callback
-/******/ 			var moduleId, chunkId, i = 0;
-/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
-/******/ 				for(moduleId in moreModules) {
-/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
-/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
-/******/ 					}
-/******/ 				}
-/******/ 				if(runtime) var result = runtime(__webpack_require__);
-/******/ 			}
-/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
-/******/ 			for(;i < chunkIds.length; i++) {
-/******/ 				chunkId = chunkIds[i];
-/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 					installedChunks[chunkId][0]();
-/******/ 				}
-/******/ 				installedChunks[chunkId] = 0;
-/******/ 			}
-/******/ 			return __webpack_require__.O(result);
-/******/ 		}
-/******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunkronik_plugin"] = self["webpackChunkronik_plugin"] || [];
-/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
-/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
-/******/ 	})();
-/******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["admin/interface/dist/main"], () => (__webpack_require__("./admin/interface/index.js")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["admin/interface/dist/main"], () => (__webpack_require__("./admin/interface/src/sass/main.scss")))
-/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!**********************************!*\
+  !*** ./admin/interface/index.js ***!
+  \**********************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
+/* harmony import */ var _templates_support_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./templates/support.js */ "./admin/interface/templates/support.js");
+/* harmony import */ var _templates_integrations_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./templates/integrations.js */ "./admin/interface/templates/integrations.js");
+/* harmony import */ var _templates_settings_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./templates/settings.js */ "./admin/interface/templates/settings.js");
+/* harmony import */ var _templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./templates/media_cleaner_settings.js */ "./admin/interface/templates/media_cleaner_settings.js");
+/* harmony import */ var _templates_general_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./templates/general.js */ "./admin/interface/templates/general.js");
+/* harmony import */ var _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./templates/media_cleaner.js */ "./admin/interface/templates/media_cleaner.js");
+/* harmony import */ var _context_LazyLoaderContext_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./context/LazyLoaderContext.js */ "./admin/interface/context/LazyLoaderContext.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
+
+// Load Support Screen.
+
+// Load Integrations Screen.
+
+// Load Settings Screen.
+
+// Load Settings Screen.
+
+// Load General Screen.
+
+// Load General Screen.
+
+// Load Support Screen.
+
+
+
+// Due to the nature of WP we need to wait for the readystate.
+
+document.addEventListener('readystatechange', function (event) {
+  // When HTML/DOM elements are ready:
+  if (event.target.readyState === "interactive") {
+    // Finally we check to see if the query selector is present.
+    // Support screen
+    if (document.querySelector("#ronik-base_support") !== null) {
+      var domNode = document.getElementById('ronik-base_support');
+      var root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(domNode);
+      root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_support_js__WEBPACK_IMPORTED_MODULE_2__["default"], {}));
+    }
+    // Integrations screen
+    if (document.querySelector("#ronik-base_integrations") !== null) {
+      var _domNode = document.getElementById('ronik-base_integrations');
+      var _root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode);
+      _root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_integrations_js__WEBPACK_IMPORTED_MODULE_3__["default"], {}));
+    }
+    // Settings screen
+    if (document.querySelector("#ronik-base_settings") !== null) {
+      var _domNode2 = document.getElementById('ronik-base_settings');
+      var _root2 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode2);
+      _root2.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_settings_js__WEBPACK_IMPORTED_MODULE_4__["default"], {}));
+    }
+
+    // Settings screen
+    if (document.querySelector("#ronik-base_settings-media-cleaner") !== null) {
+      var _domNode3 = document.getElementById('ronik-base_settings-media-cleaner');
+      var _root3 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode3);
+      _root3.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__["default"], {}));
+    }
+    // Support screen
+    if (document.querySelector("#ronik-base_support-media-cleaner") !== null) {
+      var _domNode4 = document.getElementById('ronik-base_support-media-cleaner');
+      var _root4 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode4);
+      _root4.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_support_js__WEBPACK_IMPORTED_MODULE_2__["default"], {}));
+    }
+
+    // General screen
+    if (document.querySelector("#ronik-base_general") !== null) {
+      var _domNode5 = document.getElementById('ronik-base_general');
+      var _root5 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode5);
+      _root5.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_general_js__WEBPACK_IMPORTED_MODULE_6__["default"], {}));
+    }
+
+    // General screen
+    if (document.querySelector("#ronik-base_media_cleaner") !== null) {
+      var _domNode6 = document.getElementById('ronik-base_media_cleaner');
+      var _root6 = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(_domNode6);
+      _root6.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_context_LazyLoaderContext_js__WEBPACK_IMPORTED_MODULE_8__.LazyLoaderProvider, {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__["default"], {})
+      }));
+    }
+  }
+});
+})();
+
 /******/ })()
 ;

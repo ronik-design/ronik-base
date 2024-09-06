@@ -10,7 +10,6 @@ function add_item( $admin_bar ){
     // Default status low
     $f_outdated = 'rmc-sync__outdated-low';
     $f_message = '';
-
     
     if($f_detector && $f_detector > 0){
         $f_message = $f_sync;
@@ -26,8 +25,6 @@ function add_item( $admin_bar ){
         $f_message = $f_sync;
         $f_outdated = 'rmc-sync__outdated-low';
     }
-
-    
 
     $menu_id = 'rmc';
     $admin_bar->add_menu(
@@ -78,7 +75,6 @@ function mc_sync_action_js() { ?>
                             location.reload();
                         } else {
                             console.log(data.data['response']);
-
                             if(data.data['response'] == 'Reload'){
                                 setTimeout(function(){
                                     alert('Synchronization is complete! Page will auto reload.');
@@ -93,6 +89,12 @@ function mc_sync_action_js() { ?>
                                     handlePostDataTest('fetch-media', 'all', f_increment);
                                 }, 50);
                             }
+                            if(data.data['response'] == 'Collector-Sync-done'){
+                                alert("Sync is completed! Please do not refresh the page!");
+                                setTimeout(function(){
+                                    location.reload();
+                                }, 500);
+                            }
                         }
                     }
                 })
@@ -103,8 +105,7 @@ function mc_sync_action_js() { ?>
             }
             let counter = 0;
             console.log('Ajax request sent.');
-            handlePostDataTest('fetch-media', 'all', 0)
-                                        
+            handlePostDataTest('fetch-media', 'all', 0)          
         });
     </script>
 <?php }

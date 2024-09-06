@@ -1,6 +1,64 @@
 <?php
 
 class RonikBaseHelper{
+    // Semi Imitates the loose LIKE%% Comparison
+    public function ronik_compare_like($a_value , $b_value){
+        if(stripos($a_value, $b_value) !== FALSE){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // Function that detects if on local mode.
+    public function localValidator(){
+        // Check for local string in host.
+        $is_local =  str_contains( $_SERVER['HTTP_HOST'] , 'local');
+        // If false we check to see if the REMOTE_ADDR is the default local host ip address..
+        if(!$is_local){
+            $whitelist = array(
+                '127.0.0.1',
+                '::1'
+            );
+            if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+                $is_local = true;
+            } else {
+                $is_local = false;
+            }
+        }
+        return $is_local;
+    }
+
+    // Creates an encoded svg for src, lazy loading.
+    // This pretty much creates a basebone svg structure.
+    public function ronikdesignsbase_svgplaceholder($imgacf=null) {
+        $iacf = $imgacf;
+        if($iacf){
+            if($iacf['width']){
+                $width = $iacf['width'];
+            }
+            if($iacf['height']){
+                $height = $iacf['height'];
+            }
+            $viewbox = "width='{$width}' height='{$height}' viewBox='0 0 {$width} {$height}'";
+        } else{
+            $viewbox = "viewBox='0 0 100 100'";
+        }
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' {$viewbox}%3E%3C/svg%3E";
+    }
+    
+
+    public function ronikdesigns_increase_memory(){
+        // Lets us set the max_execution_time to 1hr
+        error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+        @set_time_limit( intval( 3600*2 ) );
+        error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
+        error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+        ini_set('memory_limit', '5024M');
+        error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
+    }
+
 	// Write error logs cleanly.
     public function ronikdesigns_write_log($log) {
 		// $f_error_email = get_field('error_email', 'option');
@@ -24,6 +82,7 @@ class RonikBaseHelper{
 			error_log(print_r('<----- ' . $log . ' ----->', true));
 		}
 	}
+
 	// Write error logs cleanly.
 	public function ronikdesigns_write_log_devmode($log, $severity_level='low') {
 		if($severity_level == 'low'){
@@ -90,7 +149,6 @@ function formatSizeUnits($bytes){
     }
     return $bytes;
 }
-
 
 function rmc_getLineWithString_ronikdesigns($fileName, $id) {
 	$f_attached_file = get_attached_file( $id );
@@ -263,8 +321,6 @@ function databaseScannerMedia__allMedia( $requestParameter ) {
 
 
 
-
-
 function cleaner_compare_array_diff($primary, $secondary){
     // Helper Guide
 	$helper = new RonikBaseHelper;
@@ -293,121 +349,3 @@ function cleaner_compare_array_diff($primary, $secondary){
     return $arr_mixed_diff_reindexed;
 }
 
-
-// Depending on the size of the site we would not want to do this but in this case it is okay.
-function ronikbase_database_cleaner(){
-    $f_ronik_database_cleaner = get_option( 'options_ronik-database-cleaner', 'not-triggered' );
-    // delete_option( 'options_ronik-database-cleaner' );
-    // update_option( 'options_ronik-database-cleaner' , 'not-triggered' );
-
-    if($f_ronik_database_cleaner == 'not-triggered'){
-        // Switch to triggered value this will prevent multiple triggers
-        update_option( 'options_ronik-database-cleaner' , 'triggered' );
-        // Lets target the wp_options values.
-        global $wpdb;
-        $results = $wpdb->get_results( "SELECT * FROM wp_options WHERE option_value LIKE '%[:en]%' ORDER BY option_name ASC", ARRAY_A );
-        if($results){
-            foreach($results as $result){
-                // English Target
-                $string_option = explode('[:zh]', (explode('[:en]', $result['option_value'])[1]))[0];
-                update_option( $result['option_name'], wp_slash($string_option) );
-            }
-        }
-        // Lets target the wp_posts post_content values
-        // TARGET: <!--:en-->
-        $results = $wpdb->get_results( "SELECT * FROM wp_posts WHERE post_content LIKE '%<!--:en-->%' ORDER BY post_title ASC", ARRAY_A );
-        if($results){
-            foreach($results as $result){
-                // English Target
-                $string_content = explode('<!--:-->', (explode('<!--:en-->', $result['post_content'])[1]))[0];
-                // Update post
-                $my_post = array(
-                    'ID'           => $result['ID'],
-                    'post_content' => wp_slash($string_content),
-                );
-                // Update the post into the database
-                wp_update_post( $my_post );
-
-            }
-        }
-        // Lets target the wp_posts post_title values
-        // TARGET: <!--:en-->
-        $results = $wpdb->get_results( "SELECT * FROM wp_posts WHERE post_title LIKE '%<!--:en-->%' ORDER BY post_title ASC", ARRAY_A );
-        if($results){
-            foreach($results as $result){
-                // English Target
-                $string_title = explode('<!--:-->', (explode('<!--:en-->', $result['post_title'])[1]))[0];
-                // Update post
-                $my_post = array(
-                    'ID'           => $result['ID'],
-                    'post_title' => wp_slash($string_title),
-                );
-                // Update the post into the database
-                wp_update_post( $my_post );
-
-            }
-        }
-        $f_get_all_posts = get_posts( array(
-            'numberposts'       => -1,
-            'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'), // Any sometimes doesnt work for all...
-            'fields' => 'ids',
-            'order' => 'ASC',
-            'post_type' => array('page', 'nav_menu_item', 'families', 'subfamilies', 'products', 'news', 'faqs', 'distributors')  // Any sometimes doesnt work for all, it depends if regisetred..
-        ) );
-        if($f_get_all_posts){
-            foreach($f_get_all_posts as $f_post_id){
-                // Lets update the post meta of all posts...
-                $postmetas = get_post_meta( $f_post_id );
-                // First we get all the meta values & keys from the current post.
-                if($postmetas){
-                    foreach($postmetas as $meta_key => $meta_value) {
-                        $f_meta_val = $meta_value[0];
-                        //  We do a loose comparison if the meta value has any keyword of en.
-                        if(ronik_compare_like($f_meta_val , '[:en]')){
-                            // English Target
-                            $string = explode('[:zh]', (explode('[:en]', $f_meta_val)[1]))[0];
-                            update_post_meta($f_post_id, $meta_key, wp_slash($string));
-                        }
-                    }
-                }
-                // Next lets update all the post title & posts_content...
-                    //  We do a loose comparison if the meta value has any keyword of en.
-                    // Post Title
-                    $f_post_title = get_post_field( 'post_title', $f_post_id );
-                    if(ronik_compare_like(get_post_field( 'post_title', $f_post_id ) , '[:en]')){
-                        // English Target
-                        $string_title_1 = explode('[:zh]', (explode('[:en]', $f_post_title)[1]))[0];
-                        $f_post_title = wp_slash($string_title_1);
-                    }
-                    if(ronik_compare_like(get_post_field( 'post_title', $f_post_id ) , '[:en]')){
-                        // English Target
-                        $string_title_2 = explode('[:]', (explode('[:en]', $f_post_title)[1]))[0];
-                        $f_post_title = wp_slash($string_title_2);
-                    }
-                    // Post Content
-                    $f_post_content = get_post_field( 'post_content', $f_post_id );
-                    if(ronik_compare_like(get_post_field( 'post_title', $f_post_id ) , '[:en]')){
-                        // English Target
-                        $string_content_1 = explode('[:zh]', (explode('[:en]', $f_post_content)[1]))[0];
-                        $f_post_content = wp_slash($string_content_1);
-                    }
-                    if(ronik_compare_like(get_post_field( 'post_title', $f_post_id ) , '[:en]')){
-                        // English Target
-                        $string_content_2 = explode('[:]', (explode('[:en]', $f_post_content)[1]))[0];
-                        $f_post_content = wp_slash($string_content_2);
-                    }
-                    // Update post
-                    $my_post = array(
-                        'ID'           => $f_post_id,
-                        'post_title'   => $f_post_title,
-                        'post_content' => $f_post_content,
-                    );
-                    // Update the post into the database
-                    wp_update_post( $my_post );
-            }
-        } else {
-            update_option( 'options_ronik-database-cleaner' , 'not-triggered' );
-        }
-    }
-
-}

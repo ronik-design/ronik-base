@@ -230,6 +230,14 @@ html {
   color: #fff;
   text-align: center;
 }
+.loader .centered-blob{
+  display: block;
+}
+.loader .progress-bar{
+  display: block;
+  position: relative;
+  z-index: 1000000;
+}
 .centered-blob{
 	width:400px;
 	height:400px;
@@ -239,6 +247,7 @@ html {
 	transform:translate(-50%,-50%);
 	background:#000;
 	filter: blur(10px) contrast(20);
+  display: none;
 
   .blob-1, .blob-2{
     width:70px;
@@ -458,7 +467,7 @@ html {
 
 
 
-.ronik-base_page_options-ronik-base_media_cleaner{
+.ronik-base_page_options-ronik-base_media_cleaner, .ronik-media-cleaner_page_options-ronik-base_media_cleaner{
   background: #1e2937;
   border-radius: 15px;
 

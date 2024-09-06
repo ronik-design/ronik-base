@@ -192,42 +192,26 @@ class Ronik_Base {
 		// rmc_ajax_media_cleaner
 			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
 		if( $this->get_media_cleaner_state() ){
-			
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
-
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
-
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_swap', $plugin_admin, 'rmc_ajax_media_swap');
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_swap', $plugin_admin, 'rmc_ajax_media_swap');
-			
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
-
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_cleaner_settings', $plugin_admin, 'rmc_ajax_media_cleaner_settings');
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner_settings', $plugin_admin, 'rmc_ajax_media_cleaner_settings');
 
+			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_api_determinism', $plugin_admin, 'rmc_ajax_api_determinism');
+			$this->loader->add_action('wp_ajax_rmc_ajax_api_determinism', $plugin_admin, 'rmc_ajax_api_determinism');
 
-
-			
 			// ronikdesigns_cron_auth
 			$this->loader->add_action( 'rmc_media_sync', $plugin_admin, 'rmc_media_sync' );
 			if (!wp_next_scheduled('rmc_media_sync')) {
 				wp_schedule_event(strtotime('04:00:00'), 'daily', 'rmc_media_sync');
 			}
-
 			$this->loader->add_action( 'save_post', $plugin_admin, 'rmc_media_sync_save' );
-
-			// 			//* delete transient
-			// function ronikdesigns_delete_custom_transient(){
-			//     delete_transient('loop-news-arch');
-			//     delete_transient('loop-teams-arch');
-			// }
-			// add_action('update option', 'ronikdesigns_delete_custom_transient');
-			// add_action('save_post', 'ronikdesigns_delete_custom_transient');
-			// add_action('delete_post', 'ronikdesigns_delete_custom_transient');
-
 		}
 	}
 
@@ -239,10 +223,9 @@ class Ronik_Base {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() , $this->get_media_cleaner_state(), $this->get_optimization_state() );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 		$this->loader->add_action('rest_api_init', $plugin_public, 'ronikdesignsbase_rest_api_init');
 	}
 
@@ -305,7 +288,7 @@ class Ronik_Base {
 	}
 
 	/**
-	 * Retrieve the valid auth of media cleaner.
+	 * Retrieve the valid auth of optimization.
 	 *
 	 * @since     1.0.0
 	 * @return    string    .

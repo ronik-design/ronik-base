@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Load Support Screen.
@@ -13,6 +13,11 @@ import LoadSettingsScreenMediaCleaner from './templates/media_cleaner_settings.j
 import LoadGeneralScreen from './templates/general.js';
 // Load General Screen.
 import LoadMediaCleanerScreen from './templates/media_cleaner.js';
+// Load Support Screen.
+import LoadMediaCleanerSupportScreen from './templates/support.js';
+
+import { LazyLoaderProvider } from './context/LazyLoaderContext.js';
+
 
 // Due to the nature of WP we need to wait for the readystate.
 document.addEventListener('readystatechange', event => { 
@@ -44,7 +49,13 @@ document.addEventListener('readystatechange', event => {
                 const root = createRoot(domNode);
                 root.render(<LoadSettingsScreenMediaCleaner />);
             }
-
+            // Support screen
+            if(document.querySelector("#ronik-base_support-media-cleaner") !== null){
+                const domNode = document.getElementById('ronik-base_support-media-cleaner');
+                const root = createRoot(domNode);
+                root.render(<LoadMediaCleanerSupportScreen />);
+            }
+           
 
 
             // General screen
@@ -58,11 +69,12 @@ document.addEventListener('readystatechange', event => {
             if(document.querySelector("#ronik-base_media_cleaner") !== null){
                 const domNode = document.getElementById('ronik-base_media_cleaner');
                 const root = createRoot(domNode);
-                root.render(<LoadMediaCleanerScreen />);
+                root.render(
+                    <LazyLoaderProvider>
+                        <LoadMediaCleanerScreen />
+                    </LazyLoaderProvider>
+                );
             }
 
-            
-
-        
     }
 });

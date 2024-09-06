@@ -1,0 +1,8 @@
+<?php 
+function ronikdesignsbase_optimization_data( $data ) {
+
+}
+register_rest_route( 'optimization/v1', '/optimizationcollector/(?P<slug>\w+)', array(
+    'methods' => 'GET',
+    'callback' => 'ronikdesignsbase_optimization_data',
+));

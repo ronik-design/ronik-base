@@ -25,7 +25,6 @@ const MediaCleanerSettings = () => {
 
 
     useEffect(()=>{
-        // alert('dd');
         var filebackupenabled = document.querySelector('#ronik-base_settings-media-cleaner').getAttribute("data-file-backup");
         if(filebackupenabled == 'on'){
             // filebackupenabled = true;

@@ -14,6 +14,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./admin/interface/src/sass/main.scss":
+/*!********************************************!*\
+  !*** ./admin/interface/src/sass/main.scss ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "./public/assets/src/app.js":
 /*!**********************************!*\
   !*** ./public/assets/src/app.js ***!
@@ -114,6 +126,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"/public/assets/dist/app": 0,
+/******/ 			"admin/interface/dist/main": 0,
 /******/ 			"public/assets/dist/main": 0
 /******/ 		};
 /******/ 		
@@ -164,8 +177,9 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["public/assets/dist/main"], () => (__webpack_require__("./public/assets/src/app.js")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["public/assets/dist/main"], () => (__webpack_require__("./public/assets/src/sass/main.scss")))
+/******/ 	__webpack_require__.O(undefined, ["admin/interface/dist/main","public/assets/dist/main"], () => (__webpack_require__("./public/assets/src/app.js")))
+/******/ 	__webpack_require__.O(undefined, ["admin/interface/dist/main","public/assets/dist/main"], () => (__webpack_require__("./public/assets/src/sass/main.scss")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["admin/interface/dist/main","public/assets/dist/main"], () => (__webpack_require__("./admin/interface/src/sass/main.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

@@ -41,17 +41,35 @@ class Ronik_Base_Public {
 	private $version;
 
 	/**
+	 * The media_cleaner.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $media_cleaner   
+	 */
+	private $media_cleaner_state;
+
+	/**
+	 * The optimization_state.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $optimization_state 
+	 */
+	private $optimization_state;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
-
+	public function __construct($plugin_name, $version,  $media_cleaner_state, $optimization_state ) {
+		$this->media_cleaner_state = $media_cleaner_state;
+		$this->optimization_state = $optimization_state;
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -72,7 +90,7 @@ class Ronik_Base_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/ronik-base-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/dist/main.css', array(), $this->version, 'all' );
 	}
 
 	/**
@@ -92,13 +110,22 @@ class Ronik_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ronik-base-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/dist/app.js', array( 'jquery' ), $this->version, false );
 	}
 
-	function ronikdesignsbase_rest_api_init(){
-		// Include the Spam Blocker.
-		foreach (glob(dirname(__FILE__) . '/rest-api/*.php') as $file) {
-			include $file;
+	// Public facing rest api.
+	public function ronikdesignsbase_rest_api_init(){
+		if($this->media_cleaner_state){
+			// Include the dynamic rest api.
+			foreach (glob(dirname(__FILE__) . '/rest-api/media_cleaner/*.php') as $file) {
+				include $file;
+			}
+		}
+		if($this->optimization_state){
+			// Include the dynamic rest api.
+			foreach (glob(dirname(__FILE__) . '/rest-api/optimization/*.php') as $file) {
+				include $file;
+			}
 		}
 	}
 }

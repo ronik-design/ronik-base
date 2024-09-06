@@ -92,9 +92,6 @@ class Ronik_Base_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'interface/dist/main.css', array(), $this->version, 'all' );
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/ronik-base-admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -122,9 +119,9 @@ class Ronik_Base_Admin {
 		if ( ! wp_script_is( 'jquery', 'enqueued' )) {
 			wp_enqueue_script($this->plugin_name.'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js', array(), null, true);
 			$scriptName = $this->plugin_name.'jquery';
-			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/ronik-base-admin.js', array($scriptName), $this->version, false);
+			wp_enqueue_script($this->plugin_name.'-admin', plugin_dir_url(__FILE__) . 'js/ronik-base-admin.js', array($scriptName), $this->version, false);
 		} else {
-			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/ronik-base-admin.js', array(), $this->version, false);
+			wp_enqueue_script($this->plugin_name.'-admin', plugin_dir_url(__FILE__) . 'js/ronik-base-admin.js', array(), $this->version, false);
 		}
 
 		// Ajax & Nonce
@@ -216,22 +213,9 @@ class Ronik_Base_Admin {
 			';
 		}
 		function ronikbase_support_settings(){
-			$rbp_media_cleaner_file_size = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size')/1048576 : 0;
-			$f_file_import = get_option( 'rbp_media_cleaner_file_import' ) ? get_option( 'rbp_media_cleaner_file_import' ) : 'off'; 
-
-			
-			echo '<div id="ronik-base_settings"></div>';
-
-			if($_POST['media_cleaner_state'] == 'valid'){
-				echo '
-					<div id="ronik-base_settings-media-cleaner" data-file-backup="'.$f_file_import .'" data-file-size="'.$rbp_media_cleaner_file_size.'">Media Cleaner</div>
-				';
-			}
-			if($_POST['optimization_state'] == 'valid'){
-				echo '
-					<div id="ronik-base_settings-optimization">Optimization</div>
-				';
-			}
+			echo '
+			<div id="ronik-base_settings">Ronik Base Settings</div>
+			';
 		}
 		function ronikbase_support_callback(){
 			echo '
@@ -259,8 +243,6 @@ class Ronik_Base_Admin {
 		include dirname(__FILE__)  . '/ajax/api-checkpoint.php';
 	}
 
-
-
 	// Media Cleaner Chunk
 		public function rmc_classes(){
 			// Include the wp-functions.
@@ -268,7 +250,6 @@ class Ronik_Base_Admin {
 				include $file;
 			}
 		}
-
 		public function rmc_functions(){
 			// Include the wp-functions.
 			foreach (glob(dirname(__FILE__) . '/media-cleaner/functions/*.php') as $file) {
@@ -295,7 +276,6 @@ class Ronik_Base_Admin {
 			if($rbp_media_cleaner_sync_running == 'running'){
 				return false;
 			}
-
 			$transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
 			if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized ) ) {
 				$rmc_media_cleaner_media_data_collectors_image_id_array_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized;
@@ -303,49 +283,36 @@ class Ronik_Base_Admin {
 				return false;
 			}
 
-			// Lets us set the max_execution_time to 1hr
-			error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-			@set_time_limit( intval( 3600*2 ) );
-			error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
-	
-			error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
-			ini_set('memory_limit', '1024M');
-			error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
-			// ini_set('memory_limit', '-1');
-
+			// Update the memory option.
+			$helper = new RonikBaseHelper;
+			$helper->ronikdesigns_increase_memory();
+			
 			$RmcDataGathering = new RmcDataGathering;
-
 			$f_sync = get_option('rbp_media_cleaner_sync-time');
-			$date = new DateTime($f_sync); // For today/now, don't pass an arg.
-			$date->modify("-1 day");
-			update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
-
+			if($f_sync){
+				$date = new DateTime(); // For today/now, don't pass an arg.
+				$date->modify("-1 day");
+				update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+			}
 
 			$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor( $post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
-			
+
 			$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->specificImagePostAuditor( $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array,  $post_id  );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
 
 			$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $RmcDataGathering->specificImagePostContentAuditor( $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $post_id );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
 			
-			
 			$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 
-			
 			$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
 
-
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
 			$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
-
 		}
-
-
-
 
 
 		public function rmc_media_sync(){
@@ -363,22 +330,9 @@ class Ronik_Base_Admin {
 				error_log(print_r($rbp_media_cleaner_sync_running, true));
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '0%' , DAY_IN_SECONDS );
 
-
-			// Update the set_time_limit option.
-				// Lets us set the max_execution_time to 1hr
-				error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
-				@set_time_limit( intval( 3600*2 ) );
-				error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
-
-				error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
-				ini_set('memory_limit', '-1');
-				error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
-				// ini_set('memory_limit', '-1');
-
-				// define('WP_MEMORY_LIMIT', '512M');	
-				// define('WP_MAX_MEMORY_LIMIT', '512M');	
-
-
+			// Update the memory option.
+				$helper = new RonikBaseHelper;
+				$helper->ronikdesigns_increase_memory();
 
 			// Default settings...
 				$RmcDataGathering = new RmcDataGathering;
@@ -408,8 +362,7 @@ class Ronik_Base_Admin {
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '20%' , DAY_IN_SECONDS );
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_posts_array) , true));
-				sleep(1);
-
+				sleep(10);
 
 			// Gather all the image ids.
 				$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' );
@@ -420,13 +373,11 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' , $rmc_media_cleaner_media_data_collectors_image_id_array , DAY_IN_SECONDS );
 				}
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '40%' , DAY_IN_SECONDS );
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '30%' , DAY_IN_SECONDS );
 				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_id_array' , true));
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array) , true));
 				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_id_array , true));
-
-				sleep(1);
-
+				sleep(10);
 
 			// Image Id Thumbnail Auditor.
 				$transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' );
@@ -437,13 +388,11 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
 				}
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '60%' , DAY_IN_SECONDS );
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '40%' , DAY_IN_SECONDS );
 				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , true));
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , true));
 				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , true));
-
-				sleep(1);
-
+				sleep(10);
 
 			// Check image id within all posts. 
 				$transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' );
@@ -454,13 +403,11 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
 				}
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '50%' , DAY_IN_SECONDS );
 				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , true));
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , true));
 				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_auditor_array , true));
-
-				sleep(1);
-
+				sleep(10);
 
 			// Check image basename within the post content primarily this is for gutenberg editior.
 				$transient_rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' );
@@ -471,11 +418,11 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
 				}
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '90%' , DAY_IN_SECONDS );
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
 				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , true));
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , true));
 				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , true));
-				sleep(1);
+				sleep(10);
 
 			// Check the image inside the filesystem. This checks if the image hardcoded into any of the files.
 				$transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' );
@@ -486,39 +433,33 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 				}
-
-
-
-
 				
 			// Check if images have the preserved attributes.
-				$transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
-				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
-					$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve;
-				} else {
-					$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
-					// Save the response so we don't have to call again until tomorrow.
-					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
-				}
-
-
-
+				// $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
+				// if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
+				// 	$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve;
+				// } else {
+				// }
+				$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
+				// Save the response so we don't have to call again until tomorrow.
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '98%' , DAY_IN_SECONDS );
+				sleep(10);
+
 				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , true));
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '99%' , DAY_IN_SECONDS );
+				sleep(10);
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
 					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
 				sleep(1);
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , 'DONE' , DAY_IN_SECONDS );
-				sleep(5);
-
-
 				error_log(print_r('FINISHED SYNC' , true));
 
 			// Update the sync status
 			update_option('rbp_media_cleaner_sync_running', 'not-running');
 			update_option('rbp_media_cleaner_cron_last-ran', date('Y-m-d'));
+			update_option('rbp_media_cleaner_sync-time',  date("m/d/Y h:ia"));
 		}
 }

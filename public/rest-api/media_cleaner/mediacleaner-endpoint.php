@@ -1,52 +1,22 @@
 <?php 
-
-
 function ronikdesignsbase_mediacleaner_data( $data ) {
+    // Update the memory option.
+    $helper = new RonikBaseHelper;
+    $helper->ronikdesigns_increase_memory();
+    
     // Get all the data IDS
     $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
     if(!$rbp_media_cleaner_media_data){
         $rbp_media_cleaner_media_data = array();
     }
-    // Creates an encoded svg for src, lazy loading.
-    function km_svgplaceholder($imgacf=null) {
-        $iacf = $imgacf;
-        if($iacf){
-            if($iacf['width']){
-                $width = $iacf['width'];
-            }
-            if($iacf['height']){
-                $height = $iacf['height'];
-            }
-            $viewbox = "width='{$width}' height='{$height}' viewBox='0 0 {$width} {$height}'";
-        } else{
-            $viewbox = "viewBox='0 0 100 100'";
-        }
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' {$viewbox}%3E%3C/svg%3E";
-    }
-    
-    function localValidator(){
-        // Check for local string in host.
-        $is_local =  str_contains( $_SERVER['HTTP_HOST'] , 'local');
-        // If false we check to see if the REMOTE_ADDR is the default local host ip address..
-        if(!$is_local){
-            $whitelist = array(
-                '127.0.0.1',
-                '::1'
-            );
-            if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
-                $is_local = true;
-            } else {
-                $is_local = false;
-            }
-        }
-        return $is_local;
-    }
 
 
     function id_reformatter_media_data($mediacollector_data){
+        $helper = new RonikBaseHelper;
+
         $f_reformatted_collector = array();
         $upload_dir = wp_upload_dir();
-        $is_local = localValidator();
+        $is_local = $helper->localValidator();
 
         if($mediacollector_data){
             foreach($mediacollector_data as $i => $image_id){
@@ -68,7 +38,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                         'data-id' => $image_id, 
                         'data-class' => 'image-target',
                         'class' => ' lzy_img reveal-disabled',
-                        'src' => km_svgplaceholder(),
+                        'src' => $helper->ronikdesignsbase_svgplaceholder(),
                         'data-width' => (isset($f_img_attached[1]) && $f_img_attached[1] ? $f_img_attached[1] : '50' ),
                         'data-height '=> (isset($f_img_attached[2]) && $f_img_attached[2] ? $f_img_attached[2] : '50' ),
                         'data-type' => (!$is_local && isset($f_img_attached[0]) && $f_img_attached[0] ? wp_get_image_mime( $f_img_attached[0] ) : '')
@@ -93,14 +63,12 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                             $media_size = formatSizeUnits(filesize( $upload_dir['basedir'].'/'.$attachment_metadata['file'] ) );
                         } else {
                             // $media_size = "File Size Not found!";
-
                             $filePath = get_attached_file($image_id);
                             if( $filePath ){
                                 $media_size = formatSizeUnits(filesize( $filePath ) );
                             } else {
                                 $media_size = "File Size Not found!";
                             }
-
                         }
                     } else {
                         $filePath = get_attached_file($image_id);
@@ -112,12 +80,10 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                     }
                 }
                 $f_reformatted_collector[$i]['media_size'] = $media_size;
-
                 if( isset($attachment_metadata['file']) && $attachment_metadata['file']){
                     $media_file = $upload_dir['basedir'].'/'.$attachment_metadata['file'];
                     $media_file = strstr($upload_dir['basedir'].'/'.$attachment_metadata['file'], '/uploads/');
                 } else {
-
                     // $media_file_type = "Not found";
                     $filePath = get_attached_file($image_id);
                     if( $filePath ){
@@ -125,13 +91,10 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                     } else {
                         $media_file = "Not found";
                     }
-
                 }
                 $f_reformatted_collector[$i]['media_file'] = $media_file;
-
                 if( isset($attachment_metadata['file']) && $attachment_metadata['file']){
                     $media_file_type = wp_get_image_mime($upload_dir['basedir'].'/'.$attachment_metadata['file']);
-
                     if( !$media_file_type ){
                         // $media_file_type = "Not found";
                         $fileType = wp_check_filetype(get_attached_file($image_id));
@@ -157,15 +120,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return $f_reformatted_collector;
     }
 
-
-
-
-
-
-
     function mediaDataSizeFormatter($rbp_media_cleaner_media_data, $slug){
-        error_log(print_r('mediaDataSizeFormatter', true));
-
         $f_filter_collector = array();
         foreach ( $rbp_media_cleaner_media_data as $i => $image_id ){    
             $upload_dir = wp_upload_dir();
@@ -215,57 +170,26 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return id_reformatter_media_data($rbp_media_cleaner_media_data);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     $filters = $data->get_param( 'filter' );
 
-
-
-
-
     if((str_contains($filters, 'all') || empty($filters)) && $data['slug'] == 'large' || $data['slug'] == 'small'){    
-        error_log(print_r('ssstest1', true));
-        error_log(print_r( $filters , true ));
-        error_log(print_r('sstest2', true));
-        error_log(print_r($data['slug'] , true));
-        
         if( !str_contains($filters, 'gif') && !str_contains($filters, 'jpg') && !str_contains($filters, 'png') && !str_contains($filters, 'video')  && !str_contains($filters, 'misc') ){
-            error_log(print_r( 'filters', true));
-            error_log(print_r( $filters, true));
-
             if($data['slug'] == 'large' || $data['slug'] == 'small'){
                 if($rbp_media_cleaner_media_data){
-                    error_log(print_r('aaaaa', true));
-
                     return mediaDataSizeFormatter($rbp_media_cleaner_media_data, $data['slug']);
                 }
             }
         }
-
-
     } 
     
-
-
-
     // mediacollector
-
     if($filters){
-        $rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );        
+        $rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        
+        if(!is_array($rmc_media_cleaner_media_data_collectors_image_id_array)){
+            return 'no-images';
+        }
+
         $filters_array = explode("?" , $filters);
         if($filters_array){
             foreach($filters_array as $filter_array){
@@ -277,37 +201,16 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 }
             }
             if(isset($rbp_media_cleaner_media_data_collector_refomat_specific_id)){
-
-
-
-
-                if( (!str_contains($filters, 'all') || !empty($filters)) ){
-                    error_log(print_r('test1', true));
-            
-                    error_log(print_r( $filters , true ));
-                    error_log(print_r('test2', true));
-            
-                    error_log(print_r($data['slug'] , true));
-                    
+                if( (!str_contains($filters, 'all') || !empty($filters)) ){   
                     return mediaDataSizeFormatter( $rbp_media_cleaner_media_data_collector_refomat_specific_id, $data['slug'] );
                 }
-
-
                 return id_reformatter_media_data($rbp_media_cleaner_media_data_collector_refomat_specific_id);
-                
             } else{
                 return 'no-images';
             }
         }
         return 'no-images';
     }
-
-
-
-
-
-
-
 
     if($data['slug'] == 'all' && str_contains($filters, 'all') ){
         $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
@@ -318,7 +221,6 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return id_reformatter_media_data($rbp_media_cleaner_media_data);
     }
 
-    
     // Temp Saved mediacollector
     if($data['slug'] == 'tempsaved'){
         $select_attachment_type['svg'] = 'image/svg+xml';
@@ -350,7 +252,6 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         $select_attachment_type['txt|asc|c|cc|h|srt'] = "text/plain";
         $select_attachment_type['csv'] = "text/csv";
         $select_attachment_type['webp'] = "image/webp";
-
         $args = array( 
             'post_mime_type' => $select_attachment_type,
             'numberposts'    => -1,
@@ -369,7 +270,6 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return id_reformatter_media_data(get_posts( $args ));
     }
 }
-
 register_rest_route( 'mediacleaner/v1', '/mediacollector/(?P<slug>\w+)', array(
     'methods' => 'GET',
     'callback' => 'ronikdesignsbase_mediacleaner_data',

@@ -15,12 +15,11 @@ if(isset($_POST['unPreserveImageId']) && $_POST['unPreserveImageId']){
         $data = wp_get_attachment_metadata( $_POST['unPreserveImageId'] ); // get the data structured
         $data['rbp_media_cleaner_isdetached'] = '';  // change the values you need to change
         wp_update_attachment_metadata( $_POST['unPreserveImageId'], $data );  // save it back to the db
-
-        $rbp_media_cleaner_data_array[] = $_POST['unPreserveImageId'];
-        $rbp_media_cleaner_data_array = array_values(array_filter($rbp_media_cleaner_data_array));
-        update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_data_array);
-
-        // // Send sucess message!
+        // update_option('rbp_media_cleaner_media_data', $rbp_media_cleaner_data_array);
+        $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        $array_with_preserved_img = array_merge($transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized, array($_POST['unPreserveImageId']) );
+        set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $array_with_preserved_img , DAY_IN_SECONDS );
+        // Send sucess message!
         error_log(print_r('Unpreserve', true));
         wp_send_json_success('Reload');
     }
@@ -31,22 +30,10 @@ if(isset($_POST['preserveImageId']) && $_POST['preserveImageId']){
         $data = wp_get_attachment_metadata( $_POST['preserveImageId'] ); // get the data structured
         $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_temp-saved';  // change the values you need to change
         wp_update_attachment_metadata( $_POST['preserveImageId'], $data );  // save it back to the db
-
-        // $array_without_preserved_img = array_values(array_diff($rbp_media_cleaner_data_array, array($_POST['preserveImageId'])));
-        // $array_without_preserved_img_unique = array_unique($array_without_preserved_img);
-        // update_option('rbp_media_cleaner_media_data', array_values(array_filter($array_without_preserved_img_unique)));
-
-
-
         $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
-        
         $array_without_preserved_img = array_values(array_diff($transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized, array($_POST['preserveImageId'])));
         $array_without_preserved_img_unique = array_unique($array_without_preserved_img);
-        
-        
         set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $array_without_preserved_img_unique , DAY_IN_SECONDS );
-
-
         // Send sucess message!
         error_log(print_r('Preserve', true));
         wp_send_json_success('Reload');
