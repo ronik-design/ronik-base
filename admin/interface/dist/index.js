@@ -3332,7 +3332,7 @@ var FetchAddon = function FetchAddon(_ref) {
                       onChange: handleChange
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
                       htmlFor: "switch-off",
-                      children: "Init Unused Media Migration"
+                      children: "Manual Media Library Scan"
                     })]
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
                     className: "radio-switch-field",
@@ -3354,7 +3354,7 @@ var FetchAddon = function FetchAddon(_ref) {
                 className: isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn',
                 disabled: isButtonDisabled // Disable the button if syncIsRunning is valid
                 ,
-                children: formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Sync is inprogress' : 'Sync Media' : 'Delete Media'
+                children: formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan' : 'Delete Media'
               })]
             })
           })
@@ -49502,8 +49502,8 @@ function General() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     className: "general-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "General Message",
-      description: ""
+      title: "Plugin Info",
+      description: "Thanks for using the Ronik plugin! <br><br>In the future, we expect to offer a full suite of functionality; for now we have Media Harmony. <br><br>For developers and content admins alike, we know how tricky it can be to manage a media library, especially for a large or aging website with multiple hands involved in asset creation and use. When not actively managed, the space used by old files quickly grows, negatively impacting site load times, performance, and internal hygiene. As soon as you have more than one person producing content, you get a messy basement, which also makes it hard for admins to locate and make use of the correct files for front-end publishing. Attempts to manually mitigate the issue by regularly reviewing, removing, or editing unlinked or improper files could take hours and is likely to result in mistakes. <br><br>The solution we saw to this issue is a tool that reviews your database for any unlinked files and allows for easy removal. Our plugin is compatible with most common frameworks and does a full database scan to reveal/ provide a holistic picture of unlinked files of all types in the media library. Editors can refine their results thanks to an array of sort and filter criteria and then preserve, individually target, or bulk delete their unlinked and matching files.<br><br>Most plugins out there that offer similar functionality are less reliable, lack granularity of selection, and fail to go as deep as ours to find things like nested clones of assets or corrupt files. Check our full feature list, installation instructions, and usage instructions below."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {})]
   });
 }
@@ -49587,7 +49587,7 @@ function Mediacleaner() {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Welcome to Media Harmony!",
-      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. The total size of your library will determine the time required to scan. Change your file size threshold in the Settings tab. Sort, filter, and delete or preserve your files in the list below."
+      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. The total size of your library will determine the time required to scan. <ul> <li> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. </li> <li> Change your file size threshold for the scan in the Settings tab. </li> <li> Use the search bar to filter for title keywords and sort files by size below. </li> <li> Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. </li> </ul> "
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       requestType: "rmc_ajax_media_cleaner"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {})]
@@ -49694,7 +49694,7 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     });
     setBackupEnabled(isChecked ? 'valid' : 'invalid');
     if (isChecked) {
-      alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
+      alert('Your files will be backed up within the file: /ronik-base/admin/media-cleaner/ronikdetached');
     }
   };
 
@@ -49749,20 +49749,15 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "settings-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      title: "Media Cleaner Settings Message",
-      description: "Tell us which features you want to use."
+      title: "Media Cleaner Settings:",
+      description: "Configure file size minimum and backup settings below. <br><br>Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "media-cleaner-item-settings__file-size",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-        htmlFor: "file-size-selector",
-        children: "Minimum File Size Limit"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-        children: "This will change the overall targeted media file size."
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
         type: "number",
         id: "file-size-selector",
         name: "file-size-selector",
-        min: "0",
+        min: "0.1",
         max: "1000",
         step: ".01",
         value: formValues['filesize-option'],
@@ -49772,8 +49767,8 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
         children: [formValues['filesize-option'], " MB"]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      title: "Media Cleaner Backup Settings",
-      description: "Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached. Upon Deletion, <br> Based on size of site this may take a while"
+      title: "Backup files:",
+      description: "Turn on to automatically backup files. Please note that this may take an additional 1-2 minutes.  "
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "media-cleaner-item-settings__file-size",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("label", {
@@ -49791,6 +49786,43 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MediaCleanerSettings);
+
+/***/ }),
+
+/***/ "./admin/interface/templates/media_cleaner_support.js":
+/*!************************************************************!*\
+  !*** ./admin/interface/templates/media_cleaner_support.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ContentBlock.jsx */ "./admin/interface/components/ContentBlock.jsx");
+/* harmony import */ var _components_Faq_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Faq.jsx */ "./admin/interface/components/Faq.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
+
+
+function Support() {
+  var faqItems = [["What does [Plugin Name] do?", "[Plugin Name] is a WordPress plugin designed to help you identify and remove unused media files from your WordPress site. It ensures that only media files that are no longer used in posts, pages, or other content are safely deleted, helping to reduce your media library's size and improve site performance."], ["How does [Plugin Name] determine which media files are unused?", "The plugin scans your entire WordPress site, including posts, pages, and custom post types, to check for media usage. It cross-references the media files in your library with those used in your content. Any media files not found in your content are flagged as potentially unused."], ["Is it safe to use [Plugin Name] to delete media files?", "Yes, [Plugin Name] is designed with safety in mind. The plugin performs a thorough check to ensure that only truly unused media files are flagged for deletion. Before any files are permanently deleted, you have the option to review them and perform a backup to ensure that you can restore any files if needed."], ["Can I recover deleted media files?", "Once media files are deleted using [Your Plugin Name], they are permanently removed from your server and cannot be recovered through the plugin. However, if you have created a backup of your media files before deletion, you can restore them from the backup."], ["Will [Plugin Name] delete media files that are used in widgets or theme settings?", "Yes, [Plugin Name] checks for media files used not only in posts, pages, and custom post types but also in widgets and theme settings. The plugin performs a comprehensive scan of your site, including these areas, to ensure that no important media files are inadvertently deleted. We still recommend reviewing your media library and widget/theme settings periodically to confirm that all necessary files are accounted for."], ["How often should I run [Plugin Name] to clean up unused media?", '[Plugin Name] automatically performs a media cleanup every night at midnight through its built-in cron job. However, you can also manually trigger a cleanup at any time using the "Force Sync" option available in the WP-Admin bar. For most sites, the nightly automatic cleanup should be sufficient. If you prefer more frequent checks, or if you’ve made significant changes to your media library, you can use the "Force Sync" feature to ensure your media library remains organized and free of unused files.'], ["Does [Plugin Name] have any performance impact on my site?", "[Plugin Name] is designed with performance in mind, utilizing efficient algorithms and a custom throttle system to minimize impact on your site. The plugin scans and deletes unused media in a way that allows your server to cool down before proceeding, helping to prevent any significant strain on site performance. While the plugin generally operates smoothly, a large media library might cause occasional slowdowns. For optimal performance, we recommend running the plugin during off-peak hours. If you experience any rare performance issues, the throttle system is in place to mitigate these effects and ensure your site remains responsive."], ["Is [Plugin Name] compatible with other media management plugins?", "[Plugin Name] is designed to work with standard WordPress media libraries. If you use other media management plugins, ensure they do not alter how media files are referenced or stored in the database. Compatibility issues are rare, but if you encounter any, please reach out to our support team for assistance."], ["Where can I get support or report issues with [Plugin Name]?", "If you need support or wish to report issues, please visit our support page at [support URL] or contact us directly at [support email]. Our team is here to assist you with any questions or concerns you may have."]];
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "support-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+      title: "Frequently asked questions",
+      description: "Here, you'll find answers to commonly asked questions about using Ronik Plugin. If you don't see your question listed, you can have a look at the section below."
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_Faq_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      items: faqItems
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+      title: "Contact our team:",
+      description: "Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue here: [Google Form link]"
+    })]
+  });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Support);
 
 /***/ }),
 
@@ -51050,7 +51082,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./templates/media_cleaner_settings.js */ "./admin/interface/templates/media_cleaner_settings.js");
 /* harmony import */ var _templates_general_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./templates/general.js */ "./admin/interface/templates/general.js");
 /* harmony import */ var _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./templates/media_cleaner.js */ "./admin/interface/templates/media_cleaner.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _templates_media_cleaner_support_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./templates/media_cleaner_support.js */ "./admin/interface/templates/media_cleaner_support.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
 
@@ -51069,7 +51102,7 @@ var renderComponent = function renderComponent(selector, Component) {
   var domNode = document.querySelector(selector);
   if (domNode) {
     var root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(domNode);
-    root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(Component, {}));
+    root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(Component, {}));
   }
 };
 
@@ -51081,7 +51114,7 @@ document.addEventListener('readystatechange', function (event) {
     renderComponent('#ronik-base_integrations', _templates_integrations_js__WEBPACK_IMPORTED_MODULE_3__["default"]);
     renderComponent('#ronik-base_settings', _templates_settings_js__WEBPACK_IMPORTED_MODULE_4__["default"]);
     renderComponent('#ronik-base_settings-media-cleaner', _templates_media_cleaner_settings_js__WEBPACK_IMPORTED_MODULE_5__["default"]);
-    renderComponent('#ronik-base_support-media-cleaner', _templates_support_js__WEBPACK_IMPORTED_MODULE_2__["default"]);
+    renderComponent('#ronik-base_support-media-cleaner', _templates_media_cleaner_support_js__WEBPACK_IMPORTED_MODULE_8__["default"]);
     renderComponent('#ronik-base_general', _templates_general_js__WEBPACK_IMPORTED_MODULE_6__["default"]);
     renderComponent('#ronik-base_media_cleaner', _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
   }

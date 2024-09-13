@@ -132,7 +132,7 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
                                                 checked={formValues['user-option'] === 'fetch-media'}
                                                 onChange={handleChange}
                                             />
-                                            <label htmlFor="switch-off">Init Unused Media Migration</label>
+                                            <label htmlFor="switch-off">Manual Media Library Scan</label>
                                         </div>
                                         <div className="radio-switch-field">
                                             <input
@@ -153,7 +153,7 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
                                     className={isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn'}
                                     disabled={isButtonDisabled}  // Disable the button if syncIsRunning is valid
                                 >
-                                    {formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Sync is inprogress' : 'Sync Media' : 'Delete Media'}
+                                    {formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan' : 'Delete Media'}
                                 </button>
                             </form>
                         </div>

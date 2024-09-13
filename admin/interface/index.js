@@ -8,7 +8,7 @@ import LoadSettingsScreen from './templates/settings.js';
 import LoadSettingsScreenMediaCleaner from './templates/media_cleaner_settings.js';
 import LoadGeneralScreen from './templates/general.js';
 import LoadMediaCleanerScreen from './templates/media_cleaner.js';
-import LoadMediaCleanerSupportScreen from './templates/support.js';
+import LoadMediaCleanerSupportScreen from './templates/media_cleaner_support.js';
 
 // Function to render a component into a DOM node
 const renderComponent = (selector, Component) => {
@@ -26,6 +26,8 @@ document.addEventListener('readystatechange', (event) => {
         renderComponent('#ronik-base_support', LoadSupportScreen);
         renderComponent('#ronik-base_integrations', LoadIntegrationsScreen);
         renderComponent('#ronik-base_settings', LoadSettingsScreen);
+
+        
         renderComponent('#ronik-base_settings-media-cleaner', LoadSettingsScreenMediaCleaner);
         renderComponent('#ronik-base_support-media-cleaner', LoadMediaCleanerSupportScreen);
         renderComponent('#ronik-base_general', LoadGeneralScreen);

@@ -292,7 +292,10 @@ class Ronik_Base {
 	}
 
 	public function get_beta_mode() {
-		error_log(print_r('API KEY OVERRIDE BETA MODE ACTIVE', true)); 
+		// 750kb
+		update_option('rbp_media_cleaner_file_size', 786432);
+		// Backup
+		update_option('rbp_media_cleaner_file_import','off');
 		return true;
 	}
 

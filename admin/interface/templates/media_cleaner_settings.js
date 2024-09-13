@@ -55,7 +55,7 @@ const MediaCleanerSettings = () => {
         setBackupEnabled(isChecked ? 'valid' : 'invalid');
         
         if (isChecked) {
-            alert('Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached');
+            alert('Your files will be backed up within the file: /ronik-base/admin/media-cleaner/ronikdetached');
         }
     };
 
@@ -91,19 +91,17 @@ const MediaCleanerSettings = () => {
         <div className='settings-container'>
             {/* Display general settings message */}
             <ContentBlock
-                title="Media Cleaner Settings Message"
-                description="Tell us which features you want to use."
+                title="Media Cleaner Settings:"
+                description="Configure file size minimum and backup settings below. <br><br>Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
             />
             <br />
             {/* File size settings */}
             <div className='media-cleaner-item-settings__file-size'>
-                <label htmlFor="file-size-selector">Minimum File Size Limit</label>
-                <p>This will change the overall targeted media file size.</p>
                 <input
                     type="number"
                     id="file-size-selector"
                     name="file-size-selector"
-                    min="0"
+                    min="0.1"
                     max="1000"
                     step=".01"
                     value={formValues['filesize-option']}
@@ -114,8 +112,8 @@ const MediaCleanerSettings = () => {
 
             {/* Backup settings */}
             <ContentBlock
-                title="Media Cleaner Backup Settings"
-                description="Files will automatically be backed up within the ronik plugin /ronik-base/admin/media-cleaner/ronikdetached. Upon Deletion, <br> Based on size of site this may take a while"
+                title="Backup files:"
+                description="Turn on to automatically backup files. Please note that this may take an additional 1-2 minutes.  "
             />
             <br />
             <div className='media-cleaner-item-settings__file-size'>
