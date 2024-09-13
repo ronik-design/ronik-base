@@ -1,5 +1,9 @@
 <?php
+$rbpHelper = new RbpHelper;
+
 if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5a, wp_send_json_error ', 'low', 'rbp_media_cleaner');
+
 	wp_send_json_error('Security check failed', '400');
 	wp_die();
 }
@@ -17,8 +21,11 @@ add_filter( 'http_request_timeout', 'ronikdesigns_timeout_extend' );
 
 // Simple function that erases all option data from plugin,
 function databaseScannerMedia__cleaner( ) {    
+	$rbpHelper = new RbpHelper;
     global $wpdb;
-    error_log(print_r('Lets cleanup the database', true));
+
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 4a, databaseScannerMedia__cleaner Lets cleanup the database ', 'low', 'rbp_media_cleaner');
+
     // Remove the original post value to null..
     $_POST['imageDirFound'] = '';
     $tablename = $wpdb->prefix . "posts";
@@ -39,26 +46,33 @@ function databaseScannerMedia__cleaner( ) {
     }
 }
 if ($_POST['post_overide'] == 'media-preserve'){
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-preserve ', 'low', 'rbp_media_cleaner');
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
 		include $file;
 	}
 } else if( $_POST['post_overide'] == 'media-delete-indiv') {
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-delete-indiv ', 'low', 'rbp_media_cleaner');
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_delete_indiv.php') as $file) {
 		include $file;
 	}
 } else{
 	if(!$_POST['user_option']){
+		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5c, Security check failed ', 'low', 'rbp_media_cleaner');
+
 		wp_send_json_error('Security check failed', '400');
 		wp_die();	
 	}
 	
 	if(($_POST['user_option'] == 'fetch-media')){
+		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5d, fetch-media ', 'low', 'rbp_media_cleaner');
+
 		foreach (glob(dirname(__FILE__) . '/media-cleaner_init.php') as $file) {
 			include $file;
 		}
 	} 
 	if($_POST['user_option'] == 'delete-media'){
-		error_log(print_r('delete-media', true));
+		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5e, delete-media ', 'low', 'rbp_media_cleaner');
+
 		foreach (glob(dirname(__FILE__) . '/media-cleaner-remove.php') as $file) {
 			include $file;
 		}

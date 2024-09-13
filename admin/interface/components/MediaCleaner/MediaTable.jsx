@@ -123,25 +123,25 @@ const MediaCollectorTable = ({
                     </button>
                     <button
                         type="button"
-                        title="Filter High"
+                        title="Sort Largest to Smallest File Size"
                         onClick={filter_size}
                         data-filter="high"
                         className={`filter-nav__button filter-nav__button--${filterMode === 'high' ? 'active' : 'inactive'}`}
                     >
-                        Filter High
+                        Sort Largest to Smallest File Size
                     </button>
                     <button
                         type="button"
-                        title="Filter Low"
+                        title="Sort Smallest to Largest File Size"
                         onClick={filter_size}
                         data-filter="low"
                         className={`filter-nav__button filter-nav__button--${filterMode === 'low' ? 'active' : 'inactive'}`}
                     >
-                        Filter Low
+                        Sort Smallest to Largest File Size
                     </button>
                 </div>
-                <span className="overall-number">Overall Unattached Media Found: {mediaCollector.length}</span>
-                <span className="overall-number">Overall Unattached Media File Size: {Math.round(totalSize * 100) / 100} MB</span>
+                <span className="overall-number">Number of unlinked files found: {mediaCollector.length}</span>
+                <span className="overall-number">Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB</span>
             </>
         );
     };
@@ -175,11 +175,11 @@ const MediaCollectorTable = ({
             <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
             <td className='media-collector-table__td'>{collector['id']}</td>
             <td className='media-collector-table__td'>
-                <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
+                <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
             </td>
             <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
             <td className='media-collector-table__td media-collector-table__td--preserve'>
-                <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve Row</button>
+                <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve File</button>
             </td>
         </tr>
     ));
@@ -193,14 +193,14 @@ const MediaCollectorTable = ({
             <table className='media-collector-table'>
                 <tbody className='media-collector-table__tbody'>
                     <tr className='media-collector-table__tr'>
-                        <th className='media-collector-table__th'>Trash</th>
+                        <th className='media-collector-table__th'>Permanently Delete</th>
                         <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
                         <th className='media-collector-table__th'>File Type</th>
                         <th className='media-collector-table__th'>File Size</th>
-                        <th className='media-collector-table__th'>Image ID</th>
-                        <th className='media-collector-table__th'>Image Edit</th>
-                        <th className='media-collector-table__th media-collector-table__th--img-url'>Image Url</th>
-                        <th className='media-collector-table__th media-collector-table__th--preserve'>Temporarily Preserve Image <br /><sup>Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily.</sup></th>
+                        <th className='media-collector-table__th'>File ID</th>
+                        <th className='media-collector-table__th'>Media Library Link</th>
+                        <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
+                        <th className='media-collector-table__th media-collector-table__th--preserve'>Preserve: <br /><sup>Select preserve to exclude any file from bulk deletion.</sup></th>
                     </tr>
                 </tbody>
                 <tbody className='media-collector-table__tbody'>
@@ -218,17 +218,16 @@ const PreservedMediaCollectorTable = ({ mediaCollectorPreserved, activatePreserv
     // Render preserved media items
     const mediaCollectorItems = mediaCollectorPreserved.map(collector => (
         <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-            <td className='media-collector-table__td'>Trash</td>
             <td className='media-collector-table__td media-collector-table__td--img-thumb'>{collector['img-thumb'] ? parse(collector['img-thumb']) : 'No Image Found'}</td>
             <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
             <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
             <td className='media-collector-table__td'>{collector['id']}</td>
             <td className='media-collector-table__td'>
-                <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Edit</a>
+                <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
             </td>
             <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
             <td className='media-collector-table__td media-collector-table__td--preserve'>
-                <button onClick={activatePreserve} data-unpreserve-media={collector['id']}>Unpreserve Row</button>
+                <button onClick={activatePreserve} data-unpreserve-media={collector['id']}>Un-preserve file</button>
             </td>
         </tr>
     ));
@@ -237,13 +236,12 @@ const PreservedMediaCollectorTable = ({ mediaCollectorPreserved, activatePreserv
         <table className='media-collector-table'>
             <tbody className='media-collector-table__tbody'>
                 <tr className='media-collector-table__tr'>
-                    <th className='media-collector-table__th'>Trash</th>
                     <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
                     <th className='media-collector-table__th'>File Type</th>
                     <th className='media-collector-table__th'>File Size</th>
-                    <th className='media-collector-table__th'>Image ID</th>
-                    <th className='media-collector-table__th'>Image Edit</th>
-                    <th className='media-collector-table__th media-collector-table__th--img-url'>Image Url</th>
+                    <th className='media-collector-table__th'>File ID</th>
+                    <th className='media-collector-table__th'>Media Library Link</th>
+                    <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
                     <th className='media-collector-table__th media-collector-table__th--preserve'>Temporarily Preserve Image <br /><sup>Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily.</sup></th>
                 </tr>
             </tbody>

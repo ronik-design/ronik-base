@@ -42,6 +42,8 @@ class RmcDataGathering{
 
     // postTypesRetrieval retrieves all the post types and custom post types of the entire site.
     public function postTypesRetrieval(){
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 12a, postTypesRetrieval retrieves all the post types and custom post types of the entire site. ', 'low', 'rbp_media_cleaner');
         $post_types = get_post_types( array(), 'names', 'and' );
         // We remove a few of the deafult types to help with speed cases..
         $post_types_without_defaults = array_diff($post_types,
@@ -91,7 +93,9 @@ class RmcDataGathering{
 
     // Function that returns all post ids
     public function postIDCollector($select_post_status, $select_post_type ){
-        error_log(print_r('postIDCollector Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('postIDCollector: Ref 1a postIDCollector Started ', 'low', 'rbp_media_cleaner');
+
         $counter = 0; 
         if($select_post_type){
             $count_posts = array();
@@ -130,7 +134,8 @@ class RmcDataGathering{
             $rmc_data_collectors_post_ids_array[] = postIDCollector($select_post_status, $select_post_type, $offsetValue, $select_numberposts );
         }	
 
-        error_log(print_r('postIDCollector DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('postIDCollector: Ref 1b postIDCollector Done ', 'low', 'rbp_media_cleaner');
+
         // Merge and filter and reindex.
         return array_values(array_filter(array_merge(...$rmc_data_collectors_post_ids_array)));
     }
@@ -138,7 +143,9 @@ class RmcDataGathering{
 
     // Function that returns all Image IDs
     public function imageIDCollector($select_attachment_type, $select_numberposts, $file_size, $maxIncrement){
-        error_log(print_r('imageIDCollector Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Ref 1a imageIDCollector Started ', 'low', 'rbp_media_cleaner');
+
         // Get all Image IDs.
         function imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size){
             $allimagesid = get_posts( array(
@@ -189,7 +196,8 @@ class RmcDataGathering{
             $rmc_data_collectors_ids_array[$number] = imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size );
         }
 
-        error_log(print_r('imageIDCollector DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Ref 1b imageIDCollector Done ', 'low', 'rbp_media_cleaner');
+
         return array_values(array_filter(array_merge(...array_filter($rmc_data_collectors_ids_array))));
     }
 
@@ -198,7 +206,9 @@ class RmcDataGathering{
 
     // Lets get all of the pages, posts and custom post types of the entire application. Thumbnail.
     public function specificImageThumbnailAuditor( $specificPageID, $allimagesid  ){
-        error_log(print_r('imageThumbnailAuditor Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1a imageThumbnailAuditor Started ', 'low', 'rbp_media_cleaner');
+
         // We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
         $select_numberposts = 35;
         $throttle_detector_attachement = count($allimagesid);
@@ -229,7 +239,7 @@ class RmcDataGathering{
             $all_image_attachement_ids_array[] = specificImageAttachement($allimagesid_array);
         }
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_image_attachement_ids_array))));
-        error_log(print_r('imageThumbnailAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1b imageThumbnailAuditor Checkpoint 1a DONE ', 'low', 'rbp_media_cleaner');
 
         $all_post_thumbnail_ids = array();
         if( get_post_thumbnail_id( $specificPageID ) ){
@@ -237,7 +247,8 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter($all_post_thumbnail_ids)));
-        error_log(print_r('imageThumbnailAuditor Checkpoint 1b DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1c imageThumbnailAuditor Checkpoint 1b DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1b;
     }
 
@@ -246,7 +257,9 @@ class RmcDataGathering{
 
     // Lets get all of the pages, posts and custom post types of the entire application. Thumbnail.
     public function imageThumbnailAuditor( $get_all_post_pages, $allimagesid, $select_attachment_type ){
-        error_log(print_r('imageThumbnailAuditor Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1a imageThumbnailAuditor Started ', 'low', 'rbp_media_cleaner');
+
         // We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
         $select_numberposts = 35;
         $throttle_detector_attachement = count($allimagesid);
@@ -275,7 +288,7 @@ class RmcDataGathering{
             $all_image_attachement_ids_array[] = imageAttachement($allimagesid_array);
         }
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_image_attachement_ids_array))));
-        error_log(print_r('imageThumbnailAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1b imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
 
 
         // We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
@@ -303,7 +316,8 @@ class RmcDataGathering{
         }	
 
         $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter(array_merge(...$all_post_thumbnail_ids_array))));
-        error_log(print_r('imageThumbnailAuditor Checkpoint 1b DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1c imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1b;
     }
 
@@ -312,7 +326,9 @@ class RmcDataGathering{
 
     // Check the image id, the og file path, and the image base name.
     public function specificImagePostAuditor( $allimagesid , $specificPageID ){
-        error_log(print_r('imagePostAuditor Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImagePostAuditor: Ref 1a imagePostAuditor Started ', 'low', 'rbp_media_cleaner');
+
         // We do a very loose search for the image id in the post_meta value.
         // At the same time we search for the image file path in the post_meta value.
         $wp_postsmeta_id_audit_array = array();
@@ -338,7 +354,6 @@ class RmcDataGathering{
                 ));
 
                 if($f_posts){
-                    error_log(print_r( $j , true));
                     foreach($f_posts as $key => $posts){
                         if($posts){
                             $wp_postsmeta_id_audit_array[] = $image_id;
@@ -349,7 +364,8 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_postsmeta_id_audit_array)));
-        error_log(print_r('imagePostAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImagePostAuditor: Ref 1b imagePostAuditor DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1a;
     }
 
@@ -357,15 +373,11 @@ class RmcDataGathering{
 
 
 
-
-
-
-
-
-
     // Check the image id, the og file path, and the image base name.
     public function imagePostAuditor( $allimagesid , $all_post_pages, $select_post_status, $select_post_type ){
-        error_log(print_r('imagePostAuditor Started' , true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1a imagePostAuditor Started ', 'low', 'rbp_media_cleaner');
+
         // We do a very loose search for the image id in the post_meta value.
         // At the same time we search for the image file path in the post_meta value.
         $wp_postsmeta_id_audit_array = array();
@@ -392,7 +404,6 @@ class RmcDataGathering{
                 ));
 
                 if($f_posts){
-                    error_log(print_r( $j , true));
                     foreach($f_posts as $key => $posts){
                         if($posts){
                             $wp_postsmeta_id_audit_array[] = $image_id;
@@ -404,7 +415,8 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_postsmeta_id_audit_array)));
-        error_log(print_r('imagePostAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imagePostAuditor DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1a;
     }
 
@@ -413,8 +425,10 @@ class RmcDataGathering{
 
     // Check the post content and do a loose find if the basename is within the post content. This is most ideal for gutenberg blocks.
     public function specificImagePostContentAuditor( $allimagesid , $post_id ){
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImagePostContentAuditor: Ref 1a imagePostContentAuditor Started ', 'low', 'rbp_media_cleaner');
+
         $helper = new RonikBaseHelper;
-        error_log(print_r('imagePostContentAuditor Started' , true));
         // This searches the posts content
         // Lets get the post meta of all posts...
         $wp_postsmeta_wp_content_id_audit_array = array();
@@ -430,7 +444,8 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_postsmeta_wp_content_id_audit_array)));
-        error_log(print_r('imagePostContentAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImagePostContentAuditor: Ref 1b imagePostContentAuditor DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1a;
     }
 
@@ -440,14 +455,13 @@ class RmcDataGathering{
 
 
 
-
-
-
     // Check the post content and do a loose find if the basename is within the post content. This is most ideal for gutenberg blocks.
     public function imagePostContentAuditor( $allimagesid , $all_post_pages ){
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Ref 1a imagePostContentAuditor Started ', 'low', 'rbp_media_cleaner');
+
         $helper = new RonikBaseHelper;
 
-        error_log(print_r('imagePostContentAuditor Started' , true));
         // This searches the posts content
         // Lets get the post meta of all posts...
         $wp_postsmeta_wp_content_id_audit_array = array();
@@ -457,7 +471,6 @@ class RmcDataGathering{
                     foreach($allimagesid as $k => $image_id){
                         //  We do a loose comparison if the meta value has any keyword of en.
                         if( $helper->ronik_compare_like( get_post_field('post_content', $post_id) , basename(get_attached_file($image_id)))){
-                            error_log(print_r( $k , true));
                             $wp_postsmeta_wp_content_id_audit_array[] = $image_id;
                         }
                     }
@@ -467,7 +480,8 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_postsmeta_wp_content_id_audit_array)));
-        error_log(print_r('imagePostContentAuditor Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Ref 1a imagePostContentAuditor DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1a;
     }
 
@@ -486,9 +500,9 @@ class RmcDataGathering{
 
     // Check all the files for the image.
     public function imageFilesystemAudit( $allimagesid  ){
-        error_log(print_r('imageFilesystemAudit Started' , true));
-
-        error_log(print_r(get_theme_file_path(), true));
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1a imageFilesystemAudit Started ', 'low', 'rbp_media_cleaner');
+        $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1b imageFilesystemAudit ' . get_theme_file_path(), 'low', 'rbp_media_cleaner');
         
         $wp_infiles_array = array();
         if($allimagesid){
@@ -498,7 +512,7 @@ class RmcDataGathering{
         }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_unique(array_filter($wp_infiles_array))));
-        error_log(print_r('imageFilesystemAudit Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1c imageFilesystemAudit DONE ', 'low', 'rbp_media_cleaner');
         return $arr_checkpoint_1a;
     }
 
@@ -511,8 +525,8 @@ class RmcDataGathering{
 
     // Check all the files for the image.
     public function imagePreserveAudit( $allimagesid  ){
-        error_log(print_r('imagePreserveAudit Started' , true));
-
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1a imagePreserveAudit Started ', 'low', 'rbp_media_cleaner');
 
         $meta_temp_saved_array = array();
         if($allimagesid){
@@ -529,16 +543,11 @@ class RmcDataGathering{
                 }
             }
         }
-
-        error_log(print_r('$meta_temp_saved_array ', true));
-
-        error_log(print_r($meta_temp_saved_array , true));
-
-
-
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1b imagePreserveAudit  ' . $meta_temp_saved_array , 'low', 'rbp_media_cleaner');
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_unique(array_filter($meta_temp_saved_array))));
-        error_log(print_r('imagePreserveAudit Checkpoint 1a DONE' , true));
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1a imagePreserveAudit DONE ', 'low', 'rbp_media_cleaner');
+
         return $arr_checkpoint_1a;
     }
 
@@ -548,6 +557,9 @@ class RmcDataGathering{
 
 
     public function imageMarker( $allimagesid  ) {
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imageMarker: Ref 1a imageMarker Started ', 'low', 'rbp_media_cleaner');
+
         if($allimagesid){
             foreach($allimagesid as $imageid){
                 $data = wp_get_attachment_metadata( $imageid ); // get the data structured
@@ -555,6 +567,8 @@ class RmcDataGathering{
 				wp_update_attachment_metadata( $imageid, $data );  // save it back to the db
             }
         }
+        $rbpHelper->ronikdesigns_write_log_devmode('imageMarker: Ref 1b imageMarker DONE ', 'low', 'rbp_media_cleaner');
+
     }
 
 
@@ -562,8 +576,10 @@ class RmcDataGathering{
 
 
     public function imageCloneSave( $is_array , $imagesid ) {
-        $f_file_import = get_option( 'rbp_media_cleaner_file_import' );
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11a, imageCloneSave. ', 'low', 'rbp_media_cleaner');
 
+        $f_file_import = get_option( 'rbp_media_cleaner_file_import' );
         // Update the memory option.
         $helper = new RonikBaseHelper;
         $helper->ronikdesigns_increase_memory();
@@ -575,9 +591,7 @@ class RmcDataGathering{
             $rbp_media_cleaner_media_data = $imagesid;
         }
         
-        error_log(print_r('$rbp_media_cleaner_media_data', true));
-        error_log(print_r($rbp_media_cleaner_media_data, true));
-
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11b, imageCloneSave. '. $rbp_media_cleaner_media_data , 'low', 'rbp_media_cleaner');
 
         if($f_file_import == 'off' || !isset($f_file_import)){
             if($rbp_media_cleaner_media_data){
@@ -587,7 +601,7 @@ class RmcDataGathering{
                     if($delete_attachment_clone){
                         //Delete attachment file from disk
                         unlink( get_attached_file( $clone_path ) );
-                        error_log(print_r('Clone File Deleted', true));
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11b, imageCloneSave. Clone File Deleted' , 'low', 'rbp_media_cleaner');
                     }
 
                     // Delete attachment from database only, not file
@@ -597,7 +611,7 @@ class RmcDataGathering{
                         if(get_attached_file( $rbp_data_id )){
                             unlink( get_attached_file( $rbp_data_id ) );
                         }
-                        error_log(print_r('File Deleted', true));
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11c, imageCloneSave. File Deleted' , 'low', 'rbp_media_cleaner');
                     }
 
                     if( $rbp_data_id == end($rbp_media_cleaner_media_data) ){
@@ -637,8 +651,6 @@ class RmcDataGathering{
                     mkdir(dirname(__FILE__, 2).'/ronikdetached/', 0777, true);
                 }
           
-
-
                 // Erase old files and database
                 if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-database.sql')) {
                     unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql' );
@@ -646,7 +658,6 @@ class RmcDataGathering{
                 if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-media.zip')) {                
                     unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-media.zip' );
                 }
-
 
                 if($file_path && isset($file_path_date_mod_array_reindexed[1])){
                     if( file_exists($file_path) ){
@@ -663,7 +674,7 @@ class RmcDataGathering{
                 }
 
 
-                error_log(print_r($rbp_data_id, true));
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, imageCloneSave. '. $rbp_data_id , 'low', 'rbp_media_cleaner');
 
                 $clone_path = get_post_meta($rbp_data_id , '_wp_attached_file' ); // Full path
                 if( isset($clone_path[0]) ){
@@ -673,7 +684,7 @@ class RmcDataGathering{
                         if (file_exists(get_attached_file( $clone_path ))) { 
                             unlink( get_attached_file( $clone_path ) );
                         }
-                        error_log(print_r('Clone File Deleted', true));
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11e, imageCloneSave. Clone File Deleted ' , 'low', 'rbp_media_cleaner');
                     }
                 }
 
@@ -686,7 +697,7 @@ class RmcDataGathering{
                             unlink( get_attached_file( $rbp_data_id ) );
                         }
                     }
-                    error_log(print_r('File Deleted', true));
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, imageCloneSave.  File Deleted ' , 'low', 'rbp_media_cleaner');
                 } 
             }
 
@@ -738,14 +749,9 @@ class RmcDataGathering{
                     fclose($fileHandler);
                     $message = "Backup Created Successfully";
                     error_log(print_r($message, true));
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, imageCloneSave. BACKUP '. $message , 'low', 'rbp_media_cleaner');
                 }
-
-
-
-
-                
             return true;
-
         }   
         return true;     
     }

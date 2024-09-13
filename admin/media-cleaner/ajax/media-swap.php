@@ -1,4 +1,7 @@
 <?php 
+$rbpHelper = new RbpHelper;
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 10a, Media Swap. ', 'low', 'rbp_media_cleaner');
+
     $helper = new RonikBaseHelper;
     update_post_meta( $_POST['id'], 'mediaSwapFileTimestamp', time() );
     $image_id = $_POST['id'];

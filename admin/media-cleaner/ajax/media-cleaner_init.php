@@ -5,6 +5,7 @@
 
 // Create an instance of the helper class.
 $helper = new RonikBaseHelper;
+$rbpHelper = new RbpHelper;
 
 // Retrieve the timestamp of the last cron run from the database, defaulting to 'false' if not set.
 $cronLastRun = get_option('rbp_media_cleaner_cron_last', 'false');
@@ -16,7 +17,7 @@ $oneDayAgo = strtotime('-1 day');
 // Check if the cron job was last run more than a day ago.
 if ($cronLastRun && $currentTimestamp > strtotime($cronLastRun)) {
     // Log the cron reset event.
-    error_log('Cron Reset');
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6a, Cron Reset ', 'low', 'rbp_media_cleaner');
     
     // Update the sync status to 'not-running' and delete the transient progress data.
     update_option('rbp_media_cleaner_sync_running', 'not-running');
@@ -34,12 +35,12 @@ $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_arra
 $finalizedImageIds = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
 
 // Log the initial sync status and progress.
-error_log('Running First Time: ' . $syncRunning);
-error_log('Progress: ' . $progress);
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6b, Running First Time: ' . $syncRunning , 'low', 'rbp_media_cleaner');
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6c, Progress: ' . $progress , 'low', 'rbp_media_cleaner');
 
 // If the sync process is currently running, return the progress status.
 if ($syncRunning === 'running') {
-    error_log('Running');
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6d, Running: ' . $progress , 'low', 'rbp_media_cleaner');
     wp_send_json_success([
         'sync' => $progress,
         'response' => 'Collector-Sync-inprogress-' . rand(),
@@ -84,13 +85,12 @@ if (!$finalizedImageIds || (isset($_POST['sync']) && $_POST['sync'] === 'inprogr
         wp_send_json_success('COMPLETED');
         exit;
     }
-
     // Log the completion status.
-    error_log('Collector-Sync-done');
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6e, Collector-Sync-done'  , 'low', 'rbp_media_cleaner');
 }
 
 // Log the increment value or indicate if it is not set.
-error_log($_POST['increment'] ?? 'No increment');
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6f '.$_POST['increment'] ?? 'No increment'  , 'low', 'rbp_media_cleaner');
 
 // Handle the increment and update the sync progress accordingly.
 if (isset($_POST['increment'])) {
@@ -131,8 +131,9 @@ if (isset($_POST['increment'])) {
     }
 
     // Log the current increment and maximum pages.
-    error_log('Increment: ' . $increment);
-    error_log('Max Increment: ' . $maxPages);
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6g Increment: ' . $increment  , 'low', 'rbp_media_cleaner');
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6h Max Increment: ' . $maxPages  , 'low', 'rbp_media_cleaner');
+
 
     // If the increment has reached or exceeded the maximum number of pages, prompt for a reload.
     if ($increment >= $maxPages) {
@@ -173,6 +174,8 @@ if (isset($_POST['increment'])) {
 
 } else {
     // Handle cases where the increment parameter is missing or incorrect.
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6i Increment error '   , 'low', 'rbp_media_cleaner');
+
     wp_send_json_error('Increment error.');
     exit;
 }

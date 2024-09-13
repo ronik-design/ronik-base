@@ -278,5 +278,5 @@ function my_custom_permission_check() {
 register_rest_route( 'mediacleaner/v1', '/mediacollector/(?P<slug>\w+)', array(
     'methods' => 'GET',
     'callback' => 'ronikdesignsbase_mediacleaner_data',
-    'permission_callback' => 'my_custom_permission_check', // Restrict access based on custom logic
+    // 'permission_callback' => 'my_custom_permission_check', // Restrict access based on custom logic
 ));

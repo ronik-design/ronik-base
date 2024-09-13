@@ -176,7 +176,11 @@ class Ronik_Base {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state() );
+		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode() );
+
+		$this->loader->add_action('init', $plugin_admin, 'rbp_helper_functions_cookies', 1);
+		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_helper_functions', 1);
+
 		// Lets check to see if dependencies are met before continuing...
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
 		// Let us load the plugin interface.
@@ -191,7 +195,7 @@ class Ronik_Base {
 
 		// rmc_ajax_media_cleaner
 			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
-		if( $this->get_media_cleaner_state() ){
+		if( $this->get_media_cleaner_state() || $this->get_beta_mode() ){
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
@@ -223,7 +227,7 @@ class Ronik_Base {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() , $this->get_media_cleaner_state(), $this->get_optimization_state() );
+		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() , $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode() );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action('rest_api_init', $plugin_public, 'ronikdesignsbase_rest_api_init');
@@ -286,6 +290,12 @@ class Ronik_Base {
 		}
 		return $media_cleaner_state;
 	}
+
+	public function get_beta_mode() {
+		error_log(print_r('API KEY OVERRIDE BETA MODE ACTIVE', true)); 
+		return true;
+	}
+
 
 	/**
 	 * Retrieve the valid auth of optimization.

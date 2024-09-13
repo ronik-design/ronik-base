@@ -50,13 +50,14 @@ class RonikBaseHelper{
     
 
     public function ronikdesigns_increase_memory(){
+        $rbpHelper = new RbpHelper;
         // Lets us set the max_execution_time to 1hr
-        error_log(print_r( 'First max_execution_time: ' . ini_get('max_execution_time'), true ));
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13a, ronikdesigns_increase_memory First max_execution_time: ' . ini_get('max_execution_time'), 'low', 'rbp_media_cleaner');
         @set_time_limit( intval( 3600*2 ) );
-        error_log(print_r( 'Rewrite max_execution_time: ' . ini_get('max_execution_time'), true ));
-        error_log(print_r( 'First memory_limit: ' . ini_get('memory_limit'), true ));
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13b, ronikdesigns_increase_memory Rewrite max_execution_time: ' . ini_get('max_execution_time'), 'low', 'rbp_media_cleaner');
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13c, ronikdesigns_increase_memory First memory_limit: ' . ini_get('memory_limit'), 'low', 'rbp_media_cleaner');
         ini_set('memory_limit', '5024M');
-        error_log(print_r( 'Rewrite memory_limit: ' . ini_get('memory_limit'), true ));
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13d, ronikdesigns_increase_memory Rewrite memory_limit: ' . ini_get('memory_limit'), 'low', 'rbp_media_cleaner');
     }
 
 	// Write error logs cleanly.
@@ -274,6 +275,10 @@ function cleaner_post_mime_type($mime_type){
 // Pretty much a quick way to get the overall count of the media.
 function databaseScannerMedia__allMedia( $requestParameter ) {
     // Helper Guide
+    $rbpHelper = new RbpHelper;
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 14a, databaseScannerMedia__allMedia a quick way to get the overall count of the media. ', 'low', 'rbp_media_cleaner');
+
+    
 	$helper = new RonikBaseHelper;
     // error_log(print_r('Lets gather all the images of the entire site.', true));
     $helper->ronikdesigns_write_log_devmode('Lets gather all the images of the entire site.', 'low');

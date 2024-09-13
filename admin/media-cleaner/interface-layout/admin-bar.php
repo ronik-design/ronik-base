@@ -53,7 +53,7 @@ function mc_sync_action_js() { ?>
         const syncElement = document.getElementById('wp-admin-bar-rmc-sync');
 
         // Check if the element exists
-        if (syncElement) {
+        if (syncElement && isButtonDisabled) {
             // Find the <a> tag inside the element
             const linkElement = syncElement.querySelector('a');
 

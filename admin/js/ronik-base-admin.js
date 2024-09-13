@@ -3,23 +3,30 @@
     // Initialize a counter variable
     let progressCounter = 0;
     let progressTimerCounter = 0;
+    let intervalTime = 10000;
 
     // Function to initialize media progress
     function initRonikMediaProgress() {
         // Increment the counter
         progressCounter++;
         progressTimerCounter++;
+
+        // Time is lame so we convert milliseconds to seconds.
+        // This helps with the intervall counter to make essentially a countdown clock.
+        function timeAdjust(counter) {
+            return (counter*intervalTime)*0.001;
+        }
+        
         // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data. 
         console.log("initRonikMediaProgress count:", progressCounter);
-        if(progressCounter > 60){
+        if(timeAdjust(progressCounter) > 60){
             // Clear the console
             console.clear();
             // Reset the counter to 0.
             progressCounter = 0;
         }
         // Pretty much this is a safe guard we simply reload the entire page incase things are acting wacky or slow.
-        // 60 seconds times 5. 5 minutes
-        if(progressTimerCounter > 60*5){
+        if(timeAdjust(progressTimerCounter) > 60*5){
             window.location.reload(true);
         }
 
@@ -55,7 +62,7 @@
                     if(!data.data){
 
                     } else{
-                        if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){       
+                        if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){   
                             console.log('.progress-bar not present');
                  
                             var element = document.getElementById("wpwrap");
@@ -74,6 +81,8 @@
                                 `);
                             }
                             console.log(data);
+                        } else {
+                            
                         }
                     }
                 }
@@ -97,7 +106,10 @@
             if (data === 'Success') {
                 console.log('Correct API Key');
             } else {
-                initRonikDeterminism(pluginSlug, 'invalidate');
+                setTimeout(() => {
+                    console.log("Delayed");
+                    initRonikDeterminism(pluginSlug, 'invalidate');
+                  }, intervalTime*2);
             }
         } catch (err) {
             console.error('Error validating API key:', err);
@@ -120,7 +132,7 @@
             dataType: 'json',
             success: function(data) {
                 if (data.data === 'Reload') {
-                    alert('Yikes, looks like your API key has expired!');
+                    alert('Yikes, looks like this license key is invalid and may be expired.');
                     setTimeout(() => window.location.reload(true), 500);
                 } else if (data.data !== 'noreload') {
                     console.log('Success:', data);
@@ -136,16 +148,17 @@
     // Function to start validation and progress checking
     function ronikbasePingValidator() {
         console.log('Ping validator started');
+        console.log('API KEY DISABLED');
         function pingValidator() {
             initRonikDeterminism('ronik_media_cleaner', 'valid');
         }
-        setInterval(pingValidator, 10000);
+        setInterval(pingValidator, intervalTime);
 
         if (window.location.href.includes("options-ronik-base_media_cleaner")) {
             function pingMediaProgressValidator() {
                 initRonikMediaProgress();
             }
-            setInterval(pingMediaProgressValidator, 1000);
+            setInterval(pingMediaProgressValidator, intervalTime/2);
         }
     }
 

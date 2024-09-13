@@ -3,6 +3,9 @@
 * Init Remove row Media .
 */
 
+$rbpHelper = new RbpHelper;
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 7a, Init Remove row Media ', 'low', 'rbp_media_cleaner');
+
 $rbp_media_cleaner_data_array = get_option('rbp_media_cleaner_media_data');
 if( !$rbp_media_cleaner_data_array ){
     $rbp_media_cleaner_data_array = array();
@@ -20,7 +23,8 @@ if(isset($_POST['unPreserveImageId']) && $_POST['unPreserveImageId']){
         $array_with_preserved_img = array_merge($transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized, array($_POST['unPreserveImageId']) );
         set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $array_with_preserved_img , DAY_IN_SECONDS );
         // Send sucess message!
-        error_log(print_r('Unpreserve', true));
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 7b, Init Remove row Media Unpreserve', 'low', 'rbp_media_cleaner');
+
         wp_send_json_success('Reload');
     }
 }
@@ -35,10 +39,13 @@ if(isset($_POST['preserveImageId']) && $_POST['preserveImageId']){
         $array_without_preserved_img_unique = array_unique($array_without_preserved_img);
         set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $array_without_preserved_img_unique , DAY_IN_SECONDS );
         // Send sucess message!
-        error_log(print_r('Preserve', true));
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 7b, Init Remove row Media Preserve', 'low', 'rbp_media_cleaner');
+
         wp_send_json_success('Reload');
     }
 } else{
     // If no rows are found send the error message!
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 7c, Init Remove row Media No rows found!', 'low', 'rbp_media_cleaner');
+
     wp_send_json_error('No rows found!');
 }

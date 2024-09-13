@@ -627,16 +627,16 @@ html {
       border-spacing: 0;
       
       .media-collector-table__th , .media-collector-table__td{
-        max-width: 5%;
+        max-width: 7%;
 
         &--img-thumb{
           max-width: 15%;
         }
         &--img-url{
-          max-width: 40%;
+          max-width: 20%;
         }
         &--preserve{
-          max-width: 20%;
+          max-width: 15%;
         } 
         button{
           background-color: #6700ff;

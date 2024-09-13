@@ -2727,7 +2727,7 @@ var MediaCollector = function MediaCollector() {
       activateDelete: activateDelete,
       activatePreserve: activatePreserve
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-      children: "Preserved Images"
+      children: "Preserved Files"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PreservedMediaCollectorTable, {
       mediaCollectorPreserved: mediaCollectorPreserved,
       filter: filterMode,
@@ -2902,25 +2902,25 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
           children: "Filter All"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
           type: "button",
-          title: "Filter High",
+          title: "Sort Largest to Smallest File Size",
           onClick: filter_size,
           "data-filter": "high",
           className: "filter-nav__button filter-nav__button--".concat(filterMode === 'high' ? 'active' : 'inactive'),
-          children: "Filter High"
+          children: "Sort Largest to Smallest File Size"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
           type: "button",
-          title: "Filter Low",
+          title: "Sort Smallest to Largest File Size",
           onClick: filter_size,
           "data-filter": "low",
           className: "filter-nav__button filter-nav__button--".concat(filterMode === 'low' ? 'active' : 'inactive'),
-          children: "Filter Low"
+          children: "Sort Smallest to Largest File Size"
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
         className: "overall-number",
-        children: ["Overall Unattached Media Found: ", mediaCollector.length]
+        children: ["Number of unlinked files found: ", mediaCollector.length]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
         className: "overall-number",
-        children: ["Overall Unattached Media File Size: ", Math.round(totalSize * 100) / 100, " MB"]
+        children: ["Total unlinked media file size: ", Math.round(totalSize * 100) / 100, " MB"]
       })]
     });
   };
@@ -2984,7 +2984,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
           target: "_blank",
           rel: "noopener noreferrer",
           href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
-          children: "Edit"
+          children: "Go to media"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
@@ -2994,7 +2994,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
           onClick: activatePreserve,
           "data-preserve-media": collector['id'],
-          children: "Preserve Row"
+          children: "Preserve File"
         })
       })]
     }, collector['id']);
@@ -3010,7 +3010,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
           className: "media-collector-table__tr",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
             className: "media-collector-table__th",
-            children: "Trash"
+            children: "Permanently Delete"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-thumb",
             children: "Thumbnail Image"
@@ -3022,17 +3022,17 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
             children: "File Size"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
             className: "media-collector-table__th",
-            children: "Image ID"
+            children: "File ID"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
             className: "media-collector-table__th",
-            children: "Image Edit"
+            children: "Media Library Link"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-url",
-            children: "Image Url"
+            children: "File Path"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
             className: "media-collector-table__th media-collector-table__th--preserve",
-            children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
-              children: "Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily."
+            children: ["Preserve: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
+              children: "Select preserve to exclude any file from bulk deletion."
             })]
           })]
         })
@@ -3056,9 +3056,6 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
       className: "media-collector-table__tr",
       "data-media-id": collector['id'],
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
-        className: "media-collector-table__td",
-        children: "Trash"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-thumb",
         children: collector['img-thumb'] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb']) : 'No Image Found'
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
@@ -3076,7 +3073,7 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
           target: "_blank",
           rel: "noopener noreferrer",
           href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
-          children: "Edit"
+          children: "Go to media"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
@@ -3086,7 +3083,7 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
           onClick: activatePreserve,
           "data-unpreserve-media": collector['id'],
-          children: "Unpreserve Row"
+          children: "Un-preserve file"
         })
       })]
     }, collector['id']);
@@ -3098,9 +3095,6 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
         className: "media-collector-table__tr",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th",
-          children: "Trash"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
           className: "media-collector-table__th media-collector-table__th--img-thumb",
           children: "Thumbnail Image"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
@@ -3111,13 +3105,13 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
           children: "File Size"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
           className: "media-collector-table__th",
-          children: "Image ID"
+          children: "File ID"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
           className: "media-collector-table__th",
-          children: "Image Edit"
+          children: "Media Library Link"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
           className: "media-collector-table__th media-collector-table__th--img-url",
-          children: "Image Url"
+          children: "File Path"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
           className: "media-collector-table__th media-collector-table__th--preserve",
           children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
@@ -49541,10 +49535,7 @@ function Integrations() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Integrations Message",
       description: "Ronik Base can integrate with other products, to help you further improve your website. You can enable or disable these integrations below."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Recommended integrations",
-      description: "Unlock rich results in Google search by using plugins that integrate with the Yoast Schema API."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "tile-block",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "tile-block__inner",
@@ -49595,8 +49586,8 @@ function Mediacleaner() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Media Cleaner",
-      description: "Media Cleaner will go through all unattached JPG, PNG, and GIF files. Based on media size this may take a while. Please click the 'Init Unused Media Migration' then review the selected images for deletion. Then click 'Init Deletion of Unused Media'. Please backup site before clicking the button! Keep in mind that if any pages or post are in the trash. The images that are attached to those pages will be deleted.Also please keep in mind that the older the website the higher possibility of a huge number of images being detached."
+      title: "Welcome to Media Harmony!",
+      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. The total size of your library will determine the time required to scan. Change your file size threshold in the Settings tab. Sort, filter, and delete or preserve your files in the list below."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       requestType: "rmc_ajax_media_cleaner"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {})]

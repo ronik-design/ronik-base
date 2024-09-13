@@ -58,6 +58,17 @@ class Ronik_Base_Public {
 	 */
 	private $optimization_state;
 
+
+	/**
+	 * The beta_mode_state.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $beta_mode_state   
+	 */
+	private $beta_mode_state;
+
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -65,7 +76,8 @@ class Ronik_Base_Public {
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version,  $media_cleaner_state, $optimization_state ) {
+	public function __construct($plugin_name, $version,  $media_cleaner_state, $optimization_state, $beta_mode_state ) {
+		$this->beta_mode_state = $beta_mode_state;
 		$this->media_cleaner_state = $media_cleaner_state;
 		$this->optimization_state = $optimization_state;
 		$this->plugin_name = $plugin_name;
@@ -115,6 +127,7 @@ class Ronik_Base_Public {
 
 	// Public facing rest api.
 	public function ronikdesignsbase_rest_api_init(){
+		
 		if($this->media_cleaner_state){
 			// Include the dynamic rest api.
 			foreach (glob(dirname(__FILE__) . '/rest-api/media_cleaner/*.php') as $file) {
@@ -127,5 +140,19 @@ class Ronik_Base_Public {
 				include $file;
 			}
 		}
+
+		if(!$this->optimization_state && $this->beta_mode_state){
+			// Include the dynamic rest api.
+			foreach (glob(dirname(__FILE__) . '/rest-api/optimization/*.php') as $file) {
+				include $file;
+			}
+		}
+		if(!$this->media_cleaner_state && $this->beta_mode_state){
+			// Include the dynamic rest api.
+			foreach (glob(dirname(__FILE__) . '/rest-api/media_cleaner/*.php') as $file) {
+				include $file;
+			}
+		}
+		
 	}
 }

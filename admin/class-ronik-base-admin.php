@@ -59,13 +59,24 @@ class Ronik_Base_Admin {
 	private $optimization_state;
 
 	/**
+	 * The beta_mode_state.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $beta_mode_state   
+	 */
+	private $beta_mode_state;
+
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version,  $media_cleaner_state, $optimization_state ) {
+	public function __construct($plugin_name, $version,  $media_cleaner_state, $optimization_state, $beta_mode_state ) {
+		$this->beta_mode_state = $beta_mode_state;
 		$this->media_cleaner_state = $media_cleaner_state;
 		$this->optimization_state = $optimization_state;
 		$this->plugin_name = $plugin_name;
@@ -150,45 +161,49 @@ class Ronik_Base_Admin {
 
 	// We create our own option page due to ACF in-effective
 	public function rbp_plugin_interface() {
-		add_menu_page(
-			'General - Ronik Base', // page <title>Title</title>
-			'Ronik Base', // link text
-			'manage_options', // user capabilities
-			'options-ronik-base', // page slug
-			'ronikbase_support_general', // this function prints the page content
-			'dashicons-visibility', // icon (from Dashicons for example)
-			6 // menu position
-		);
-		// Add Settings page.
-		add_submenu_page(
-			'options-ronik-base', // parent page slug
-			'Ronik Base Settings',
-			'Settings',
-			'manage_options',
-			'options-ronik-base_settings', //
-			'ronikbase_support_settings',
-			1 // menu position
-		);
-		// Add Integrations page.
-		add_submenu_page(
-			'options-ronik-base', // parent page slug
-			'Integrations',
-			'Integrations',
-			'manage_options',
-			'options-ronik-base_integrations',
-			'ronikbase_integrations_callback',
-			2 // menu position
-		);
-		// Add Support page.
-		add_submenu_page(
-			'options-ronik-base', // parent page slug
-			'Support',
-			'Support',
-			'manage_options',
-			'options-ronik-base_support', //
-			'ronikbase_support_callback',
-			3 // menu position
-		);
+		
+		if($this->media_cleaner_state && !$this->beta_mode_state){
+			add_menu_page(
+				'General - Ronik Base', // page <title>Title</title>
+				'Ronik Base', // link text
+				'manage_options', // user capabilities
+				'options-ronik-base', // page slug
+				'ronikbase_support_general', // this function prints the page content
+				'dashicons-visibility', // icon (from Dashicons for example)
+				6 // menu position
+			);
+			// Add Settings page.
+			add_submenu_page(
+				'options-ronik-base', // parent page slug
+				'Ronik Base Settings',
+				'Settings',
+				'manage_options',
+				'options-ronik-base_settings', //
+				'ronikbase_support_settings',
+				1 // menu position
+			);
+			// Add Integrations page.
+			add_submenu_page(
+				'options-ronik-base', // parent page slug
+				'Integrations',
+				'Integrations',
+				'manage_options',
+				'options-ronik-base_integrations',
+				'ronikbase_integrations_callback',
+				2 // menu position
+			);
+			// Add Support page.
+			add_submenu_page(
+				'options-ronik-base', // parent page slug
+				'Support',
+				'Support',
+				'manage_options',
+				'options-ronik-base_support', //
+				'ronikbase_support_callback',
+				3 // menu position
+			);
+
+		}
 		if($this->media_cleaner_state){
 			$_POST['media_cleaner_state'] = 'valid';
 			// Include the interface Fields
@@ -207,6 +222,16 @@ class Ronik_Base_Admin {
 		} else{
 			$_POST['optimization_state'] = 'invalid';
 		}
+
+		if(!$this->media_cleaner_state && $this->beta_mode_state){
+			$_POST['media_cleaner_state'] = 'valid';
+			// Include the interface Fields
+			foreach (glob(dirname(__FILE__) . '/media-cleaner/interface-layout/*.php') as $file) {
+				include $file;
+			}
+		}
+
+
 		function ronikbase_support_general(){
 			echo '
 				<div id="ronik-base_general"></div>
@@ -271,6 +296,9 @@ class Ronik_Base_Admin {
 		}
 
 		public function rmc_media_sync_save( $post_id ){
+			$rbpHelper = new RbpHelper;
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2a, rmc_media_sync_save update media sync logic for on save posts. ', 'low', 'rbp_media_cleaner');
+			
 			// Detect if the sync is already running. 
 			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
 			if($rbp_media_cleaner_sync_running == 'running'){
@@ -297,37 +325,61 @@ class Ronik_Base_Admin {
 
 			$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor( $post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2b, specificImageThumbnailAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , 'low', 'rbp_media_cleaner');
 
 			$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->specificImagePostAuditor( $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array,  $post_id  );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2b, specificImagePostAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , 'low', 'rbp_media_cleaner');
 
 			$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $RmcDataGathering->specificImagePostContentAuditor( $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $post_id );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
-			
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2c, specificImagePostContentAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
+
 			$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2d, imageFilesystemAudit ' . count($rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array) , 'low', 'rbp_media_cleaner');
 
 			$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2e, imagePreserveAudit ' . count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , 'low', 'rbp_media_cleaner');
 
 			set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
 			$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
+
 		}
 
+			/**
+			* Register helper classes!
+			* This is critical for AUTHORIZATION to work properly!
+		*/
+		public function rbp_helper_functions(){
+			foreach (glob(dirname(__FILE__) . '/helper/rbp_helper.php') as $file) {
+				include_once $file;
+			}
+		}
+		public function rbp_helper_functions_cookies(){
+			foreach (glob(dirname(__FILE__) . '/helper/rbp_helper_cookies.php') as $file) {
+				include_once $file;
+			}
+		}
 
 		public function rmc_media_sync(){
+			$rbpHelper = new RbpHelper;
+
+			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1a, rmc_media_sync', 'low', 'rbp_media_cleaner');
+			$date = new DateTime(); // For today/now, don't pass an arg.
+
 			// Detect if the sync is already running. 
 			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
 			if($rbp_media_cleaner_sync_running == 'running'){
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync already running', 'low', 'rbp_media_cleaner');
 				return false;
 			}
 			// Update the sync status to running..
+				update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia")));
 				update_option('rbp_media_cleaner_sync_running', 'running');
-				error_log(print_r('RUNNING Media Sync', true));
-
 				$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
-
-				error_log(print_r($rbp_media_cleaner_sync_running, true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, options: rbp_media_cleaner_sync_running' .$rbp_media_cleaner_sync_running , 'low', 'rbp_media_cleaner');
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '0%' , DAY_IN_SECONDS );
 
 			// Update the memory option.
@@ -361,7 +413,7 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_posts_array' , $rmc_media_cleaner_media_data_collectors_posts_array , DAY_IN_SECONDS );
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '20%' , DAY_IN_SECONDS );
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_posts_array) , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Gather all the posts ID of the entire database ' .count($rmc_media_cleaner_media_data_collectors_posts_array) , 'low', 'rbp_media_cleaner');
 				sleep(10);
 
 			// Gather all the image ids.
@@ -374,9 +426,8 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' , $rmc_media_cleaner_media_data_collectors_image_id_array , DAY_IN_SECONDS );
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '30%' , DAY_IN_SECONDS );
-				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_id_array' , true));
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array) , true));
-				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_id_array , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Gather all the image ids. ' .count($rmc_media_cleaner_media_data_collectors_image_id_array) , 'low', 'rbp_media_cleaner');
+
 				sleep(10);
 
 			// Image Id Thumbnail Auditor.
@@ -389,9 +440,8 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '40%' , DAY_IN_SECONDS );
-				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , true));
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , true));
-				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Image Id Thumbnail Auditor. ' .count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , 'low', 'rbp_media_cleaner');
+
 				sleep(10);
 
 			// Check image id within all posts. 
@@ -404,9 +454,8 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_auditor_array , DAY_IN_SECONDS );
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '50%' , DAY_IN_SECONDS );
-				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_auditor_array' , true));
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , true));
-				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_auditor_array , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image id within all posts. ' .count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , 'low', 'rbp_media_cleaner');
+
 				sleep(10);
 
 			// Check image basename within the post content primarily this is for gutenberg editior.
@@ -419,9 +468,8 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , DAY_IN_SECONDS );
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
-				error_log(print_r('$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' , true));
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , true));
-				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image basename within the post content primarily this is for gutenberg editior. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
+
 				sleep(10);
 
 			// Check the image inside the filesystem. This checks if the image hardcoded into any of the files.
@@ -433,6 +481,7 @@ class Ronik_Base_Admin {
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 				}
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check the image inside the filesystem. This checks if the image hardcoded into any of the files. ' .count($rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array) , 'low', 'rbp_media_cleaner');
 				
 			// Check if images have the preserved attributes.
 				// $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
@@ -447,7 +496,8 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '98%' , DAY_IN_SECONDS );
 				sleep(10);
 
-				error_log(print_r(count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check if images have the preserved attributes. ' .count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , 'low', 'rbp_media_cleaner');
+
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '99%' , DAY_IN_SECONDS );
 				sleep(10);
 
@@ -455,7 +505,7 @@ class Ronik_Base_Admin {
 					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
 				sleep(1);
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , 'DONE' , DAY_IN_SECONDS );
-				error_log(print_r('FINISHED SYNC' , true));
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: FINISHED SYNC ' , 'low', 'rbp_media_cleaner');
 
 			// Update the sync status
 			update_option('rbp_media_cleaner_sync_running', 'not-running');

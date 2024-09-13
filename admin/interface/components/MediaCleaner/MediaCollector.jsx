@@ -299,7 +299,7 @@ const MediaCollector = () => {
                 activateDelete={activateDelete}
                 activatePreserve={activatePreserve}
             />
-            <h1>Preserved Images</h1>
+            <h1>Preserved Files</h1>
             <PreservedMediaCollectorTable
                 mediaCollectorPreserved={mediaCollectorPreserved}
                 filter={filterMode}

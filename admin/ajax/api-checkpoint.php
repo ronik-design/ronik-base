@@ -1,18 +1,58 @@
 <?php
+$rbpHelper = new RbpHelper;
+$rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1a ', 'low', 'rbp_api_checkpoint');
 // Verify nonce for security
 if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+    $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1b, Security check failed ', 'low', 'rbp_api_checkpoint');
+
     wp_send_json_error('Security check failed', 400);
     wp_die();
 }
 
 // Ensure the user is logged in
 if (!is_user_logged_in()) {
+    $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1c, User not logged in ', 'low', 'rbp_api_checkpoint');
+
     wp_send_json_error('User not logged in', 403);
     wp_die();
 }
 
 // Retrieve the API key from options
 $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key', '');
+if($this->beta_mode_state){
+    error_log(print_r('BETA API KEY', true));
+    $rbp_media_cleaner_api_key = 'beta-key';
+}
+
+
+$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
+$rbp_media_cleaner_sync_running_time = get_option('rbp_media_cleaner_sync_running-time', 'invalid');
+
+// A time validator if the sync is r4unning longer then necessary!
+if($rbp_media_cleaner_sync_running == 'running'){
+    $date = new DateTime(); // For today/now, don't pass an arg.
+    
+    if($rbp_media_cleaner_sync_running_time == 'invalid'){
+        update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia")));        
+        update_option('rbp_media_cleaner_sync_running', 'not-running');
+    } else {
+        $date->modify("-30 minutes");
+        if(date($date->format("m/d/Y h:ia")) > $rbp_media_cleaner_sync_running_time){
+            update_option('rbp_media_cleaner_sync_running', 'not-running');
+            update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia"))); 
+            
+            $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, EXPIRED ', 'low', 'rbp_media_cleaner');
+        } else {
+            $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, NOT EXPIRED ', 'low', 'rbp_media_cleaner');
+        }
+    }
+}
+
+
+
+
+
+
 
 // Handle different AJAX requests based on POST data
 switch (true) {

@@ -9,10 +9,10 @@ function Integrations() {
 				description= "Ronik Base can integrate with other products, to help you further improve your website. You can enable or disable these integrations below."
 			/>
 			<br></br>
-			<ContentBlock
+			{/* <ContentBlock
 				title= "Recommended integrations"
 				description= "Unlock rich results in Google search by using plugins that integrate with the Yoast Schema API."
-			/>
+			/> */}
 
 			<div className="tile-block">
 				<div className="tile-block__inner">

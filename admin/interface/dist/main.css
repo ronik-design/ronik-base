@@ -533,16 +533,16 @@ html {
   border-spacing: 0;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td {
-  max-width: 5%;
+  max-width: 7%;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--img-thumb, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--img-thumb {
   max-width: 15%;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--img-url, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--img-url {
-  max-width: 40%;
+  max-width: 20%;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--preserve, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--preserve {
-  max-width: 20%;
+  max-width: 15%;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th button, .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td button {
   background-color: #6700ff;

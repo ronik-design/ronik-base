@@ -3,10 +3,11 @@
 * Init Remove individual Media .
 */
 
+$rbpHelper = new RbpHelper;
 $RmcDataGathering = new RmcDataGathering;
-error_log(print_r('Init Remove individual Media .', true));
-error_log(print_r('imageId', true));
-error_log(print_r($_POST['imageId'], true));
+
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 3a, Init Remove individual Media imageId: '.$_POST['imageId'], 'low', 'rbp_media_cleaner');
+
 if(isset($_POST['imageId']) && $_POST['imageId']){
     $rbp_media_cleaner_data_array = get_option('rbp_media_cleaner_media_data'); 
     if( !$rbp_media_cleaner_data_array ){
@@ -31,7 +32,7 @@ if(isset($_POST['imageId']) && $_POST['imageId']){
         wp_send_json_success('Reload'); 
     }
     // Send sucess message!
-    error_log(print_r('Deleted', true));
+    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 3b, Init Remove individual Media Deleted ', 'low', 'rbp_media_cleaner');
     wp_send_json_success('Reload');      
 }
 ?>
