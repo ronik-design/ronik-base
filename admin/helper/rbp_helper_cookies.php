@@ -13,7 +13,7 @@
         setcookie("RbpDebug", 'valid', time()+1500);  /* expire in 25 min */
     }
     // ?rbp_severity=severity_low
-    // &rbp_severity=severity_low
+    // &rbp_severity=severity_low&rbp_severity=severity_low
     if( isset($_GET['rbp_severity']) && $_GET['rbp_severity'] == 'severity_low' ){
         setcookie("RbpSeverity", 'low', time()+1500);  /* expire in 25 min */
     }

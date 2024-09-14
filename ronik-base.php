@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://www.ronikdesign.com/
- * @since             1.1.5
+ * @since             1.1.6
  * @package           Ronik_Base
  *
  * @wordpress-plugin
  * Plugin Name:       Ronik
  * Plugin URI:        https://www.ronikdesign.com/
  * Description:       Clean out unused media -- your website will thank you! This plugin uses Advanced Custom Fields to run
- * Version:           1.1.5
+ * Version:           1.1.6
  * Author:            Kevin Mancuso
  * Author URI:        https://www.ronikdesign.com/
  * License:           GPL-2.0+

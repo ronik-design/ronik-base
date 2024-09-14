@@ -155,9 +155,9 @@ html {
               background-color: #00C666;
               color: #fff;
               // pointer-events: none;
-              cursor: progress;
             }
             .submit-btn-disabled{
+              cursor: progress;
               background-color: gray;
               opacity: .2;
             }

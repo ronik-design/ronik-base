@@ -158,6 +158,12 @@ class RmcDataGathering{
                 'order'  => 'DESC',
             ));
 
+            error_log(print_r( $select_attachment_type, true));
+            error_log(print_r( $offsetValue, true));
+            error_log(print_r( $select_numberposts, true));
+            error_log(print_r( $allimagesid, true));
+
+
             if ($allimagesid) {
                 $all_image_ids = array();
                 foreach ($allimagesid as $imageID){
@@ -166,6 +172,12 @@ class RmcDataGathering{
                     wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
 
                     if( file_exists( get_attached_file( $imageID ) ) ){
+
+                        error_log(print_r( $imageID, true));
+                        error_log(print_r( 'filesize( get_attached_file( $imageID ) )  '.filesize( get_attached_file( $imageID ) ), true));
+                        error_log(print_r( $file_size, true));
+
+
                         // finds the total file / image size
                         $filesize = filesize( get_attached_file( $imageID ) );
                         // converts bits to mega bytes
@@ -178,6 +190,8 @@ class RmcDataGathering{
                         // $all_image_ids[] = $imageID;
                         // This is responsible for only getting the large images rather then the tiny ones.
                         if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
+                            error_log(print_r( 'ssss', true));
+
                             $all_image_ids[] = $imageID;
                         }
                     }

@@ -45,7 +45,7 @@ class Ronik_Base_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $media_cleaner   
+	 * @var      string    $media_cleaner
 	 */
 	private $media_cleaner_state;
 
@@ -54,7 +54,7 @@ class Ronik_Base_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $optimization_state 
+	 * @var      string    $optimization_state
 	 */
 	private $optimization_state;
 
@@ -63,7 +63,7 @@ class Ronik_Base_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $beta_mode_state   
+	 * @var      string    $beta_mode_state
 	 */
 	private $beta_mode_state;
 
@@ -125,7 +125,7 @@ class Ronik_Base_Admin {
 		 */
 
 		//
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'interface/dist/index.js', array( 'jquery' ), $this->version, false );		
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'interface/dist/index.js', array( 'jquery' ), $this->version, false );
 
 		if ( ! wp_script_is( 'jquery', 'enqueued' )) {
 			wp_enqueue_script($this->plugin_name.'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js', array(), null, true);
@@ -149,7 +149,7 @@ class Ronik_Base_Admin {
 	public function rbp_plugin_dependencies() {
 		if ( is_admin() && current_user_can( 'activate_plugins' ) && !class_exists('ACF') ) {
 			add_action( 'admin_notices', 'child_plugin_notice' );
-			deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' ); 
+			deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' );
 			if ( isset( $_GET['activate'] ) ) {
 				unset( $_GET['activate'] );
 			}
@@ -161,7 +161,7 @@ class Ronik_Base_Admin {
 
 	// We create our own option page due to ACF in-effective
 	public function rbp_plugin_interface() {
-		
+
 		if($this->media_cleaner_state && !$this->beta_mode_state){
 			add_menu_page(
 				'General - Ronik Base', // page <title>Title</title>
@@ -298,8 +298,8 @@ class Ronik_Base_Admin {
 		public function rmc_media_sync_save( $post_id ){
 			$rbpHelper = new RbpHelper;
 			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2a, rmc_media_sync_save update media sync logic for on save posts. ', 'low', 'rbp_media_cleaner');
-			
-			// Detect if the sync is already running. 
+
+			// Detect if the sync is already running.
 			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
 			if($rbp_media_cleaner_sync_running == 'running'){
 				return false;
@@ -314,7 +314,7 @@ class Ronik_Base_Admin {
 			// Update the memory option.
 			$helper = new RonikBaseHelper;
 			$helper->ronikdesigns_increase_memory();
-			
+
 			$RmcDataGathering = new RmcDataGathering;
 			$f_sync = get_option('rbp_media_cleaner_sync-time');
 			if($f_sync){
@@ -369,7 +369,7 @@ class Ronik_Base_Admin {
 			$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1a, rmc_media_sync', 'low', 'rbp_media_cleaner');
 			$date = new DateTime(); // For today/now, don't pass an arg.
 
-			// Detect if the sync is already running. 
+			// Detect if the sync is already running.
 			$rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running' , 'not-running');
 			if($rbp_media_cleaner_sync_running == 'running'){
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync already running', 'low', 'rbp_media_cleaner');
@@ -393,7 +393,7 @@ class Ronik_Base_Admin {
 				// Dynamically retrieve the post types for entire site including custom post types.
 				$select_post_type = $RmcDataGathering->postTypesRetrieval();
 			// Mime_type.
-				$select_attachment_type = cleaner_post_mime_type('all' );
+				$select_attachment_type = cleaner_post_mime_type('all');
 				// error_log(print_r($_POST['mime_type'], true));
 			// Overall media counter...
 				$throttle_detector =  databaseScannerMedia__allMedia(array('count', $select_attachment_type));
@@ -444,7 +444,7 @@ class Ronik_Base_Admin {
 
 				sleep(10);
 
-			// Check image id within all posts. 
+			// Check image id within all posts.
 				$transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' );
 				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array ) ) {
 					$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array;
@@ -482,7 +482,7 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 				}
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check the image inside the filesystem. This checks if the image hardcoded into any of the files. ' .count($rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array) , 'low', 'rbp_media_cleaner');
-				
+
 			// Check if images have the preserved attributes.
 				// $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
 				// if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
