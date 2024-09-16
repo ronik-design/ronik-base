@@ -2341,7 +2341,7 @@ var MediaCollector = function MediaCollector() {
     _useState4 = _slicedToArray(_useState3, 2),
     mediaCollector = _useState4[0],
     setMediaCollector = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('page_number', 0)),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam('page_number', 0))),
     _useState6 = _slicedToArray(_useState5, 2),
     filterPager = _useState6[0],
     setFilterPager = _useState6[1];
@@ -2643,7 +2643,7 @@ var MediaCollector = function MediaCollector() {
           case 16:
             _context3.prev = 16;
             _context3.t0 = _context3["catch"](6);
-            console.error('[WP Pageviews Plugin]', _context3.t0);
+            console.error('[WP Pageviews Plugin handlePostDataPreserve]', _context3.t0);
           case 19:
           case "end":
             return _context3.stop();
@@ -2718,6 +2718,8 @@ var MediaCollector = function MediaCollector() {
       setFilterMode: setFilterMode,
       setSelectedFormValues: setSelectedFormValues,
       setSelectedDataFormValues: setSelectedDataFormValues,
+      setFilterPager: setFilterPager,
+      setFilterType: setFilterType,
       filter_size: filter_size,
       filterPager: filterPager,
       filter: filterMode,
@@ -2775,6 +2777,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
     selectedFormValues = _ref.selectedFormValues,
     filterMode = _ref.filterMode,
     setFilterMode = _ref.setFilterMode,
+    setFilterPager = _ref.setFilterPager,
     setSelectedFormValues = _ref.setSelectedFormValues,
     setSelectedDataFormValues = _ref.setSelectedDataFormValues,
     filter_size = _ref.filter_size,
@@ -2927,7 +2930,8 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
 
   // PagerNav component
   var PagerNav = function PagerNav(_ref2) {
-    var pager = _ref2.pager;
+    var pager = _ref2.pager,
+      setFilterPager = _ref2.setFilterPager;
     var handlePager = function handlePager(e) {
       var direction = e.target.getAttribute("data-pager");
       setFilterPager(function (prev) {
@@ -3001,7 +3005,8 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterNav, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PagerNav, {
-      pager: filterPager
+      pager: filterPager,
+      setFilterPager: setFilterPager
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
       className: "media-collector-table",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
@@ -3345,7 +3350,7 @@ var FetchAddon = function FetchAddon(_ref) {
                       onChange: handleChange
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
                       htmlFor: "switch-on",
-                      children: "Delete Unused Media"
+                      children: "Bulk Delete Media"
                     })]
                   })]
                 })
@@ -49503,8 +49508,201 @@ function General() {
     className: "general-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Plugin Info",
-      description: "Thanks for using the Ronik plugin! <br><br>In the future, we expect to offer a full suite of functionality; for now we have Media Harmony. <br><br>For developers and content admins alike, we know how tricky it can be to manage a media library, especially for a large or aging website with multiple hands involved in asset creation and use. When not actively managed, the space used by old files quickly grows, negatively impacting site load times, performance, and internal hygiene. As soon as you have more than one person producing content, you get a messy basement, which also makes it hard for admins to locate and make use of the correct files for front-end publishing. Attempts to manually mitigate the issue by regularly reviewing, removing, or editing unlinked or improper files could take hours and is likely to result in mistakes. <br><br>The solution we saw to this issue is a tool that reviews your database for any unlinked files and allows for easy removal. Our plugin is compatible with most common frameworks and does a full database scan to reveal/ provide a holistic picture of unlinked files of all types in the media library. Editors can refine their results thanks to an array of sort and filter criteria and then preserve, individually target, or bulk delete their unlinked and matching files.<br><br>Most plugins out there that offer similar functionality are less reliable, lack granularity of selection, and fail to go as deep as ours to find things like nested clones of assets or corrupt files. Check our full feature list, installation instructions, and usage instructions below."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {})]
+      description: "Thanks for using the Ronik Plugin!"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "container",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        className: "section",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          className: "section-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+            children: "In the future, we expect to offer a full suite of functionality; for now we have Media Harmony."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+            children: "For developers and content admins alike, we know how tricky it can be to manage a media library, especially for a large or aging website with multiple hands involved in asset creation and use. When not actively managed, the space used by old files quickly grows, negatively impacting site load times, performance, and internal hygiene. As soon as you have more than one person producing content, you get a messy basement, which also makes it hard for admins to locate and make use of the correct files for front-end publishing. Attempts to manually mitigate the issue by regularly reviewing, removing, or editing unlinked or improper files could take hours and is likely to result in mistakes."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+            children: "The solution we saw to this issue is a tool that reviews your database for any unlinked files and allows for easy removal. Our plugin is compatible with most common frameworks and does a full database scan to reveal a holistic picture of unlinked files of all types in the media library. Editors can refine their results thanks to an array of sort and filter criteria and then preserve, individually target, or bulk delete their unlinked and matching files."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+            children: "Most plugins out there that offer similar functionality are less reliable, lack granularity of selection, and fail to go as deep as ours to find things like nested clones of assets or corrupt files."
+          })]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+          children: "Feature List"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          className: "section-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Comprehensive Media Scanning"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Full Site Scan:"
+              }), " Analyzes all media files used across posts, pages, custom post types, widgets, and theme settings to identify unused files."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Cross-Reference:"
+              }), " Compares media files in your library with those used in your content to detect and flag potentially unused media."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Safe Media Deletion"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Thorough Verification:"
+              }), " Ensures that only truly unused media files are flagged for deletion."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Review and Backup:"
+              }), " Allows you to review flagged files before deletion."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Manual and Automated Scan"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Automated Scan:"
+              }), " Performs nightly scan of unused media files."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Manual Scan:"
+              }), " Initiates a scan to allow for more frequent or immediate review."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Performance Optimization"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Efficient Algorithms:"
+              }), " Utilizes optimized algorithms for scanning and deletion tasks to minimize impact on site performance."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Custom Throttle System:"
+              }), " Features a throttle system to cool down your server before proceeding with heavy tasks, reducing the risk of strain or slowdowns."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Comprehensive File Usage Checking"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Includes Widgets and Theme Settings:"
+              }), " Checks for media files used in widgets and theme settings, not just posts and pages, to prevent accidental deletion of important files."]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Compatibility and Support"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Standard Compatibility:"
+              }), " Designed to work with standard WordPress media libraries."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Support and Issue Reporting:"
+              }), " Team contact information available for support and issue reporting, in addition to extensive built-in error-logging."]
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+          children: "Installation Instructions"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          className: "instructions",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Using WordPress Admin Dashboard:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Log in to your WordPress Admin Dashboard:"
+              }), " Log in to your WordPress Admin Dashboard."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Navigate to the Plugins Menu:"
+              }), " Go to Plugins > Add New."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Upload the Plugin:"
+              }), " Click on the \u201CUpload Plugin\u201D button at the top of the page."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Click \u201CChoose File\u201D and select the downloaded Media Harmony ZIP file:"
+              }), " Click \u201CInstall Now\u201D to upload and install the plugin."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Activate the Plugin:"
+              }), " Once installed, click the \u201CActivate Plugin\u201D link to enable Media Harmony on your site."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "Using FTP:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Extract the ZIP File:"
+              }), " Extract the contents of the Media Harmony ZIP file on your local computer."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Upload to Server:"
+              }), " Connect to your website server using an FTP client (e.g., FileZilla)."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Navigate to wp-content/plugins/ directory on your server:"
+              }), " Upload the extracted Media Harmony folder to this directory."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Activate the Plugin:"
+              }), " Log in to your WordPress Admin Dashboard. Go to Plugins > Installed Plugins. Find Media Harmony in the list and click \u201CActivate\u201D."]
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+          children: "Plugin Usage"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          className: "usage",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "1. Accessing Media Harmony"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "In WordPress Admin Dashboard:"
+              }), " After activation, you\u2019ll find Media Harmony listed under the Settings menu or as a separate menu item in your WordPress Admin Dashboard."]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "2. Performing Media Scan"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Initiate Manual Scan:"
+              }), " In addition to the automated scans, scan your site at any time using the Initiate Scan options in the plugin or WP-Admin bar."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Reviewing Results:"
+              }), " Once the scan is complete, review the unlinked files found and individually delete, bulk delete, and preserve them."]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "3. Checking Performance"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Monitor Plugin Impact:"
+              }), " Media Harmony includes a custom throttle system designed to minimize performance impact. For optimal performance, consider running the plugin during off-peak hours."]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+            children: "4. Troubleshooting and Support"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Consult the FAQ:"
+              }), " For common questions and troubleshooting tips, refer to the FAQ or Support sections of the plugin."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+                children: "Contact Support:"
+              }), " If you encounter issues or need assistance, contact our support team via the support email."]
+            })]
+          })]
+        })]
+      })]
+    })]
   });
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (General);
@@ -49587,7 +49785,7 @@ function Mediacleaner() {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Welcome to Media Harmony!",
-      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. The total size of your library will determine the time required to scan. <ul> <li> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. </li> <li> Change your file size threshold for the scan in the Settings tab. </li> <li> Use the search bar to filter for title keywords and sort files by size below. </li> <li> Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. </li> </ul> "
+      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. "
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       requestType: "rmc_ajax_media_cleaner"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {})]
@@ -49639,6 +49837,16 @@ var getDataAttribute = function getDataAttribute(selector, attribute) {
 var MediaCleanerSettings = function MediaCleanerSettings() {
   // Default value for file size from the data attribute
   var fileSizeDefault = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-size');
+  function isScientificNotationNumber(value) {
+    if (typeof value === 'number' && isFinite(value)) {
+      var stringValue = value.toExponential();
+      return stringValue.includes('e') || stringValue.includes('E');
+    }
+    return false;
+  }
+  // if(isScientificNotationNumber(fileSizeDefault)){
+
+  // }
 
   // State to manage form input values
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_defineProperty({}, 'filesize-option', fileSizeDefault)),
@@ -49808,7 +50016,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function Support() {
-  var faqItems = [["What does [Plugin Name] do?", "[Plugin Name] is a WordPress plugin designed to help you identify and remove unused media files from your WordPress site. It ensures that only media files that are no longer used in posts, pages, or other content are safely deleted, helping to reduce your media library's size and improve site performance."], ["How does [Plugin Name] determine which media files are unused?", "The plugin scans your entire WordPress site, including posts, pages, and custom post types, to check for media usage. It cross-references the media files in your library with those used in your content. Any media files not found in your content are flagged as potentially unused."], ["Is it safe to use [Plugin Name] to delete media files?", "Yes, [Plugin Name] is designed with safety in mind. The plugin performs a thorough check to ensure that only truly unused media files are flagged for deletion. Before any files are permanently deleted, you have the option to review them and perform a backup to ensure that you can restore any files if needed."], ["Can I recover deleted media files?", "Once media files are deleted using [Your Plugin Name], they are permanently removed from your server and cannot be recovered through the plugin. However, if you have created a backup of your media files before deletion, you can restore them from the backup."], ["Will [Plugin Name] delete media files that are used in widgets or theme settings?", "Yes, [Plugin Name] checks for media files used not only in posts, pages, and custom post types but also in widgets and theme settings. The plugin performs a comprehensive scan of your site, including these areas, to ensure that no important media files are inadvertently deleted. We still recommend reviewing your media library and widget/theme settings periodically to confirm that all necessary files are accounted for."], ["How often should I run [Plugin Name] to clean up unused media?", '[Plugin Name] automatically performs a media cleanup every night at midnight through its built-in cron job. However, you can also manually trigger a cleanup at any time using the "Force Sync" option available in the WP-Admin bar. For most sites, the nightly automatic cleanup should be sufficient. If you prefer more frequent checks, or if you’ve made significant changes to your media library, you can use the "Force Sync" feature to ensure your media library remains organized and free of unused files.'], ["Does [Plugin Name] have any performance impact on my site?", "[Plugin Name] is designed with performance in mind, utilizing efficient algorithms and a custom throttle system to minimize impact on your site. The plugin scans and deletes unused media in a way that allows your server to cool down before proceeding, helping to prevent any significant strain on site performance. While the plugin generally operates smoothly, a large media library might cause occasional slowdowns. For optimal performance, we recommend running the plugin during off-peak hours. If you experience any rare performance issues, the throttle system is in place to mitigate these effects and ensure your site remains responsive."], ["Is [Plugin Name] compatible with other media management plugins?", "[Plugin Name] is designed to work with standard WordPress media libraries. If you use other media management plugins, ensure they do not alter how media files are referenced or stored in the database. Compatibility issues are rare, but if you encounter any, please reach out to our support team for assistance."], ["Where can I get support or report issues with [Plugin Name]?", "If you need support or wish to report issues, please visit our support page at [support URL] or contact us directly at [support email]. Our team is here to assist you with any questions or concerns you may have."]];
+  var faqItems = [["What does Media Harmony do?", "Media Harmony is a WordPress plugin designed to help you identify and remove unused media files from your WordPress site. It ensures that only media files that are no longer used in posts, pages, or other content are safely deleted, helping to reduce your media library's size and improve site performance."], ["How does Media Harmony determine which media files are unused?", "The plugin scans your entire WordPress site, including posts, pages, and custom post types, to check for media usage. It cross-references the media files in your library with those used in your content. Any media files not found in your content are flagged as potentially unused."], ["Is it safe to use Media Harmony to delete media files?", "Yes, Media Harmony is developed with safety in mind. The plugin performs a thorough check to ensure that only truly unused media files are flagged for deletion. Before any files are permanently deleted, you have the option to review them and are encouraged to perform a backup to ensure that you can restore any files if needed."], ["Can I recover deleted media files?", "Once media files are deleted using Media Harmony, they are permanently removed from your server and cannot be recovered through the plugin. However, if you have created a backup of your media files before deletion, you can restore them from the backup."], ["Will Media Harmony delete media files that are used in widgets or theme settings?", "Media Harmony checks for media files used not only in posts, pages, and custom post types but also in widgets and theme settings, but only unlinked files we be loaded for deletion. The plugin performs a comprehensive scan of your site, including these areas, to ensure that no important media files are inadvertently deleted. We still recommend reviewing your media library and widget/theme settings periodically to confirm that all necessary files are accounted for."], ["How often should I run Media Harmony to scan for unused media?", 'Media Harmony automatically performs a media library scan every 24 hours for you to review your files. You can also manually initiate a scan at any time. For most sites, the nightly automatic cleanup is plenty.'], ["Does Media Harmony have any performance impact on my site?", "One of the key benefits to using Media Harmony is that it improves site performance, utilizing efficient algorithms and a custom throttle system to minimize impact on your site when it works. The plugin scans and deletes unused media in a way that allows your server to cool down before proceeding, preventing any significant strain on site performance. Scans of larger media libraries may more time. For optimal performance, we recommend running the plugin during low-usage periods. "]];
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "support-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {

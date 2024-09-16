@@ -1,7 +1,7 @@
 <?php
 add_menu_page(
     'General - Ronik Base', // page <title>Title</title>
-    'Ronik Media Cleaner', // link text
+    'Media Harmony', // link text
     'manage_options', // user capabilities
     'options-ronik-base-mediacleaner', // page slug
     'ronikbase_support_general', // this function prints the page content
@@ -9,7 +9,7 @@ add_menu_page(
     6 // menu position
 );
 
-if(!$this->beta_mode_state){
+// if(!$this->beta_mode_stat && false){
     // Add Settings page.
     add_submenu_page(
         'options-ronik-base-mediacleaner', // parent page slug
@@ -20,7 +20,7 @@ if(!$this->beta_mode_state){
         'ronikbase_support_settings_media_cleaner',
         1 // menu position
     );
-}
+// }
 // Add Support page.
 add_submenu_page(
     'options-ronik-base-mediacleaner', // parent page slug
@@ -70,6 +70,9 @@ function ronikbase_media_cleaner_callback(){
 
 
 function ronikbase_support_settings_media_cleaner(){
+    function isScientificNotation($value) {
+        return preg_match('/^-?\d+(\.\d+)?[eE][-+]?\d+$/', $value);
+    }
     $rbp_media_cleaner_file_size = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size')/1048576 : 0;
     $f_file_import = get_option( 'rbp_media_cleaner_file_import' ) ? get_option( 'rbp_media_cleaner_file_import' ) : 'off'; 
     echo '<div id="ronik-base_settings"></div>';

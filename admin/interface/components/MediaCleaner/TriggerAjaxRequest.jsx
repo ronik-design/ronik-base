@@ -143,7 +143,7 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
                                                 checked={formValues['user-option'] === 'delete-media'}
                                                 onChange={handleChange}
                                             />
-                                            <label htmlFor="switch-on">Delete Unused Media</label>
+                                            <label htmlFor="switch-on">Bulk Delete Media</label>
                                         </div>
                                     </div>
                                 </div>

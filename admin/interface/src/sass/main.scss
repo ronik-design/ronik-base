@@ -192,7 +192,7 @@ html {
   position: relative;
 
   &:before{
-    content: "Please Wait until synchronization is completed!";
+    content: "Your media library scan is in progress -- this takes time.";
     color: white;
     font-size: 15px;
     font-style: italic;
@@ -473,7 +473,7 @@ html {
 
 
 
-.ronik-base_page_options-ronik-base_media_cleaner, .ronik-media-cleaner_page_options-ronik-base_media_cleaner{
+.ronik-base_page_options-ronik-base_media_cleaner, .ronik-media-cleaner_page_options-ronik-base_media_cleaner, .media-harmony_page_options-ronik-base_media_cleaner{
   background: #1e2937;
   border-radius: 15px;
 

@@ -30,7 +30,7 @@ function add_item( $admin_bar ){
     $admin_bar->add_menu(
         array(
             'id' => $menu_id, 
-            'title' => __('Ronik Media Cleaner'), 
+            'title' => __('Media Harmony'), 
             'href' => '/wp-admin/admin.php?page=options-ronik-base_media_cleaner', 
             'meta' => array(
                 'class' => $f_outdated,
@@ -38,7 +38,7 @@ function add_item( $admin_bar ){
             )
         )
     );
-    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Scan All Media'), 'id' => 'rmc-sync', 'href' => '/', 'meta' => array('target' => '_blank')));
+    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Initiate Scan'), 'id' => 'rmc-sync', 'href' => '/', 'meta' => array('target' => '_blank')));
     $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Last Sync: '. $f_message), 'id' => 'rmc-drafts',  'href' => '', 'meta' => array('target' => '_blank')));
 }
 /* Here you trigger the ajax handler function using jQuery */

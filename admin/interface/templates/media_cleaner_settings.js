@@ -11,6 +11,18 @@ const MediaCleanerSettings = () => {
     // Default value for file size from the data attribute
     const fileSizeDefault = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-size');
 
+    function isScientificNotationNumber(value) {
+        if (typeof value === 'number' && isFinite(value)) {
+            const stringValue = value.toExponential();
+            return stringValue.includes('e') || stringValue.includes('E');
+        }
+        return false;
+    }
+    // if(isScientificNotationNumber(fileSizeDefault)){
+
+    // }
+    
+
     // State to manage form input values
     const [formValues, setFormValues] = useState({ ['filesize-option']: fileSizeDefault });
     // State to manage the response status

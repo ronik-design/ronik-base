@@ -293,7 +293,7 @@ class Ronik_Base {
 
 	public function get_beta_mode() {
 		// 150kb
-		update_option('rbp_media_cleaner_file_size', 150000);
+		// update_option('rbp_media_cleaner_file_size', 0.1);
 		// Backup
 		update_option('rbp_media_cleaner_file_import','off');
 		return true;

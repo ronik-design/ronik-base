@@ -172,12 +172,6 @@ class RmcDataGathering{
                     wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
 
                     if( file_exists( get_attached_file( $imageID ) ) ){
-
-                        error_log(print_r( $imageID, true));
-                        error_log(print_r( 'filesize( get_attached_file( $imageID ) )  '.filesize( get_attached_file( $imageID ) ), true));
-                        error_log(print_r( $file_size, true));
-
-
                         // finds the total file / image size
                         $filesize = filesize( get_attached_file( $imageID ) );
                         // converts bits to mega bytes
@@ -190,8 +184,7 @@ class RmcDataGathering{
                         // $all_image_ids[] = $imageID;
                         // This is responsible for only getting the large images rather then the tiny ones.
                         if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
-                            error_log(print_r( 'ssss', true));
-
+                            // error_log(print_r( 'ssss', true));
                             $all_image_ids[] = $imageID;
                         }
                     }
@@ -500,6 +493,96 @@ class RmcDataGathering{
     }
 
 
+
+    public function imagOptionAuditor(  $allimagesid , $all_post_pages, $select_post_status, $select_post_type ){
+
+                            $rbpHelper = new RbpHelper;
+                            $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1a imagePostAuditor Started ', 'low', 'rbp_media_cleaner');
+
+                            
+
+
+
+
+
+// Define the function before using it
+function search_value_in_option( $option_value, $search_term ) {
+    if ( is_array( $option_value ) || is_object( $option_value ) ) {
+        foreach ( $option_value as $value ) {
+            if ( search_value_in_option( $value, $search_term ) ) {
+                return true;
+            }
+        }
+    } elseif ( is_string( $option_value ) ) {
+        return strpos( $option_value, $search_term ) !== false;
+    }
+    return false;
+}
+
+// Your main code
+$wp_option_id_audit_array = array();
+
+global $wpdb;                            
+// Fetch all option names and values from the wp_options table
+$all_options = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options" );
+
+// Loop through each option value and compare it against each image ID
+foreach ( $all_options as $option ) {
+    $option_name  = $option->option_name;
+    $option_value = maybe_unserialize( $option->option_value ); // Unserialize if needed
+
+    // Ignore any option name that starts with '_transient_rmc_media_cleaner'
+    if ( strpos( $option_name, '_transient_rmc_media_cleaner' ) === 0 ) {
+        continue; // Skip this iteration if the condition is met
+    }
+
+    // Loop through each image ID in $allimagesid
+    foreach ( $allimagesid as $image_id ) {
+        // Create patterns to match the image ID in different formats
+        $pattern_id        = '/(?:^|\W)' . $image_id . '(?:$|\W)/'; // Direct image ID
+        $pattern_serialized = '/i:' . $image_id . ';/'; // Serialized image ID
+        $pattern_file_path = get_attached_file( $image_id ); // Full file path
+        // Create the pattern for the file name
+        $pattern_file_name = basename( get_attached_file( $image_id ) ); // File name only
+
+        $pattern_ids = 'id:' . $image_id;
+
+
+        // Check if the option value contains the image ID in any of these formats
+        if ( is_string( $option_value ) ) {
+            if ( preg_match( $pattern_id, $option_value ) || 
+                 preg_match( $pattern_serialized, $option_value ) || 
+                 strpos( $option_value, $pattern_file_path ) !== false || 
+                 strpos( $option_value, $pattern_file_name ) !== false ) {
+                // Match found
+                $wp_option_id_audit_array[] = $image_id;
+            }
+        } elseif ( search_value_in_option( $option_value,  $pattern_ids ) ) {
+            // Check if the image ID is present in the unserialized data
+            $wp_option_id_audit_array[] = $image_id;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+                            $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_option_id_audit_array)));
+                            $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imageOptionAudit DONE ', 'low', 'rbp_media_cleaner');
+
+                            return $arr_checkpoint_1a;
+
+
+
+    }
 
 
 

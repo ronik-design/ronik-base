@@ -402,7 +402,7 @@ class Ronik_Base_Admin {
 			// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
 				$maxIncrement = ceil($throttle_detector/$select_numberposts);
 			// File Size
-				$targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : 1048576;
+				$targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : .1;
 			// Gather all the posts ID of the entire database...
 				$transient_rmc_media_cleaner_media_data_collectors_posts_array = get_transient( 'rmc_media_cleaner_media_data_collectors_posts_array' );
 				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_posts_array ) ) {
@@ -472,12 +472,35 @@ class Ronik_Base_Admin {
 
 				sleep(10);
 
+
+
+
+
+					// Check image basename within the post content primarily this is for gutenberg editior.
+					$transient_rmc_media_cleaner_media_data_collectors_image_option_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_option_auditor_array' );
+					if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_option_auditor_array ) ) {
+						$rmc_media_cleaner_media_data_collectors_image_option_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_option_auditor_array;
+					} else {
+						$rmc_media_cleaner_media_data_collectors_image_option_auditor_array = $RmcDataGathering->imagOptionAuditor( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array, $rmc_media_cleaner_media_data_collectors_posts_array, $rmc_media_cleaner_media_data_collectors_posts_array, $select_post_status, $select_post_type  );
+						// Save the response so we don't have to call again until tomorrow.
+						set_transient( 'rmc_media_cleaner_media_data_collectors_image_option_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_option_auditor_array , DAY_IN_SECONDS );
+					}
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '85%' , DAY_IN_SECONDS );
+					$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image with options pages. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
+	
+					sleep(10);
+
+
+
+
+
+
 			// Check the image inside the filesystem. This checks if the image hardcoded into any of the files.
 				$transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' );
 				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array ) ) {
 					$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array;
 				} else {
-					$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array );
+					$rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array = $RmcDataGathering->imageFilesystemAudit( $rmc_media_cleaner_media_data_collectors_image_option_auditor_array );
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 				}

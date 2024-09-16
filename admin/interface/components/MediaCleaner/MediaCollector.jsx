@@ -6,7 +6,7 @@ const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
 const MediaCollector = () => {
     const [hasLoaded, setHasLoaded] = useState(false);
     const [mediaCollector, setMediaCollector] = useState(null);
-    const [filterPager, setFilterPager] = useState(getQueryParam('page_number', 0));
+    const [filterPager, setFilterPager] = useState(parseInt(getQueryParam('page_number', 0)));
     const [filterMode, setFilterMode] = useState(getQueryParam('filter_size', 'all'));
     const [filterType, setFilterType] = useState(getQueryParam('filter_type', 'all'));
     const [mediaCollectorLow, setMediaCollectorLow] = useState(null);
@@ -220,7 +220,7 @@ const MediaCollector = () => {
                 setTimeout(() => location.reload(), 50);
             }
         } catch (error) {
-            console.error('[WP Pageviews Plugin]', error);
+            console.error('[WP Pageviews Plugin handlePostDataPreserve]', error);
         }
     };
 
@@ -290,6 +290,8 @@ const MediaCollector = () => {
                 setFilterMode={setFilterMode}
                 setSelectedFormValues={setSelectedFormValues}
                 setSelectedDataFormValues={setSelectedDataFormValues}
+                setFilterPager={setFilterPager}
+                setFilterType={setFilterType}
                 filter_size={filter_size}
                 filterPager={filterPager}
                 filter={filterMode}

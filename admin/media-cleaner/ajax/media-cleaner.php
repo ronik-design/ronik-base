@@ -12,11 +12,11 @@ if (!is_user_logged_in()) {
 	return;
 }
 
-function ronikdesigns_timeout_extend( $time ){
+function rmc_timeout_extend( $time ){
 	// Default timeout is 5
 	return 200;
 }
-add_filter( 'http_request_timeout', 'ronikdesigns_timeout_extend' );
+add_filter( 'http_request_timeout', 'rmc_timeout_extend' );
 
 
 // Simple function that erases all option data from plugin,
@@ -45,7 +45,12 @@ function databaseScannerMedia__cleaner( ) {
         }
     }
 }
+
+error_log(print_r(  'preserve', true));
+
 if ($_POST['post_overide'] == 'media-preserve'){
+	error_log(print_r(  'preserve 2 ', true));
+
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-preserve ', 'low', 'rbp_media_cleaner');
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
 		include $file;

@@ -9,6 +9,7 @@ const MediaCollectorTable = ({
     selectedFormValues,
     filterMode,
     setFilterMode,
+    setFilterPager,
     setSelectedFormValues,
     setSelectedDataFormValues,
     filter_size,
@@ -147,7 +148,7 @@ const MediaCollectorTable = ({
     };
 
     // PagerNav component
-    const PagerNav = ({ pager }) => {
+    const PagerNav = ({ pager, setFilterPager }) => {
         const handlePager = (e) => {
             const direction = e.target.getAttribute("data-pager");
             setFilterPager(prev => prev + (direction === 'next' ? 1 : -1));
@@ -189,7 +190,7 @@ const MediaCollectorTable = ({
         <>
             <FilterType />
             <FilterNav />
-            <PagerNav pager={filterPager} />
+            <PagerNav pager={filterPager} setFilterPager={setFilterPager} />
             <table className='media-collector-table'>
                 <tbody className='media-collector-table__tbody'>
                     <tr className='media-collector-table__tr'>
