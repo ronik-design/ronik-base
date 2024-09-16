@@ -544,8 +544,17 @@ foreach ( $all_options as $option ) {
         $pattern_file_path = get_attached_file( $image_id ); // Full file path
         // Create the pattern for the file name
         $pattern_file_name = basename( get_attached_file( $image_id ) ); // File name only
+        // Use strpos to find the position of '/uploads/' in the file path
+        $uploads_position = strpos( $pattern_file_path, '/uploads/' );
 
-        $pattern_ids = 'id:' . $image_id;
+        // If the '/uploads/' part is found in the file path
+        if ( $uploads_position !== false ) {
+                $relative_path = substr( $pattern_file_path, $uploads_position );
+        } else {
+            $relative_path = $pattern_file_path;
+        }
+        // $pattern_ids = 'id:' . $image_id;
+        $pattern_ids = '"id":'.$image_id;
 
 
         // Check if the option value contains the image ID in any of these formats
@@ -553,13 +562,19 @@ foreach ( $all_options as $option ) {
             if ( preg_match( $pattern_id, $option_value ) || 
                  preg_match( $pattern_serialized, $option_value ) || 
                  strpos( $option_value, $pattern_file_path ) !== false || 
-                 strpos( $option_value, $pattern_file_name ) !== false ) {
+                 strpos( $option_value, $relative_path ) !== false ) {
                 // Match found
                 $wp_option_id_audit_array[] = $image_id;
             }
         } elseif ( search_value_in_option( $option_value,  $pattern_ids ) ) {
             // Check if the image ID is present in the unserialized data
             $wp_option_id_audit_array[] = $image_id;
+        } else { 
+            if(search_value_in_option( $option_value,  $relative_path)){
+                $wp_option_id_audit_array[] = $image_id;
+            } else {
+                
+            }
         }
     }
 }
