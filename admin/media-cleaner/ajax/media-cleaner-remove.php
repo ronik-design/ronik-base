@@ -29,6 +29,8 @@ if($rbp_media_cleaner_media_data){
         delete_transient('rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_option_auditor_array');
+
         delete_option('rbp_media_cleaner_increment');
         delete_option('rbp_media_cleaner_counter');
         delete_option('rbp_media_cleaner_media_data');

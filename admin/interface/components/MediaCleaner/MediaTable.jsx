@@ -60,7 +60,7 @@ const MediaCollectorTable = ({
         </div>
     );
 
-    
+
     // Guard clause to handle cases where mediaCollector is 'no-images' or null
     if (!mediaCollector || mediaCollector === 'no-images') {
         // Remove loading elements from the DOM if no images are found
@@ -77,7 +77,7 @@ const MediaCollectorTable = ({
         );
     }
 
-        
+
     // Pagination setup
     const urlParams = new URLSearchParams(window.location.search);
     const page = parseInt(filterPager) || 0;
@@ -148,21 +148,43 @@ const MediaCollectorTable = ({
     };
 
     // PagerNav component
-    const PagerNav = ({ pager, setFilterPager }) => {
-        const handlePager = (e) => {
-            const direction = e.target.getAttribute("data-pager");
-            setFilterPager(prev => prev + (direction === 'next' ? 1 : -1));
+    const PagerNav = ({ pager, setFilterPager, mediaCollector = [], itemsPerPage }) => {
+        // Calculate total pages
+        const totalItems = mediaCollector.length || 0;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        // Generate an array of page numbers
+        const pageNumbers = [...Array(totalPages).keys()]; // Generates [0, 1, 2, ...]
+
+        // Event handler for clicking on a page number
+        const handlePageClick = (pageNumber) => {
+            setFilterPager(pageNumber);
         };
 
-        const totalPages = Math.ceil(mediaCollector.length / itemsPerPage);
+        const startItem = pager * itemsPerPage + 1;
+        const endItem = Math.min(startItem + itemsPerPage - 1, totalItems);
+
         return (
             <div className='filter-nav filter-nav--no-space-top'>
-                {pager > 0 && <button className='filter-nav__button' onClick={handlePager} data-pager="previous">Previous Page</button>}
-                {pager < totalPages - 1 && <button className='filter-nav__button' onClick={handlePager} data-pager="next">Next Page</button>}
+                <p>Showing {startItem}-{endItem} of {totalItems}</p>
+                <div className='pagination'>
+                    {pageNumbers.map(pageNumber => (
+                        <button
+                            key={pageNumber}
+                            className={`filter-nav__button ${pageNumber === pager ? 'filter-nav__button--active' : ''}`}
+                            onClick={() => handlePageClick(pageNumber)}
+                        >
+                            {pageNumber + 1}
+                        </button>
+                    ))}
+                </div>
             </div>
         );
     };
-        
+
+
+
+
     // Render media items
     const mediaCollectorItems = output?.map(collector => (
         <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
@@ -185,12 +207,12 @@ const MediaCollectorTable = ({
         </tr>
     ));
 
-    
+
     return (
         <>
             <FilterType />
             <FilterNav />
-            <PagerNav pager={filterPager} setFilterPager={setFilterPager} />
+            <PagerNav pager={filterPager} setFilterPager={setFilterPager} mediaCollector={mediaCollector} itemsPerPage={itemsPerPage} />
             <table className='media-collector-table'>
                 <tbody className='media-collector-table__tbody'>
                     <tr className='media-collector-table__tr'>

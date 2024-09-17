@@ -158,12 +158,6 @@ class RmcDataGathering{
                 'order'  => 'DESC',
             ));
 
-            error_log(print_r( $select_attachment_type, true));
-            error_log(print_r( $offsetValue, true));
-            error_log(print_r( $select_numberposts, true));
-            error_log(print_r( $allimagesid, true));
-
-
             if ($allimagesid) {
                 $all_image_ids = array();
                 foreach ($allimagesid as $imageID){
@@ -495,119 +489,142 @@ class RmcDataGathering{
 
 
     public function imagOptionAuditor(  $allimagesid , $all_post_pages, $select_post_status, $select_post_type ){
+        $rbpHelper = new RbpHelper;
+        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1a imagOptionAuditor Started ', 'low', 'rbp_media_cleaner');
 
-                            $rbpHelper = new RbpHelper;
-                            $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1a imagePostAuditor Started ', 'low', 'rbp_media_cleaner');
+        // Define the function before using it
+        function search_value_in_option($option_value, $search_term, $depth = 0) {
+            $rbpHelper = new RbpHelper;
 
-                            
-
-
-
-
-
-// Define the function before using it
-function search_value_in_option( $option_value, $search_term ) {
-    if ( is_array( $option_value ) || is_object( $option_value ) ) {
-        foreach ( $option_value as $value ) {
-            if ( search_value_in_option( $value, $search_term ) ) {
-                return true;
+            if ($depth > 10) { // Limit the recursion depth to prevent infinite loops
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1b iMax recursion depth reached. ', 'low', 'rbp_media_cleaner');
+                return false;
             }
-        }
-    } elseif ( is_string( $option_value ) ) {
-        return strpos( $option_value, $search_term ) !== false;
-    }
-    return false;
-}
-
-// Your main code
-$wp_option_id_audit_array = array();
-
-global $wpdb;                            
-// Fetch all option names and values from the wp_options table
-$all_options = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options" );
-
-// Loop through each option value and compare it against each image ID
-foreach ( $all_options as $option ) {
-    $option_name  = $option->option_name;
-    $option_value = maybe_unserialize( $option->option_value ); // Unserialize if needed
-
-    // Ignore any option name that starts with '_transient_rmc_media_cleaner'
-    if ( strpos( $option_name, '_transient_rmc_media_cleaner' ) === 0 ) {
-        continue; // Skip this iteration if the condition is met
-    }
-
-    // Loop through each image ID in $allimagesid
-    foreach ( $allimagesid as $image_id ) {
-        // Create patterns to match the image ID in different formats
-        $pattern_id        = '/(?:^|\W)' . $image_id . '(?:$|\W)/'; // Direct image ID
-        $pattern_serialized = '/i:' . $image_id . ';/'; // Serialized image ID
-        $pattern_file_path = get_attached_file( $image_id ); // Full file path
-        // Create the pattern for the file name
-        $pattern_file_name = basename( get_attached_file( $image_id ) ); // File name only
-        // Use strpos to find the position of '/uploads/' in the file path
-        $uploads_position = strpos( $pattern_file_path, '/uploads/' );
-
-        // If the '/uploads/' part is found in the file path
-        if ( $uploads_position !== false ) {
-                $relative_path = substr( $pattern_file_path, $uploads_position );
-        } else {
-            $relative_path = $pattern_file_path;
-        }
-        // $pattern_ids = 'id:' . $image_id;
-        $pattern_ids = '"id":'.$image_id;
-
-
-        // Check if the option value contains the image ID in any of these formats
-        if ( is_string( $option_value ) ) {
-            if ( preg_match( $pattern_id, $option_value ) || 
-                 preg_match( $pattern_serialized, $option_value ) || 
-                 strpos( $option_value, $pattern_file_path ) !== false || 
-                 strpos( $option_value, $relative_path ) !== false ) {
-                // Match found
-                $wp_option_id_audit_array[] = $image_id;
+            if (is_array($option_value) || is_object($option_value)) {
+                foreach ($option_value as $value) {
+                    if (search_value_in_option($value, $search_term, $depth + 1)) {
+                        return true;  // Match found, exit immediately
+                    }
+                }
+            } elseif (is_string($option_value)) {
+                return strpos($option_value, $search_term) !== false;  // Return true or false based on match
             }
-        } elseif ( search_value_in_option( $option_value,  $pattern_ids ) ) {
-            // Check if the image ID is present in the unserialized data
-            $wp_option_id_audit_array[] = $image_id;
-        } else { 
-            if(search_value_in_option( $option_value,  $relative_path)){
-                $wp_option_id_audit_array[] = $image_id;
-            } else {
-                
-            }
+            return false; // If no match found in the entire search, return false
         }
+
+        // Your main code
+        $wp_option_id_audit_array = array();
+        global $wpdb;
+        $all_options = $wpdb->get_results("SELECT option_name, option_value FROM $wpdb->options");
+        // Number of options to process in each chunk to avoid overwhelming the server
+        $chunk_size = 35; // Adjust this number to throttle processing
+        $total_options = count($all_options);
+        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1c Total options count: '.$total_options, 'low', 'rbp_media_cleaner');
+
+        // Process the chunks of all options directly
+        foreach (array_chunk($all_options, $chunk_size) as $chunk_index => $option_chunk) {
+            $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1d Processing chunk: '.($chunk_index + 1), 'low', 'rbp_media_cleaner');
+            foreach ($option_chunk as $i => $option) {
+                $option_name = $option->option_name;
+                // Additional logging to catch unserialization issues
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1e Attempting to unserialize option: '.$option_name, 'low', 'rbp_media_cleaner');
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1f Option value before unserialize: '. print_r($option->option_value, true), 'low', 'rbp_media_cleaner');
+                $option_value = maybe_unserialize($option->option_value);
+
+                // Check if unserialization failed
+                if ($option_value === false && $option->option_value !== 'b:0;') {
+                    $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1g Failed to unserialize option: '.$option_name, 'low', 'rbp_media_cleaner');
+                    continue;
+                }
+
+                // Log the unserialized option value for debugging
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1h Option value after unserialize: '. print_r($option_value, true), 'low', 'rbp_media_cleaner');
+
+                // Skip if empty aka false
+                if (!$option_value) {
+                    $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1i Skipped empty option: '.$option_name, 'low', 'rbp_media_cleaner');
+                    continue;
+                }
+
+                // Skip any option name that starts with an underscore (_)
+                if (strpos($option_name, '_') === 0) {
+                    $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1j Skipped system option: '.$option_name, 'low', 'rbp_media_cleaner');
+                    continue;
+                }
+
+                // Skip certain options based on their name
+                $skipped_patterns = [
+                    '_transient_rmc_media_cleaner',
+                    'options_whitelist_domains_',
+                    'options_press_whitelists_',
+                    'options_pat_auto_ignore_domains_'
+                ];
+
+                $skip_option = false;
+                foreach ($skipped_patterns as $pattern) {
+                    if (strpos($option_name, $pattern) === 0) {
+                        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1k Skipped specific option: '.$option_name, 'low', 'rbp_media_cleaner');
+                        $skip_option = true;
+                        break;
+                    }
+                }
+                if ($skip_option) {
+                    continue;
+                }
+
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1l Processing option: '.$option_name, 'low', 'rbp_media_cleaner');
+
+                foreach ($allimagesid as $image_id) {
+                    $pattern_id = '/(?:^|\W)' . $image_id . '(?:$|\W)/'; // Direct image ID pattern
+                    $pattern_serialized = '/i:' . $image_id . ';/'; // Serialized image ID pattern
+                    $pattern_file_path = get_attached_file($image_id); // Full file path
+                    $pattern_file_name = basename($pattern_file_path); // File name
+
+                    // Handle relative paths
+                    $uploads_position = strpos($pattern_file_path, '/uploads/');
+                    $relative_path = $uploads_position !== false
+                        ? substr($pattern_file_path, $uploads_position)
+                        : $pattern_file_path;
+
+                    $pattern_ids = '"id":' . $image_id;
+
+                    $match_found = false;
+                    // Check for image ID matches in various formats
+                    if (is_string($option_value)) {
+                        if (preg_match($pattern_id, $option_value)
+                            || preg_match($pattern_serialized, $option_value)
+                            || strpos($option_value, $pattern_file_path) !== false
+                            || strpos($option_value, $relative_path) !== false) {
+                            $wp_option_id_audit_array[] = $image_id;
+                            $match_found = true;
+                        }
+                    } elseif (search_value_in_option($option_value, $pattern_ids, 0)) { // Start recursion with depth 0
+                        $wp_option_id_audit_array[] = $image_id;
+                        $match_found = true;
+                    } else {
+                        if (search_value_in_option($option_value, $relative_path, 0)) { // Start recursion with depth 0
+                            $wp_option_id_audit_array[] = $image_id;
+                            $match_found = true;
+                        }
+                    }
+                    if ($match_found) {
+                        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1m Match found for image id: '.$image_id.' in option:'.$option_name, 'low', 'rbp_media_cleaner');
+                    }
+                }
+                // Additional check to log progress within the chunk
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1n Processed option index:'.$i.' in chunk:'.($chunk_index + 1), 'low', 'rbp_media_cleaner');
+            }
+            $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1o Finished processing chunk '.($chunk_index + 1), 'low', 'rbp_media_cleaner');
+            // Throttle by introducing a short sleep time between chunks (e.g., 1 second)
+            sleep(1); // Adjust the sleep time as necessary for your server load
+        }
+        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1p Processing completed. Total matches found: '.count($wp_option_id_audit_array), 'low', 'rbp_media_cleaner');
+
+        $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_option_id_audit_array)));
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imageOptionAudit DONE ', 'low', 'rbp_media_cleaner');
+
+        return $arr_checkpoint_1a;
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-                            $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_option_id_audit_array)));
-                            $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imageOptionAudit DONE ', 'low', 'rbp_media_cleaner');
-
-                            return $arr_checkpoint_1a;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
 
 
     // Check all the files for the image.
@@ -627,8 +644,6 @@ foreach ( $all_options as $option ) {
         $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1c imageFilesystemAudit DONE ', 'low', 'rbp_media_cleaner');
         return $arr_checkpoint_1a;
     }
-
-
 
 
 

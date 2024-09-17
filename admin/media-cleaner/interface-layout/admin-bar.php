@@ -71,7 +71,7 @@ function mc_sync_action_js() { ?>
                 console.error('No <a> tag found inside the element with ID "wp-admin-bar-rmc-sync".');
             }
         } else {
-            console.error('Element with ID "wp-admin-bar-rmc-sync" not found.');
+            // console.error('Element with ID "wp-admin-bar-rmc-sync" not found.');
         }
 
         jQuery("#wp-admin-bar-rmc-sync a").unbind().click(function(e){

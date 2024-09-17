@@ -243,6 +243,8 @@ html {
   display: block;
   position: relative;
   z-index: 1000000;
+  color: #fff;
+  text-align: center;
 }
 .centered-blob{
 	width:400px;
@@ -588,6 +590,7 @@ html {
       background-color: gray;
       color: white;
     }
+    
     &--active{
       opacity: 0.2;
       pointer-events: none;

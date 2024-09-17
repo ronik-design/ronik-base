@@ -20,7 +20,7 @@ if (!is_user_logged_in()) {
 // Retrieve the API key from options
 $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key', '');
 if($this->beta_mode_state){
-    error_log(print_r('BETA API KEY', true));
+    // error_log(print_r('BETA API KEY', true));
     $rbp_media_cleaner_api_key = 'beta-key';
 }
 
@@ -31,17 +31,39 @@ $rbp_media_cleaner_sync_running_time = get_option('rbp_media_cleaner_sync_runnin
 // A time validator if the sync is r4unning longer then necessary!
 if($rbp_media_cleaner_sync_running == 'running'){
     $date = new DateTime(); // For today/now, don't pass an arg.
-    
+
     if($rbp_media_cleaner_sync_running_time == 'invalid'){
-        update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia")));        
+        update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia")));
         update_option('rbp_media_cleaner_sync_running', 'not-running');
     } else {
-        $date->modify("-30 minutes");
+        $date->modify("-120 minutes");
         if(date($date->format("m/d/Y h:ia")) > $rbp_media_cleaner_sync_running_time){
+            error_log(print_r('kill code' , true));
+            // RESET EVERYTHING
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
+            delete_transient('rmc_media_cleaner_media_data_collectors_posts_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_option_auditor_array');
+            delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array');
+
+            delete_option('rbp_media_cleaner_increment');
+            delete_option('rbp_media_cleaner_counter');
+            delete_option('rbp_media_cleaner_media_data');
+
+            sleep(2);
+            delete_option('rbp_media_cleaner_sync-time');
+            delete_option('rbp_media_cleaner_sync_running-time');
             update_option('rbp_media_cleaner_sync_running', 'not-running');
-            update_option('rbp_media_cleaner_sync_running-time', date($date->format("m/d/Y h:ia"))); 
-            
             $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, EXPIRED ', 'low', 'rbp_media_cleaner');
+            wp_send_json_success('COMPLETED');
+
+            sleep(2);
+            wp_die();
         } else {
             $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, NOT EXPIRED ', 'low', 'rbp_media_cleaner');
         }

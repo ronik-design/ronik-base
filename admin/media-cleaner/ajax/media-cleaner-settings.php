@@ -1,4 +1,4 @@
-<?php 
+<?php
 $rbpHelper = new RbpHelper;
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 9a, Media Cleaner Settings. ', 'low', 'rbp_media_cleaner');
 
@@ -19,6 +19,9 @@ if ($_POST['file_size_selector'] == 'changed' && (get_option( 'rbp_media_cleaner
     if( isset( $_POST['file_size_selection'])  ){
         update_option('rbp_media_cleaner_file_size', $_POST['file_size_selection']*1048576);
         // RESET EVERYTHING
+        
+        delete_option('rbp_media_cleaner_sync-time');
+        delete_option('rbp_media_cleaner_sync_running-time');
         update_option('rbp_media_cleaner_sync_running', 'not-running');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
@@ -29,6 +32,7 @@ if ($_POST['file_size_selector'] == 'changed' && (get_option( 'rbp_media_cleaner
         delete_transient('rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array');
         delete_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_option_auditor_array');
         delete_option('rbp_media_cleaner_increment');
         delete_option('rbp_media_cleaner_counter');
         delete_option('rbp_media_cleaner_media_data');

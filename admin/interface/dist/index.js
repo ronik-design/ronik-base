@@ -2758,6 +2758,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2931,26 +2937,38 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
   // PagerNav component
   var PagerNav = function PagerNav(_ref2) {
     var pager = _ref2.pager,
-      setFilterPager = _ref2.setFilterPager;
-    var handlePager = function handlePager(e) {
-      var direction = e.target.getAttribute("data-pager");
-      setFilterPager(function (prev) {
-        return prev + (direction === 'next' ? 1 : -1);
-      });
+      setFilterPager = _ref2.setFilterPager,
+      _ref2$mediaCollector = _ref2.mediaCollector,
+      mediaCollector = _ref2$mediaCollector === void 0 ? [] : _ref2$mediaCollector,
+      itemsPerPage = _ref2.itemsPerPage;
+    // Calculate total pages
+    var totalItems = mediaCollector.length || 0;
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    // Generate an array of page numbers
+    var pageNumbers = _toConsumableArray(Array(totalPages).keys()); // Generates [0, 1, 2, ...]
+
+    // Event handler for clicking on a page number
+    var handlePageClick = function handlePageClick(pageNumber) {
+      setFilterPager(pageNumber);
     };
-    var totalPages = Math.ceil(mediaCollector.length / itemsPerPage);
+    var startItem = pager * itemsPerPage + 1;
+    var endItem = Math.min(startItem + itemsPerPage - 1, totalItems);
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "filter-nav filter-nav--no-space-top",
-      children: [pager > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-        className: "filter-nav__button",
-        onClick: handlePager,
-        "data-pager": "previous",
-        children: "Previous Page"
-      }), pager < totalPages - 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-        className: "filter-nav__button",
-        onClick: handlePager,
-        "data-pager": "next",
-        children: "Next Page"
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: ["Showing ", startItem, "-", endItem, " of ", totalItems]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "pagination",
+        children: pageNumbers.map(function (pageNumber) {
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+            className: "filter-nav__button ".concat(pageNumber === pager ? 'filter-nav__button--active' : ''),
+            onClick: function onClick() {
+              return handlePageClick(pageNumber);
+            },
+            children: pageNumber + 1
+          }, pageNumber);
+        })
       })]
     });
   };
@@ -3006,7 +3024,9 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterNav, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PagerNav, {
       pager: filterPager,
-      setFilterPager: setFilterPager
+      setFilterPager: setFilterPager,
+      mediaCollector: mediaCollector,
+      itemsPerPage: itemsPerPage
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
       className: "media-collector-table",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {

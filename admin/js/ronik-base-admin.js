@@ -55,7 +55,13 @@
                         if(data.data === 'SEMI_SUCCESS'){
                             loaderElement.innerHTML = `Progress Status: Done`;
                         } else {
-                            loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
+                            if(data.data === 'NOT_RUNNING'){
+                                // alert('Not Running');
+                                window.location.reload(true);
+
+                            } else {
+                                loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
+                            }
                         }
                     }
                 } else {
@@ -82,7 +88,7 @@
                             }
                             console.log(data);
                         } else {
-                            
+                            console.log('TEST');
                         }
                     }
                 }
