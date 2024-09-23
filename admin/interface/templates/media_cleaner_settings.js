@@ -104,7 +104,7 @@ const MediaCleanerSettings = () => {
             {/* Display general settings message */}
             <ContentBlock
                 title="Media Cleaner Settings:"
-                description="Configure file size minimum and backup settings below. <br><br>Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
+                description="Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
             />
             <br />
             {/* File size settings */}
@@ -123,7 +123,7 @@ const MediaCleanerSettings = () => {
             </div>
 
             {/* Backup settings */}
-            <ContentBlock
+            {/* <ContentBlock
                 title="Backup files:"
                 description="Turn on to automatically backup files. Please note that this may take an additional 1-2 minutes.  "
             />
@@ -138,7 +138,7 @@ const MediaCleanerSettings = () => {
                     />
                     <span className="slider round"></span>
                 </label>
-            </div>
+            </div> */}
         </div>
     );
 };

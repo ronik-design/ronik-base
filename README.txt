@@ -38,9 +38,9 @@ Support and Issue Reporting: Provides support through a dedicated support page a
 Plugin Usage Instructions
 1. Accessing
 *   In WordPress Admin Dashboard:
-*   *   After activation, you’ll find [Plugin Name] listed under the Settings menu or as a separate menu item in your WordPress Admin Dashboard.
+*   *   After activation, you’ll find Media Harmony listed under the Settings menu or as a separate menu item in your WordPress Admin Dashboard.
 2. Performing Media CleanupAutomatic Cleanup:
-*   [Plugin Name] automatically performs a media cleanup every night at midnight via its built-in cron job. You do not need to take any action for this scheduled task.
+*   Media Harmony automatically performs a media cleanup every night at midnight via its built-in cron job. You do not need to take any action for this scheduled task.
 Manual Cleanup:
 *   Triggering Manual Sync:
 *   *   To perform a cleanup at any time, use the “Force Sync” option available in the WP-Admin bar. Simply click the “Force Sync” button to initiate a media scan and cleanup process manually.
@@ -48,10 +48,10 @@ Manual Cleanup:
 *   *   After a cleanup, check the plugin’s results to review which files were flagged and ensure that no important media was inadvertently removed.
 3. Managing Deleted Media
 *   Backup and Recovery:
-*   *   [Plugin Name] allows you to back up your media files before deletion. Ensure that you have created a backup of your media files before initiating cleanup to restore any files if needed.
+*   *   Media Harmony allows you to back up your media files before deletion. Ensure that you have created a backup of your media files before initiating cleanup to restore any files if needed.
 4. Checking Performance
 *   Monitor Plugin Impact:
-*   *   [Plugin Name] includes a custom throttle system designed to minimize performance impact. For optimal performance, consider running the plugin during off-peak hours.
+*   *   Media Harmony includes a custom throttle system designed to minimize performance impact. For optimal performance, consider running the plugin during off-peak hours.
 5. Troubleshooting and Support
 *   Consult the FAQ:
 *   *   For common questions and troubleshooting tips, refer to the FAQ section of the plugin or the official support page.
@@ -63,14 +63,14 @@ Contact Support:
 
 == Installation ==
 
-*   From WordPress Repository: Go to the WordPress Plugin Directory and search for “[Plugin Name]”. Click on the “Download” button to obtain the plugin ZIP file.
+*   From WordPress Repository: Go to the WordPress Plugin Directory and search for “Media Harmony”. Click on the “Download” button to obtain the plugin ZIP file.
 *   From Website: Download the plugin ZIP file directly from the official website if available.
 *   Install the PluginUsing WordPress Admin Dashboard:
 *   Log in to your WordPress Admin Dashboard.
 *   Navigate to the Plugins Menu:
 
 *   Download the Plugin
-*   *   From WordPress Repository: Go to the WordPress Plugin Directory and search for “[Plugin Name]”. Click on the “Download” button to obtain the plugin ZIP file.
+*   *   From WordPress Repository: Go to the WordPress Plugin Directory and search for “Media Harmony”. Click on the “Download” button to obtain the plugin ZIP file.
 *   *   From Website: Download the plugin ZIP file directly from the official website if available.
 *   Install the PluginUsing WordPress Admin Dashboard:
 *   *   Log in to your WordPress Admin Dashboard.
@@ -79,18 +79,18 @@ Contact Support:
 
 Upload the Plugin:
 *   Click on the “Upload Plugin” button at the top of the page.
-*   Click “Choose File” and select the downloaded [Plugin Name] ZIP file.
+*   Click “Choose File” and select the downloaded Media Harmony ZIP file.
 *   Click “Install Now” to upload and install the plugin.
 Activate the Plugin:
-*   Once installed, click the “Activate Plugin” link to enable [Plugin Name] on your site.
+*   Once installed, click the “Activate Plugin” link to enable Media Harmony on your site.
 *   Using FTP: Extract the ZIP File. Extract the contents of the plugin ZIP file on your local computer and upload to server. 
 *   Connect to your website server using an FTP client (e.g., FileZilla).
 *   Navigate to wp-content/plugins/ directory on your server.
-*   Upload the extracted [Plugin Name] folder to this directory.
+*   Upload the extracted Media Harmony folder to this directory.
 Activate the Plugin:
 *   Log in to your WordPress Admin Dashboard.
 *   Go to Plugins > Installed Plugins.
-*   Find [Plugin Name] in the list and click “Activate”.
+*   Find Media Harmony in the list and click “Activate”.
 
 
 == Frequently Asked Questions ==

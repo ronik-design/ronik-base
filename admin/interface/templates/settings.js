@@ -5,11 +5,11 @@ function Settings() {
 
 	return (
 		<div className='settings-container'>
-			<ContentBlock
+			{/* <ContentBlock
 				title= "Settings Message"
 				description= "Tell us which features you want to use."
 			/>
-			<br></br>
+			<br></br> */}
 
 		</div>
 	);

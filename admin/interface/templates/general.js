@@ -62,27 +62,6 @@ function General() {
 					</div>
 				</div>
 
-				<div className="section">
-					<h2>Installation Instructions</h2>
-					<div className="instructions">
-						<h3>Using WordPress Admin Dashboard:</h3>
-						<ul>
-							<li><strong>Log in to your WordPress Admin Dashboard:</strong> Log in to your WordPress Admin Dashboard.</li>
-							<li><strong>Navigate to the Plugins Menu:</strong> Go to Plugins > Add New.</li>
-							<li><strong>Upload the Plugin:</strong> Click on the “Upload Plugin” button at the top of the page.</li>
-							<li><strong>Click “Choose File” and select the downloaded Media Harmony ZIP file:</strong> Click “Install Now” to upload and install the plugin.</li>
-							<li><strong>Activate the Plugin:</strong> Once installed, click the “Activate Plugin” link to enable Media Harmony on your site.</li>
-						</ul>
-
-						<h3>Using FTP:</h3>
-						<ul>
-							<li><strong>Extract the ZIP File:</strong> Extract the contents of the Media Harmony ZIP file on your local computer.</li>
-							<li><strong>Upload to Server:</strong> Connect to your website server using an FTP client (e.g., FileZilla).</li>
-							<li><strong>Navigate to wp-content/plugins/ directory on your server:</strong> Upload the extracted Media Harmony folder to this directory.</li>
-							<li><strong>Activate the Plugin:</strong> Log in to your WordPress Admin Dashboard. Go to Plugins > Installed Plugins. Find Media Harmony in the list and click “Activate”.</li>
-						</ul>
-					</div>
-				</div>
 
 				<div className="section">
 					<h2>Plugin Usage</h2>

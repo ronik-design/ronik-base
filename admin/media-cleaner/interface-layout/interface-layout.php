@@ -37,8 +37,8 @@ add_submenu_page(
 // Add Media Cleaner page.
 add_submenu_page(
     'options-ronik-base-mediacleaner', // parent page slug
-    'Media Cleaner',
-    'Media Cleaner',
+    'Media Harmony Dashboard',
+    'Media Harmony Dashboard',
     'manage_options',
     'options-ronik-base_media_cleaner', //
     'ronikbase_media_cleaner_callback',
