@@ -488,7 +488,7 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image basename within the post content primarily this is for gutenberg editior. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
 
-				sleep(10);
+				sleep(5);
 
 
 
@@ -503,10 +503,10 @@ class Ronik_Base_Admin {
 						// Save the response so we don't have to call again until tomorrow.
 						set_transient( 'rmc_media_cleaner_media_data_collectors_image_option_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_option_auditor_array , DAY_IN_SECONDS );
 					}
-					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '85%' , DAY_IN_SECONDS );
+					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '90%' , DAY_IN_SECONDS );
 					$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image with options pages. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
 	
-					sleep(10);
+					sleep(5);
 
 
 
@@ -525,23 +525,8 @@ class Ronik_Base_Admin {
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check the image inside the filesystem. This checks if the image hardcoded into any of the files. ' .count($rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array) , 'low', 'rbp_media_cleaner');
 
 
-
-
-
-
-
-
-
-
-
-
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '98%' , DAY_IN_SECONDS );
-				sleep(10);
-
-
-
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '99%' , DAY_IN_SECONDS );
-				sleep(10);
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '95%' , DAY_IN_SECONDS );
+				sleep(5);
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
