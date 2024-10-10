@@ -414,7 +414,7 @@ class Ronik_Base_Admin {
 				}
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '20%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Gather all the posts ID of the entire database ' .count($rmc_media_cleaner_media_data_collectors_posts_array) , 'low', 'rbp_media_cleaner');
-				sleep(10);
+				sleep(1);
 
 			// Gather all the image ids.
 				$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array' );
@@ -428,7 +428,7 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '30%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Gather all the image ids. ' .count($rmc_media_cleaner_media_data_collectors_image_id_array) , 'low', 'rbp_media_cleaner');
 
-				sleep(10);
+				sleep(1);
 
 
 
@@ -460,7 +460,7 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '40%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Image Id Thumbnail Auditor. ' .count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array) , 'low', 'rbp_media_cleaner');
 
-				sleep(10);
+				sleep(1);
 
 			// Check image id within all posts.
 				$transient_rmc_media_cleaner_media_data_collectors_image_post_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_auditor_array' );
@@ -474,7 +474,7 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '50%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image id within all posts. ' .count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array) , 'low', 'rbp_media_cleaner');
 
-				sleep(10);
+				sleep(1);
 
 			// Check image basename within the post content primarily this is for gutenberg editior.
 				$transient_rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array' );
@@ -488,7 +488,7 @@ class Ronik_Base_Admin {
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '80%' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image basename within the post content primarily this is for gutenberg editior. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
 
-				sleep(5);
+				sleep(1);
 
 
 
@@ -506,7 +506,7 @@ class Ronik_Base_Admin {
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '90%' , DAY_IN_SECONDS );
 					$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check image with options pages. ' .count($rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array) , 'low', 'rbp_media_cleaner');
 	
-					sleep(5);
+					sleep(1);
 
 
 
@@ -526,7 +526,7 @@ class Ronik_Base_Admin {
 
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '95%' , DAY_IN_SECONDS );
-				sleep(5);
+				sleep(1);
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
 					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
