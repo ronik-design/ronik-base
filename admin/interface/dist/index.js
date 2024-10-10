@@ -2330,64 +2330,75 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var MediaCollectorTable = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].MediaCollectorTable,
+var FilterMedia = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].FilterMedia,
+  MediaCollectorTable = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].MediaCollectorTable,
   PreservedMediaCollectorTable = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].PreservedMediaCollectorTable;
-var MediaCollector = function MediaCollector() {
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+var MediaCollector = function MediaCollector(_ref) {
+  var type = _ref.type;
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('page', 'options-ronik-base_media_cleaner') == 'options-ronik-base_media_cleaner' ? 'mediacollector' : 'mediacollectorpreserved'),
     _useState2 = _slicedToArray(_useState, 2),
-    hasLoaded = _useState2[0],
-    setHasLoaded = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    pageDetector = _useState2[0],
+    setPageDetector = _useState2[1];
+  var fileSize = 'large';
+  // if(pageDetector == 'mediacollectorpreserved'){
+  //     fileSize = 'all';
+  // } 
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
-    mediaCollector = _useState4[0],
-    setMediaCollector = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam('page_number', 0))),
+    hasLoaded = _useState4[0],
+    setHasLoaded = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState6 = _slicedToArray(_useState5, 2),
-    filterPager = _useState6[0],
-    setFilterPager = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_size', 'all')),
+    mediaCollector = _useState6[0],
+    setMediaCollector = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam('page_number', 0))),
     _useState8 = _slicedToArray(_useState7, 2),
-    filterMode = _useState8[0],
-    setFilterMode = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_type', 'all')),
+    filterPager = _useState8[0],
+    setFilterPager = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_size', fileSize)),
     _useState10 = _slicedToArray(_useState9, 2),
-    filterType = _useState10[0],
-    setFilterType = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    filterMode = _useState10[0],
+    setFilterMode = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_type', 'all')),
     _useState12 = _slicedToArray(_useState11, 2),
-    mediaCollectorLow = _useState12[0],
-    setMediaCollectorLow = _useState12[1];
+    filterType = _useState12[0],
+    setFilterType = _useState12[1];
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState14 = _slicedToArray(_useState13, 2),
-    mediaCollectorHigh = _useState14[0],
-    setMediaCollectorHigh = _useState14[1];
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    mediaCollectorLow = _useState14[0],
+    setMediaCollectorLow = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState16 = _slicedToArray(_useState15, 2),
-    unPreserveImageId = _useState16[0],
-    setUnPreserveImageId = _useState16[1];
+    mediaCollectorHigh = _useState16[0],
+    setMediaCollectorHigh = _useState16[1];
   var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState18 = _slicedToArray(_useState17, 2),
-    preserveImageId = _useState18[0],
-    setPreserveImageId = _useState18[1];
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    unPreserveImageId = _useState18[0],
+    setUnPreserveImageId = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState20 = _slicedToArray(_useState19, 2),
-    deleteImageId = _useState20[0],
-    setDeleteImageId = _useState20[1];
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(['all']),
+    preserveImageId = _useState20[0],
+    setPreserveImageId = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState22 = _slicedToArray(_useState21, 2),
-    selectedDataFormValues = _useState22[0],
-    setSelectedDataFormValues = _useState22[1];
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
+    deleteImageId = _useState22[0],
+    setDeleteImageId = _useState22[1];
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(['all']),
+    _useState24 = _slicedToArray(_useState23, 2),
+    selectedDataFormValues = _useState24[0],
+    setSelectedDataFormValues = _useState24[1];
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
       value: 'all',
       label: 'All'
     }]),
-    _useState24 = _slicedToArray(_useState23, 2),
-    selectedFormValues = _useState24[0],
-    setSelectedFormValues = _useState24[1];
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState26 = _slicedToArray(_useState25, 2),
-    mediaCollectorPreserved = _useState26[0],
-    setMediaCollectorPreserved = _useState26[1];
+    selectedFormValues = _useState26[0],
+    setSelectedFormValues = _useState26[1];
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState28 = _slicedToArray(_useState27, 2),
+    mediaCollectorPreserved = _useState28[0],
+    setMediaCollectorPreserved = _useState28[1];
   // const { lazyLoader } = useLazyLoader();
 
   // Utility function to get query parameters
@@ -2483,10 +2494,12 @@ var MediaCollector = function MediaCollector() {
     setHasLoaded(false);
     var route = selectedDataFormValues.includes("all") ? 'all' : selectedDataFormValues.join('?');
     var endpoint = filterMode ? "".concat(filterMode, "?filter=").concat(route) : "all?filter=".concat(route);
+    // alert(pageDetector);
     fetch("/wp-json/mediacleaner/v1/mediacollector/".concat(endpoint)).then(function (response) {
       return response.json();
     }).then(function (data) {
       if (data.length) {
+        setMediaCollectorPreserved(data);
         setMediaCollector(data);
         setTimeout(function () {
           setHasLoaded(true); // Simulate delay
@@ -2525,7 +2538,7 @@ var MediaCollector = function MediaCollector() {
 
   // Function to handle filter size changes
   var filter_size = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)( /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
       var filter, route, endpoint;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -2556,13 +2569,13 @@ var MediaCollector = function MediaCollector() {
       }, _callee);
     }));
     return function (_x2) {
-      return _ref.apply(this, arguments);
+      return _ref2.apply(this, arguments);
     };
   }(), [selectedDataFormValues]);
 
   // Function to handle post data deletion
   var handlePostDataDelete = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(imageId) {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(imageId) {
       var data, response, result;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
@@ -2603,14 +2616,14 @@ var MediaCollector = function MediaCollector() {
       }, _callee2, null, [[5, 15]]);
     }));
     return function handlePostDataDelete(_x3) {
-      return _ref2.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
 
   // Function to handle post data preservation
   var handlePostDataPreserve = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(preserveImageId, unPreserveImageId) {
-      var data, response, result;
+    var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(preserveImageId, unPreserveImageId) {
+      var data, response, result, $res_message, $res_url;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
@@ -2634,9 +2647,30 @@ var MediaCollector = function MediaCollector() {
           case 12:
             result = _context3.sent;
             if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
-              setTimeout(function () {
-                return location.reload();
-              }, 50);
+              // alert('preserveImageId' + preserveImageId);
+              // alert('unPreserveImageId' + unPreserveImageId);
+
+              if (preserveImageId !== 'invalid') {
+                $res_message = "Media is preserved. Would you like to view the preserved content?";
+                $res_url = '/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=' + preserveImageId;
+              }
+              if (unPreserveImageId !== 'invalid') {
+                $res_message = "Media is unpreserved. Would you like to view the unpreserved content?";
+                $res_url = '/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=' + unPreserveImageId;
+              }
+              if (confirm($res_message)) {
+                // User clicked OK
+                // Redirect to the specified URL
+                setTimeout(function () {
+                  window.location.href = $res_url;
+                }, 50); // Add a slight delay (100ms)
+              } else {
+                // User clicked Cancel
+                // Do nothing or perform an alternative action
+                setTimeout(function () {
+                  return location.reload();
+                }, 50);
+              }
             }
             _context3.next = 19;
             break;
@@ -2651,7 +2685,7 @@ var MediaCollector = function MediaCollector() {
       }, _callee3, null, [[6, 16]]);
     }));
     return function handlePostDataPreserve(_x4, _x5) {
-      return _ref3.apply(this, arguments);
+      return _ref4.apply(this, arguments);
     };
   }();
 
@@ -2707,11 +2741,51 @@ var MediaCollector = function MediaCollector() {
   if (!hasLoaded) {
     return 'Loading...';
   }
+
+  // Function to get the value of a query parameter from the URL
+  function getQueryParameter(name) {
+    var urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+
+  // Function to scroll to the element with matching data-media-id
+  function scrollToMediaItem(mediaId) {
+    var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    if (!mediaId) return; // Exit if no mediaId is provided
+
+    // Find the element with the matching data-media-id attribute
+    var element = document.querySelector("tr[data-media-id=\"".concat(mediaId, "\"]"));
+    if (element) {
+      element.classList.add('highlighted'); // Replace 'highlighted' with your desired class name
+
+      // Calculate the position to scroll to, accounting for the offset
+      var elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      var scrollToPosition = elementPosition - offset;
+
+      // Smoothly scroll to the calculated position
+      window.scrollTo({
+        top: scrollToPosition,
+        behavior: 'smooth'
+      });
+    } else {
+      console.log("Element with data-media-id=\"".concat(mediaId, "\" not found."));
+    }
+  }
+  // Specify an offset value (e.g., 100 pixels)
+  var offsetValue = 100;
+  // Get the 'media_id' parameter value from the URL
+  var mediaId = getQueryParameter('media_id');
+
+  // Set a delay (e.g., 500 milliseconds) before calling the scrollToMediaItem function
+  setTimeout(function () {
+    scrollToMediaItem(mediaId, offsetValue);
+  }, 500);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "message",
       children: " "
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(MediaCollectorTable, {
+      type: type,
       mediaCollector: mediaCollector,
       selectedFormValues: selectedFormValues,
       filterMode: filterMode,
@@ -2728,16 +2802,245 @@ var MediaCollector = function MediaCollector() {
       mediaCollectorLow: mediaCollectorLow,
       activateDelete: activateDelete,
       activatePreserve: activatePreserve
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-      children: "Preserved Files"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PreservedMediaCollectorTable, {
+      type: type,
       mediaCollectorPreserved: mediaCollectorPreserved,
+      activatePreserve: activatePreserve,
+      setFilterMode: setFilterMode,
+      selectedFormValues: selectedFormValues,
+      filterMode: filterMode,
+      setSelectedFormValues: setSelectedFormValues,
+      setSelectedDataFormValues: setSelectedDataFormValues,
+      setFilterPager: setFilterPager,
+      setFilterType: setFilterType,
+      filter_size: filter_size,
+      filterPager: filterPager,
       filter: filterMode,
-      activatePreserve: activatePreserve
+      filterType: filterType,
+      mediaCollectorHigh: mediaCollectorHigh,
+      mediaCollectorLow: mediaCollectorLow,
+      activateDelete: activateDelete
     })]
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MediaCollector);
+
+/***/ }),
+
+/***/ "./admin/interface/components/MediaCleaner/MediaFilter.jsx":
+/*!*****************************************************************!*\
+  !*** ./admin/interface/components/MediaCleaner/MediaFilter.jsx ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+var _excluded = ["ref"];
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+
+
+// Custom ClearIndicator to clear all selected values
+
+
+var _ClearIndicator = function ClearIndicator(props) {
+  var clearValue = props.clearValue,
+    _props$innerProps = props.innerProps,
+    ref = _props$innerProps.ref,
+    restInnerProps = _objectWithoutProperties(_props$innerProps, _excluded);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", _objectSpread(_objectSpread({}, restInnerProps), {}, {
+    ref: ref,
+    onClick: function onClick() {
+      console.log('ClearIndicator clicked');
+      clearValue(); // Clear the select component's internal state
+      props.setSelectedFormValues([]); // Clear all values in the state
+      props.setSelectedDataFormValues([]); // Clear all data form values
+      props.setManualClear(true); // Set manual clear flag
+      console.log('Cleared all selected values');
+    },
+    style: {
+      cursor: 'pointer'
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+      style: {
+        fontSize: '16px'
+      },
+      children: "\u2716"
+    }), " "]
+  }));
+};
+
+// FilterType component
+var FilterType = function FilterType(_ref) {
+  var selectedFormValues = _ref.selectedFormValues,
+    setFilterMode = _ref.setFilterMode,
+    setSelectedFormValues = _ref.setSelectedFormValues,
+    setSelectedDataFormValues = _ref.setSelectedDataFormValues;
+  // Define individual options (no "all" option)
+  var options = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    return [{
+      value: 'jpg',
+      label: 'JPG'
+    }, {
+      value: 'gif',
+      label: 'GIF'
+    }, {
+      value: 'png',
+      label: 'PNG'
+    }, {
+      value: 'video',
+      label: 'Video'
+    }, {
+      value: 'misc',
+      label: 'Misc'
+    }];
+  }, []);
+
+  // State to control the open/close of the select dropdown
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    menuIsOpen = _useState2[0],
+    setMenuIsOpen = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    manualClear = _useState4[0],
+    setManualClear = _useState4[1];
+
+  // Initialize all options as selected when the component first renders
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var _selectedFormValues$;
+    console.log('useEffect triggered');
+    console.log('Selected Form Values:', selectedFormValues);
+    console.log('Manual Clear Flag:', manualClear);
+    if (!manualClear && (!selectedFormValues || selectedFormValues.length === 0)) {
+      console.log('Preselecting all options');
+      //   setSelectedFormValues(options);
+      //   setSelectedDataFormValues(options.map(option => option.value));
+    }
+
+    // Check if selectedFormValues exists and contains the 'all' option
+    if (!manualClear && selectedFormValues && selectedFormValues.length > 0 && ((_selectedFormValues$ = selectedFormValues[0]) === null || _selectedFormValues$ === void 0 ? void 0 : _selectedFormValues$.value) === 'all') {
+      console.log('"All" option is selected, preselecting all options again');
+      setSelectedFormValues(options);
+      setSelectedDataFormValues(options.map(function (option) {
+        return option.value;
+      }));
+    }
+
+    // Reset the manualClear flag after handling
+    if (manualClear) {
+      console.log('Resetting manual clear flag');
+      setManualClear(false);
+    }
+  }, [options, selectedFormValues, setSelectedFormValues, setSelectedDataFormValues, manualClear]);
+
+  // Function to toggle the dropdown
+  var toggleMenuIsOpen = function toggleMenuIsOpen() {
+    setMenuIsOpen(function (prevState) {
+      return !prevState;
+    });
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "select-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+      className: "add-button",
+      onClick: toggleMenuIsOpen,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "+"
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      closeMenuOnSelect: false,
+      value: selectedFormValues // Preselect all options
+      ,
+      isMulti: true,
+      options: options,
+      isSearchable: false // Prevent typing in the input field
+      ,
+      styles: {
+        control: function control(provided, state) {
+          return _objectSpread(_objectSpread({}, provided), {}, {
+            boxShadow: 'none',
+            // Remove the box shadow
+            borderColor: state.isFocused ? 'transparent' : provided.borderColor,
+            // Remove the border when focused
+            '&:hover': {
+              borderColor: 'transparent' // Ensure the border is also removed on hover
+            }
+          });
+        }
+      },
+
+      menuIsOpen: menuIsOpen // Control menu open/close state
+      ,
+      onChange: function onChange(selected) {
+        console.log('Select onChange triggered');
+        console.log('Selected Values:', selected);
+        // setFilterMode('all'); // Set filter mode to 'all'
+
+        setFilterMode('large'); // Set filter mode to 'all'
+
+        // Update the selected values (will handle both adding and removing)
+        setSelectedFormValues(selected || []); // Ensure empty array if no selection
+
+        // If no items are selected, set an empty array, otherwise update with selected values
+        var newDataArr = selected ? selected.map(function (option) {
+          return option.value;
+        }) : [];
+        setSelectedDataFormValues(newDataArr);
+
+        // Close the menu if all items are cleared
+        if (!selected || selected.length === 0) {
+          console.log('All items cleared, closing menu');
+          setMenuIsOpen(false);
+        }
+      },
+      components: {
+        DropdownIndicator: function DropdownIndicator() {
+          return null;
+        },
+        // Disable caret by setting DropdownIndicator to null
+        ClearIndicator: function ClearIndicator(props) {
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ClearIndicator, _objectSpread(_objectSpread({}, props), {}, {
+            setSelectedFormValues: setSelectedFormValues,
+            setSelectedDataFormValues: setSelectedDataFormValues,
+            setManualClear: setManualClear // Pass function to set manual clear flag
+          }));
+        }
+      },
+
+      noOptionsMessage: function noOptionsMessage() {
+        return "No media formats available";
+      } // Customize the "No options" message
+      ,
+      onMenuClose: function onMenuClose() {
+        console.log('Menu closed');
+        setMenuIsOpen(false);
+      } // Ensure menu closes when selection is made
+    })]
+  });
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilterType);
 
 /***/ }),
 
@@ -2754,266 +3057,194 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
 /* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+/* harmony import */ var _MediaFilter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MediaFilter */ "./admin/interface/components/MediaCleaner/MediaFilter.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
  // Importing HTML parser
 
-// MediaCollectorTable component
+
+
+// Function to get the value of a query parameter from the URL
 
 
 
-var MediaCollectorTable = function MediaCollectorTable(_ref) {
-  var _output;
+function getQueryParameter(name) {
+  var urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Helper function to handle pagination logic
+var getPaginatedData = function getPaginatedData(data, page, itemsPerPage) {
+  return data.reduce(function (resultArray, item, index) {
+    var chunkIndex = Math.floor(index / itemsPerPage);
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [];
+    }
+    resultArray[chunkIndex].push(item);
+    return resultArray;
+  }, [])[page] || [];
+};
+
+// FilterNav component
+var FilterNav = function FilterNav(_ref) {
   var mediaCollector = _ref.mediaCollector,
-    selectedFormValues = _ref.selectedFormValues,
     filterMode = _ref.filterMode,
-    setFilterMode = _ref.setFilterMode,
-    setFilterPager = _ref.setFilterPager,
-    setSelectedFormValues = _ref.setSelectedFormValues,
-    setSelectedDataFormValues = _ref.setSelectedDataFormValues,
-    filter_size = _ref.filter_size,
-    filterPager = _ref.filterPager,
-    filterType = _ref.filterType,
-    mediaCollectorHigh = _ref.mediaCollectorHigh,
-    mediaCollectorLow = _ref.mediaCollectorLow,
-    activateDelete = _ref.activateDelete,
-    activatePreserve = _ref.activatePreserve;
-  // Options for the select input
-  var options = [{
-    value: 'all',
-    label: 'All'
-  }, {
-    value: 'jpg',
-    label: 'JPG'
-  }, {
-    value: 'gif',
-    label: 'GIF'
-  }, {
-    value: 'png',
-    label: 'PNG'
-  }, {
-    value: 'video',
-    label: 'Video'
-  }, {
-    value: 'misc',
-    label: 'Misc'
-  }];
+    filter_size = _ref.filter_size;
+  var totalSize = mediaCollector.reduce(function (acc, item) {
+    var size = parseFloat(item['media_size']);
+    if (item['media_size'].includes('KB')) size /= 1024;
+    if (item['media_size'].includes('GB')) size *= 1000;
+    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    return acc + (isNaN(size) ? 0 : size);
+  }, 0);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      className: "filter-nav",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        type: "button",
+        title: "Sort Largest to Smallest File Size",
+        onClick: filter_size,
+        "data-filter": "large",
+        className: "filter-nav__button filter-nav__button--".concat(filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'),
+        children: "Sort Largest to Smallest File Size"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        type: "button",
+        title: "Sort Smallest to Largest File Size",
+        onClick: filter_size,
+        "data-filter": "small",
+        className: "filter-nav__button filter-nav__button--".concat(filterMode === 'small' ? 'active' : 'inactive'),
+        children: "Sort Smallest to Largest File Size"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+      className: "overall-number",
+      children: ["Number of unlinked files found: ", mediaCollector.length]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+      className: "overall-number",
+      children: ["Total unlinked media file size: ", Math.round(totalSize * 100) / 100, " MB"]
+    })]
+  });
+};
 
-  // FilterType component
-  var FilterType = function FilterType() {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "select select-multiple",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_3__["default"], {
-        closeMenuOnSelect: false,
-        defaultValue: selectedFormValues,
-        isMulti: true,
-        options: options,
-        onChange: function onChange(e) {
-          setFilterMode('all');
-          var params = new URLSearchParams(window.location.search);
-          var paramsObj = Array.from(params.keys()).reduce(function (acc, val) {
-            return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, val, params.get(val)));
-          }, {});
-          if (window.history.pushState) {
-            var newURL = new URL(window.location.href);
-            newURL.search = "?page=options-ronik-base_media_cleaner&page_number=".concat(paramsObj['page_number']);
-            window.history.pushState({
-              path: newURL.href
-            }, '', newURL.href);
-          }
-          var newArr = e.map(function (option) {
-            return option;
-          });
-          setSelectedFormValues(newArr);
-          var newDataArr = e.map(function (option) {
-            return option.value;
-          });
-          setSelectedDataFormValues(newDataArr);
-        }
+// PagerNav component
+var PagerNav = function PagerNav(_ref2) {
+  var pager = _ref2.pager,
+    setFilterPager = _ref2.setFilterPager,
+    _ref2$mediaCollector = _ref2.mediaCollector,
+    mediaCollector = _ref2$mediaCollector === void 0 ? [] : _ref2$mediaCollector,
+    itemsPerPage = _ref2.itemsPerPage;
+  var totalItems = mediaCollector.length || 0;
+  var totalPages = Math.ceil(totalItems / itemsPerPage);
+  var pageNumbers = _toConsumableArray(Array(totalPages).keys()); // Generates [0, 1, 2, ...]
+
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    className: "filter-nav filter-nav--no-space-top",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+      children: ["Showing ", pager * itemsPerPage + 1, "-", Math.min((pager + 1) * itemsPerPage, totalItems), " of ", totalItems]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+      className: "pagination",
+      children: pageNumbers.map(function (pageNumber) {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+          className: "filter-nav__button ".concat(pageNumber === pager ? 'filter-nav__button--active' : ''),
+          onClick: function onClick() {
+            return setFilterPager(pageNumber);
+          },
+          children: pageNumber + 1
+        }, pageNumber);
       })
-    });
-  };
+    })]
+  });
+};
 
-  // Guard clause to handle cases where mediaCollector is 'no-images' or null
+// MediaCollectorTable component
+var MediaCollectorTable = function MediaCollectorTable(_ref3) {
+  var type = _ref3.type,
+    mediaCollector = _ref3.mediaCollector,
+    selectedFormValues = _ref3.selectedFormValues,
+    filterMode = _ref3.filterMode,
+    setFilterMode = _ref3.setFilterMode,
+    setFilterPager = _ref3.setFilterPager,
+    setSelectedFormValues = _ref3.setSelectedFormValues,
+    setSelectedDataFormValues = _ref3.setSelectedDataFormValues,
+    filter_size = _ref3.filter_size,
+    filterPager = _ref3.filterPager,
+    mediaCollectorHigh = _ref3.mediaCollectorHigh,
+    mediaCollectorLow = _ref3.mediaCollectorLow,
+    activateDelete = _ref3.activateDelete,
+    activatePreserve = _ref3.activatePreserve;
+  if (type === 'preserved') return null;
   if (!mediaCollector || mediaCollector === 'no-images') {
-    // Remove loading elements from the DOM if no images are found
     var f_wpwrap = document.querySelector("#wpwrap");
     var element = document.getElementsByClassName("centered-blob");
     if (f_wpwrap) f_wpwrap.classList.remove('loader');
-    if (element[0]) element[0].remove(); // Removes the 'centered-blob' div
-    if (element[1]) element[1].remove(); // Removes the second 'centered-blob' div
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {
-        filterType: filterType
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+    if (element[0]) element[0].remove();
+    if (element[1]) element[1].remove();
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        selectedFormValues: selectedFormValues,
+        setFilterMode: setFilterMode,
+        setSelectedFormValues: setSelectedFormValues,
+        setSelectedDataFormValues: setSelectedDataFormValues
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
         children: "No Media Found!"
       })]
     });
   }
-
-  // Pagination setup
-  var urlParams = new URLSearchParams(window.location.search);
   var page = parseInt(filterPager) || 0;
   var itemsPerPage = 20;
-  var paginatedData = function paginatedData(data) {
-    return data.reduce(function (resultArray, item, index) {
-      var chunkIndex = Math.floor(index / itemsPerPage);
-      if (!resultArray[chunkIndex]) {
-        resultArray[chunkIndex] = []; // Start a new chunk
-      }
-
-      resultArray[chunkIndex].push(item);
-      return resultArray;
-    }, []);
-  };
-
-  // Determine which media collector data to use based on filterMode
-  var output = paginatedData(mediaCollector)[page];
-  if (filterMode === 'high' && mediaCollectorHigh) {
-    output = paginatedData(mediaCollectorHigh)[page];
-  } else if (filterMode === 'low' && mediaCollectorLow) {
-    output = paginatedData(mediaCollectorLow)[page];
+  var mediaId = getQueryParameter('media_id');
+  if (mediaId) {
+    itemsPerPage = 2000;
   }
-
-  // FilterNav component
-  var FilterNav = function FilterNav() {
-    var totalSize = mediaCollector.reduce(function (acc, item) {
-      var size = parseFloat(item['media_size']);
-      if (item['media_size'].includes('KB')) size /= 1024;
-      if (item['media_size'].includes('GB')) size *= 1000;
-      if (item['media_size'].includes('bytes')) size *= 1e-6;
-      return acc + (isNaN(size) ? 0 : size);
-    }, 0);
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        className: "filter-nav",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-          type: "button",
-          title: "Filter All",
-          onClick: filter_size,
-          "data-filter": "all",
-          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'all' ? 'active' : 'inactive'),
-          children: "Filter All"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-          type: "button",
-          title: "Sort Largest to Smallest File Size",
-          onClick: filter_size,
-          "data-filter": "high",
-          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'high' ? 'active' : 'inactive'),
-          children: "Sort Largest to Smallest File Size"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-          type: "button",
-          title: "Sort Smallest to Largest File Size",
-          onClick: filter_size,
-          "data-filter": "low",
-          className: "filter-nav__button filter-nav__button--".concat(filterMode === 'low' ? 'active' : 'inactive'),
-          children: "Sort Smallest to Largest File Size"
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-        className: "overall-number",
-        children: ["Number of unlinked files found: ", mediaCollector.length]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-        className: "overall-number",
-        children: ["Total unlinked media file size: ", Math.round(totalSize * 100) / 100, " MB"]
-      })]
-    });
-  };
-
-  // PagerNav component
-  var PagerNav = function PagerNav(_ref2) {
-    var pager = _ref2.pager,
-      setFilterPager = _ref2.setFilterPager,
-      _ref2$mediaCollector = _ref2.mediaCollector,
-      mediaCollector = _ref2$mediaCollector === void 0 ? [] : _ref2$mediaCollector,
-      itemsPerPage = _ref2.itemsPerPage;
-    // Calculate total pages
-    var totalItems = mediaCollector.length || 0;
-    var totalPages = Math.ceil(totalItems / itemsPerPage);
-
-    // Generate an array of page numbers
-    var pageNumbers = _toConsumableArray(Array(totalPages).keys()); // Generates [0, 1, 2, ...]
-
-    // Event handler for clicking on a page number
-    var handlePageClick = function handlePageClick(pageNumber) {
-      setFilterPager(pageNumber);
-    };
-    var startItem = pager * itemsPerPage + 1;
-    var endItem = Math.min(startItem + itemsPerPage - 1, totalItems);
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-      className: "filter-nav filter-nav--no-space-top",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-        children: ["Showing ", startItem, "-", endItem, " of ", totalItems]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        className: "pagination",
-        children: pageNumbers.map(function (pageNumber) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-            className: "filter-nav__button ".concat(pageNumber === pager ? 'filter-nav__button--active' : ''),
-            onClick: function onClick() {
-              return handlePageClick(pageNumber);
-            },
-            children: pageNumber + 1
-          }, pageNumber);
-        })
-      })]
-    });
-  };
-
-  // Render media items
-  var mediaCollectorItems = (_output = output) === null || _output === void 0 ? void 0 : _output.map(function (collector) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+  var output = getPaginatedData(filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollector, page, itemsPerPage);
+  var mediaCollectorItems = output.map(function (collector) {
+    var _document$querySelect;
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
       className: "media-collector-table__tr",
       "data-media-id": collector['id'],
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
           onClick: activateDelete,
           "data-delete-media": collector['id'],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-            src: "/wp-content/plugins/".concat(document.querySelector('#ronik-base_media_cleaner').getAttribute("data-plugin-name"), "/admin/media-cleaner/image/big-trash-can.svg"),
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+            src: "/wp-content/plugins/".concat((_document$querySelect = document.querySelector(type === 'preserved' ? '#ronik-base_media_cleaner_preserved' : '#ronik-base_media_cleaner')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.getAttribute("data-plugin-name"), "/admin/media-cleaner/image/big-trash-can.svg"),
             alt: "Delete"
           })
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-thumb",
         children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td file-type",
         children: collector['media_file_type']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td file-size",
         children: collector['media_size']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td",
         children: collector['id']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
           target: "_blank",
           rel: "noopener noreferrer",
           href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
           children: "Go to media"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
         children: collector['media_file']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--preserve",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
           onClick: activatePreserve,
           "data-preserve-media": collector['id'],
           children: "Preserve File"
@@ -3021,91 +3252,140 @@ var MediaCollectorTable = function MediaCollectorTable(_ref) {
       })]
     }, collector['id']);
   });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterType, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(FilterNav, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(PagerNav, {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      children: "Filter by file type"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      selectedFormValues: selectedFormValues,
+      setFilterMode: setFilterMode,
+      setSelectedFormValues: setSelectedFormValues,
+      setSelectedDataFormValues: setSelectedDataFormValues
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+      mediaCollector: mediaCollector,
+      filterMode: filterMode,
+      filter_size: filter_size
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
       pager: filterPager,
       setFilterPager: setFilterPager,
       mediaCollector: mediaCollector,
       itemsPerPage: itemsPerPage
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("table", {
       className: "media-collector-table",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tbody", {
         className: "media-collector-table__tbody",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
           className: "media-collector-table__tr",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "Permanently Delete"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-thumb",
             children: "Thumbnail Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Type"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Size"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "Media Library Link"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-url",
             children: "File Path"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--preserve",
-            children: ["Preserve: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
-              children: "Select preserve to exclude any file from bulk deletion."
-            })]
+            children: "Preserve"
           })]
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
-        className: "media-collector-table__tbody",
-        children: mediaCollectorItems
-      })]
+        }), mediaCollectorItems]
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+      pager: filterPager,
+      setFilterPager: setFilterPager,
+      mediaCollector: mediaCollector,
+      itemsPerPage: itemsPerPage
     })]
   });
 };
 
 // PreservedMediaCollectorTable component
-var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) {
-  var mediaCollectorPreserved = _ref3.mediaCollectorPreserved,
-    activatePreserve = _ref3.activatePreserve;
+var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref4) {
+  var type = _ref4.type,
+    mediaCollectorPreserved = _ref4.mediaCollectorPreserved,
+    activatePreserve = _ref4.activatePreserve,
+    selectedFormValues = _ref4.selectedFormValues,
+    filterMode = _ref4.filterMode,
+    setFilterMode = _ref4.setFilterMode,
+    setFilterPager = _ref4.setFilterPager,
+    setSelectedFormValues = _ref4.setSelectedFormValues,
+    setSelectedDataFormValues = _ref4.setSelectedDataFormValues,
+    filter_size = _ref4.filter_size,
+    filterPager = _ref4.filterPager,
+    mediaCollectorHigh = _ref4.mediaCollectorHigh,
+    mediaCollectorLow = _ref4.mediaCollectorLow,
+    activateDelete = _ref4.activateDelete;
   if (!mediaCollectorPreserved) return null;
-
-  // Render preserved media items
-  var mediaCollectorItems = mediaCollectorPreserved.map(function (collector) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+  if (type !== 'preserved') {
+    return;
+  }
+  if (!mediaCollectorPreserved || mediaCollectorPreserved === 'no-images') {
+    var f_wpwrap = document.querySelector("#wpwrap");
+    var element = document.getElementsByClassName("centered-blob");
+    if (f_wpwrap) f_wpwrap.classList.remove('loader');
+    if (element[0]) element[0].remove();
+    if (element[1]) element[1].remove();
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        selectedFormValues: selectedFormValues,
+        setFilterMode: setFilterMode,
+        setSelectedFormValues: setSelectedFormValues,
+        setSelectedDataFormValues: setSelectedDataFormValues
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+        children: "No Media Found!"
+      })]
+    });
+  }
+  var page = parseInt(filterPager) || 0;
+  // const itemsPerPage = 20;
+  var itemsPerPage = 20;
+  var mediaId = getQueryParameter('media_id');
+  if (mediaId) {
+    itemsPerPage = 2000;
+  }
+  var output = getPaginatedData(filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollectorPreserved, page, itemsPerPage);
+  var mediaCollectorItems = output.map(function (collector) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
       className: "media-collector-table__tr",
       "data-media-id": collector['id'],
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-thumb",
         children: collector['img-thumb'] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb']) : 'No Image Found'
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td file-type",
         children: collector['media_file_type']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td file-size",
         children: collector['media_size']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td",
         children: collector['id']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
           target: "_blank",
           rel: "noopener noreferrer",
           href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
           children: "Go to media"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
         children: collector['media_file']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--preserve",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
           onClick: activatePreserve,
           "data-unpreserve-media": collector['id'],
           children: "Un-preserve file"
@@ -3113,45 +3393,65 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref3) 
       })]
     }, collector['id']);
   });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
-    className: "media-collector-table",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
-      className: "media-collector-table__tbody",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
-        className: "media-collector-table__tr",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th media-collector-table__th--img-thumb",
-          children: "Thumbnail Image"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th",
-          children: "File Type"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th",
-          children: "File Size"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th",
-          children: "File ID"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th",
-          children: "Media Library Link"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
-          className: "media-collector-table__th media-collector-table__th--img-url",
-          children: "File Path"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("th", {
-          className: "media-collector-table__th media-collector-table__th--preserve",
-          children: ["Temporarily Preserve Image ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("sup", {
-            children: "Clicking the button will not delete the image, it will just exclude the selected image from the media list temporarily."
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+      children: "Preserved Files"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      children: "Filter by file type"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      selectedFormValues: selectedFormValues,
+      setFilterMode: setFilterMode,
+      setSelectedFormValues: setSelectedFormValues,
+      setSelectedDataFormValues: setSelectedDataFormValues
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+      mediaCollector: mediaCollectorPreserved,
+      filterMode: filterMode,
+      filter_size: filter_size
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+      pager: filterPager,
+      setFilterPager: setFilterPager,
+      mediaCollector: mediaCollectorPreserved,
+      itemsPerPage: itemsPerPage
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("table", {
+      className: "media-collector-table",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tbody", {
+        className: "media-collector-table__tbody",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
+          className: "media-collector-table__tr",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th media-collector-table__th--img-thumb",
+            children: "Thumbnail Image"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "File Type"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "File Size"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "File ID"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th",
+            children: "Media Library Link"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th media-collector-table__th--img-url",
+            children: "File Path"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+            className: "media-collector-table__th media-collector-table__th--preserve",
+            children: "Temporarily Preserve"
           })]
-        })]
+        }), mediaCollectorItems]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
-      className: "media-collector-table__tbody",
-      children: mediaCollectorItems
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+      pager: filterPager,
+      setFilterPager: setFilterPager,
+      mediaCollector: mediaCollectorPreserved,
+      itemsPerPage: itemsPerPage
     })]
   });
 };
 
-// Export components as default with named export syntax
+// Export components
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   MediaCollectorTable: MediaCollectorTable,
   PreservedMediaCollectorTable: PreservedMediaCollectorTable
@@ -49927,6 +50227,9 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       title: "Media Cleaner Settings:",
       description: "Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      title: "",
+      description: "Please note that if you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "media-cleaner-item-settings__file-size",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
@@ -49983,6 +50286,41 @@ function Support() {
   });
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Support);
+
+/***/ }),
+
+/***/ "./admin/interface/templates/preserved.js":
+/*!************************************************!*\
+  !*** ./admin/interface/templates/preserved.js ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ContentBlock.jsx */ "./admin/interface/components/ContentBlock.jsx");
+/* harmony import */ var _components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MediaCleaner/TriggerAjaxRequest.jsx */ "./admin/interface/components/MediaCleaner/TriggerAjaxRequest.jsx");
+/* harmony import */ var _components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/MediaCleaner/MediaCollector.jsx */ "./admin/interface/components/MediaCleaner/MediaCollector.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
+
+
+
+function Mediacleaner() {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    className: "mediacleaner-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+      title: "Welcome to the Preserved Libaray!",
+      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      type: "preserved"
+    })]
+  });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Mediacleaner);
 
 /***/ }),
 
@@ -51238,11 +51576,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _templates_general_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./templates/general.js */ "./admin/interface/templates/general.js");
 /* harmony import */ var _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./templates/media_cleaner.js */ "./admin/interface/templates/media_cleaner.js");
 /* harmony import */ var _templates_media_cleaner_support_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./templates/media_cleaner_support.js */ "./admin/interface/templates/media_cleaner_support.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _templates_preserved_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./templates/preserved.js */ "./admin/interface/templates/preserved.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
 
 // Import screen components
+
 
 
 
@@ -51257,7 +51597,7 @@ var renderComponent = function renderComponent(selector, Component) {
   var domNode = document.querySelector(selector);
   if (domNode) {
     var root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(domNode);
-    root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(Component, {}));
+    root.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(Component, {}));
   }
 };
 
@@ -51272,6 +51612,7 @@ document.addEventListener('readystatechange', function (event) {
     renderComponent('#ronik-base_support-media-cleaner', _templates_media_cleaner_support_js__WEBPACK_IMPORTED_MODULE_8__["default"]);
     renderComponent('#ronik-base_general', _templates_general_js__WEBPACK_IMPORTED_MODULE_6__["default"]);
     renderComponent('#ronik-base_media_cleaner', _templates_media_cleaner_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+    renderComponent('#ronik-base_media_cleaner_preserved', _templates_preserved_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
   }
 });
 })();

@@ -26,6 +26,21 @@ function add_item( $admin_bar ){
         $f_outdated = 'rmc-sync__outdated-low';
     }
 
+    $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+    $rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
+
+    if(!$progress){
+        $is_running = 'invalid';
+    } else {
+        // Use ternary operator to check $progress and assign the appropriate message
+        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE') 
+            ? 'invalid' 
+            : 'valid';
+    }
+    if($rbp_media_cleaner_sync_running === 'not-running'){
+        $is_running = 'invalid';
+    }
+
     $menu_id = 'rmc';
     $admin_bar->add_menu(
         array(
@@ -35,15 +50,19 @@ function add_item( $admin_bar ){
             'meta' => array(
                 'class' => $f_outdated,
                 'target' => '',
+                'html' => '<div data-sync="'.$is_running.'"></div>'
             )
         )
     );
     $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Initiate Scan'), 'id' => 'rmc-sync', 'href' => '/', 'meta' => array('target' => '_blank')));
     $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Last Sync: '. $f_message), 'id' => 'rmc-drafts',  'href' => '', 'meta' => array('target' => '_blank')));
 }
+
 /* Here you trigger the ajax handler function using jQuery */
 add_action( 'admin_footer', 'mc_sync_action_js' );
-function mc_sync_action_js() { ?>
+function mc_sync_action_js() { 
+    
+    ?>
     <script type="text/javascript">
         // Check if there is an element with data-sync="valid"
         const syncIsRunning = document.querySelector('[data-sync="valid"]');
@@ -54,6 +73,15 @@ function mc_sync_action_js() { ?>
 
         // Check if the element exists
         if (syncElement && isButtonDisabled) {
+            var element = document.getElementById("wp-admin-bar-rmc");
+                // Change the color
+                element.style.color = "grey"; // Replace "red" with your desired color
+                // Append text
+                element.textContent = "Media Harmony - Sync In Progress";
+
+
+
+
             // Find the <a> tag inside the element
             const linkElement = syncElement.querySelector('a');
 
@@ -76,10 +104,10 @@ function mc_sync_action_js() { ?>
 
         jQuery("#wp-admin-bar-rmc-sync a").unbind().click(function(e){
             e.preventDefault();
-            const f_wpwrap = document.querySelector("#wpwrap");
-            const f_wpcontent = document.querySelector("#wpcontent");
-            f_wpwrap.classList.add('loader')
-            f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
+            // const f_wpwrap = document.querySelector("#wpwrap");
+            // const f_wpcontent = document.querySelector("#wpcontent");
+            // f_wpwrap.classList.add('loader')
+            // f_wpcontent.insertAdjacentHTML('beforebegin', '<div class= "centered-blob"><div class= "blob-1"></div><div class= "blob-2"></div></div>');
 
             const handlePostDataTest = async ( userOptions, mimeType, f_increment ) => {
                 const data = new FormData();

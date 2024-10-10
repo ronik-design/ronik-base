@@ -45,6 +45,19 @@ add_submenu_page(
     4 // menu position
 );
 
+
+// Add Media Cleaner page.
+add_submenu_page(
+    'options-ronik-base-mediacleaner', // parent page slug
+    'Preserved Media',
+    'Preserved Media',
+    'manage_options',
+    'options-ronik-base_preserved', //
+    'ronikbase_media_cleaner_preserved_callback',
+    4 // menu position
+);
+
+
 function ronikbase_media_cleaner_callback(){ 
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
     $rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
@@ -67,6 +80,33 @@ function ronikbase_media_cleaner_callback(){
     <canvas></canvas>
     <?php
 }
+
+
+function ronikbase_media_cleaner_preserved_callback(){ 
+    $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+    $rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
+
+    if(!$progress){
+        $is_running = 'invalid';
+    } else {
+        // Use ternary operator to check $progress and assign the appropriate message
+        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE') 
+            ? 'invalid' 
+            : 'valid';
+    }
+    if($rbp_media_cleaner_sync_running === 'not-running'){
+        $is_running = 'invalid';
+    }
+?>
+
+    <!-- The main container  --> 
+    <div id="ronik-base_media_cleaner_preserved" data-sync="<?= $is_running; ?>" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
+    <canvas></canvas>
+    <?php
+}
+
+
+
 
 
 function ronikbase_support_settings_media_cleaner(){

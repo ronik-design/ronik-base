@@ -106,6 +106,11 @@ const MediaCleanerSettings = () => {
                 title="Media Cleaner Settings:"
                 description="Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
             />
+            {/* Display general settings message */}
+            <ContentBlock
+                title=""
+                description="Please note that if you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files."
+            />
             <br />
             {/* File size settings */}
             <div className='media-cleaner-item-settings__file-size'>

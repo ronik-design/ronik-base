@@ -430,12 +430,30 @@ class Ronik_Base_Admin {
 
 				sleep(10);
 
+
+
+			// Check if images have the preserved attributes.
+				// $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
+				// if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
+				// 	$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve;
+				// } else {
+				// }
+				$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserved = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_id_array );
+				// Save the response so we don't have to call again until tomorrow.
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserved , DAY_IN_SECONDS );
+
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check if images have the preserved attributes. ' .count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserved) , 'low', 'rbp_media_cleaner');
+
+
+
+
+
 			// Image Id Thumbnail Auditor.
 				$transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' );
 				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array ) ) {
 					$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $transient_rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array;
 				} else {
-					$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->imageThumbnailAuditor( $rmc_media_cleaner_media_data_collectors_posts_array, $rmc_media_cleaner_media_data_collectors_image_id_array, $select_attachment_type );
+					$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->imageThumbnailAuditor( $rmc_media_cleaner_media_data_collectors_posts_array, $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserved, $select_attachment_type );
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient( 'rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array' , $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array , DAY_IN_SECONDS );
 				}
@@ -506,26 +524,27 @@ class Ronik_Base_Admin {
 				}
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check the image inside the filesystem. This checks if the image hardcoded into any of the files. ' .count($rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array) , 'low', 'rbp_media_cleaner');
 
-			// Check if images have the preserved attributes.
-				// $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' );
-				// if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve ) ) {
-				// 	$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve;
-				// } else {
-				// }
-				$rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized = $RmcDataGathering->imagePreserveAudit( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
-				// Save the response so we don't have to call again until tomorrow.
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
+
+
+
+
+
+
+
+
+
+
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '98%' , DAY_IN_SECONDS );
 				sleep(10);
 
-				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Check if images have the preserved attributes. ' .count($rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized) , 'low', 'rbp_media_cleaner');
+
 
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , '99%' , DAY_IN_SECONDS );
 				sleep(10);
 
-				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized , DAY_IN_SECONDS );
-					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve_finalized );
+				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' , $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array , DAY_IN_SECONDS );
+					$RmcDataGathering->imageMarker( $rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array );
 				sleep(1);
 				set_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_progress' , 'DONE' , DAY_IN_SECONDS );
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: FINISHED SYNC ' , 'low', 'rbp_media_cleaner');

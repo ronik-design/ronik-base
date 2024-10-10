@@ -162,9 +162,10 @@ class RmcDataGathering{
                 $all_image_ids = array();
                 foreach ($allimagesid as $imageID){
                     $data = wp_get_attachment_metadata( $imageID ); // get the data structured
-                    $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false'; 
-                    wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
-
+                    if( $data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved'){
+                        $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false'; 
+                        wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
+                    }
                     if( file_exists( get_attached_file( $imageID ) ) ){
                         // finds the total file / image size
                         $filesize = filesize( get_attached_file( $imageID ) );
@@ -670,6 +671,8 @@ class RmcDataGathering{
                 }
             }
         }
+
+        error_log(print_r( $meta_temp_saved_array, true));
         $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1b imagePreserveAudit  ' . $meta_temp_saved_array , 'low', 'rbp_media_cleaner');
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_unique(array_filter($meta_temp_saved_array))));

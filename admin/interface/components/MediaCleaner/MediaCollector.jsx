@@ -1,13 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MediaTable from './MediaTable';
 
-const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
+const { FilterMedia, MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
 
-const MediaCollector = () => {
+const MediaCollector = ({ type }) => {
+    const [pageDetector, setPageDetector] = useState(getQueryParam('page', 'options-ronik-base_media_cleaner') == 'options-ronik-base_media_cleaner' ? 'mediacollector' : 'mediacollectorpreserved');
+    let fileSize = 'large';
+    // if(pageDetector == 'mediacollectorpreserved'){
+    //     fileSize = 'all';
+    // } 
+
     const [hasLoaded, setHasLoaded] = useState(false);
     const [mediaCollector, setMediaCollector] = useState(null);
     const [filterPager, setFilterPager] = useState(parseInt(getQueryParam('page_number', 0)));
-    const [filterMode, setFilterMode] = useState(getQueryParam('filter_size', 'all'));
+    const [filterMode, setFilterMode] = useState(getQueryParam('filter_size', fileSize));
+
     const [filterType, setFilterType] = useState(getQueryParam('filter_type', 'all'));
     const [mediaCollectorLow, setMediaCollectorLow] = useState(null);
     const [mediaCollectorHigh, setMediaCollectorHigh] = useState(null);
@@ -113,11 +120,13 @@ const MediaCollector = () => {
         setHasLoaded(false);
         const route = selectedDataFormValues.includes("all") ? 'all' : selectedDataFormValues.join('?');
         const endpoint = filterMode ? `${filterMode}?filter=${route}` : `all?filter=${route}`;
-
+        // alert(pageDetector);
         fetch(`/wp-json/mediacleaner/v1/mediacollector/${endpoint}`)
             .then(response => response.json())
             .then(data => {
                 if (data.length) {
+
+                    setMediaCollectorPreserved(data)
                     setMediaCollector(data);
                     setTimeout(() => {
                         setHasLoaded(true); // Simulate delay
@@ -155,7 +164,7 @@ const MediaCollector = () => {
 
     // Function to handle filter size changes
     const filter_size = useCallback(async (e) => {
-        setHasLoaded(false);
+        setHasLoaded(false);        
         const filter = e.target.getAttribute("data-filter");
         if (filter) {
             setFilterMode(filter);
@@ -217,7 +226,40 @@ const MediaCollector = () => {
             });
             const result = await response.json();
             if (result?.data === 'Reload') {
-                setTimeout(() => location.reload(), 50);
+
+                // alert('preserveImageId' + preserveImageId);
+                // alert('unPreserveImageId' + unPreserveImageId);
+                let $res_message,$res_url;
+
+                if(preserveImageId !== 'invalid'){
+                    $res_message = "Media is preserved. Would you like to view the preserved content?";
+                    $res_url = '/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id='+preserveImageId;
+                }
+                if(unPreserveImageId !== 'invalid'){
+                    $res_message =  "Media is unpreserved. Would you like to view the unpreserved content?";
+                    $res_url = '/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id='+unPreserveImageId;
+                }
+
+
+
+
+                if (confirm($res_message)) {
+                    // User clicked OK
+                    // Redirect to the specified URL
+                    setTimeout(() => {
+                        window.location.href = $res_url;
+                    }, 50); // Add a slight delay (100ms)
+
+                } else {
+                    // User clicked Cancel
+                    // Do nothing or perform an alternative action
+                    setTimeout(() => location.reload(), 50);
+                }
+
+
+
+
+                
             }
         } catch (error) {
             console.error('[WP Pageviews Plugin handlePostDataPreserve]', error);
@@ -280,10 +322,62 @@ const MediaCollector = () => {
         return 'Loading...';
     }
 
+// Function to get the value of a query parameter from the URL
+function getQueryParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+  
+
+    // Function to scroll to the element with matching data-media-id
+    function scrollToMediaItem(mediaId, offset = 0) {
+        if (!mediaId) return; // Exit if no mediaId is provided
+    
+        // Find the element with the matching data-media-id attribute
+        const element = document.querySelector(`tr[data-media-id="${mediaId}"]`);
+    
+        if (element) {
+            element.classList.add('highlighted'); // Replace 'highlighted' with your desired class name
+
+            // Calculate the position to scroll to, accounting for the offset
+            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+            const scrollToPosition = elementPosition - offset;
+    
+            // Smoothly scroll to the calculated position
+            window.scrollTo({
+                top: scrollToPosition,
+                behavior: 'smooth'
+            });
+        } else {
+            console.log(`Element with data-media-id="${mediaId}" not found.`);
+        }
+    }
+        // Specify an offset value (e.g., 100 pixels)
+        const offsetValue = 100;
+        // Get the 'media_id' parameter value from the URL
+        const mediaId = getQueryParameter('media_id');
+
+
+
+
+        // Set a delay (e.g., 500 milliseconds) before calling the scrollToMediaItem function
+        setTimeout(() => {
+            scrollToMediaItem(mediaId, offsetValue);
+        }, 500);
+
+
+
     return (
         <>
             <div className="message"> </div>
+            {/* <FilterMedia
+                selectedFormValues={selectedFormValues}
+                setFilterMode={setFilterMode}
+                setSelectedFormValues={setSelectedFormValues}
+                setSelectedDataFormValues={setSelectedDataFormValues}
+            /> */}
             <MediaCollectorTable
+                type={type}
                 mediaCollector={mediaCollector}
                 selectedFormValues={selectedFormValues}
                 filterMode={filterMode}
@@ -301,11 +395,25 @@ const MediaCollector = () => {
                 activateDelete={activateDelete}
                 activatePreserve={activatePreserve}
             />
-            <h1>Preserved Files</h1>
             <PreservedMediaCollectorTable
+                type={type}
                 mediaCollectorPreserved={mediaCollectorPreserved}
-                filter={filterMode}
                 activatePreserve={activatePreserve}
+                setFilterMode={setFilterMode}
+                selectedFormValues={selectedFormValues}
+                filterMode={filterMode}
+                setSelectedFormValues={setSelectedFormValues}
+                setSelectedDataFormValues={setSelectedDataFormValues}
+                setFilterPager={setFilterPager}
+                setFilterType={setFilterType}
+                filter_size={filter_size}
+                filterPager={filterPager}
+                filter={filterMode}
+                filterType={filterType}
+                mediaCollectorHigh={mediaCollectorHigh}
+                mediaCollectorLow={mediaCollectorLow}
+                activateDelete={activateDelete}
+
             />
         </>
     );

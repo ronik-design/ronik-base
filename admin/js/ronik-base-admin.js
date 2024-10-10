@@ -6,10 +6,18 @@
     let intervalTime = 10000;
 
     // Function to initialize media progress
-    function initRonikMediaProgress() {
+    function initRonikMediaProgress(destination) {
         // Increment the counter
         progressCounter++;
         progressTimerCounter++;
+
+        let clearOut = 1;
+        let safeGuard = 5;
+        if(destination !== 'media-cleaner'){
+            clearOut = 5;
+            safeGuard = 20;
+        }
+
 
         // Time is lame so we convert milliseconds to seconds.
         // This helps with the intervall counter to make essentially a countdown clock.
@@ -19,14 +27,14 @@
         
         // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data. 
         console.log("initRonikMediaProgress count:", progressCounter);
-        if(timeAdjust(progressCounter) > 60){
+        if(timeAdjust(progressCounter) > 60*clearOut){
             // Clear the console
             console.clear();
             // Reset the counter to 0.
             progressCounter = 0;
         }
         // Pretty much this is a safe guard we simply reload the entire page incase things are acting wacky or slow.
-        if(timeAdjust(progressTimerCounter) > 60*5){
+        if(timeAdjust(progressTimerCounter) > 60*safeGuard){
             window.location.reload(true);
         }
 
@@ -54,13 +62,33 @@
                     } else {
                         if(data.data === 'SEMI_SUCCESS'){
                             loaderElement.innerHTML = `Progress Status: Done`;
+                            if(destination !== 'media-cleaner'){
+                                var element = document.getElementById("wp-admin-bar-rmc");
+                                // Change the color
+                                element.style.color = "grey"; // Replace "red" with your desired color
+                                // Append text
+                                element.textContent = "Media Harmony - Progress Status: Done"; // Replace "New Text" with the text you want to add
+                            } else {
+                                loaderElement.innerHTML = `Progress Status: Done`;
+                            }
+
                         } else {
                             if(data.data === 'NOT_RUNNING'){
                                 // alert('Not Running');
                                 window.location.reload(true);
 
-                            } else {
-                                loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
+                            } else {                                                 
+                                if(destination !== 'media-cleaner'){
+                                    var element = document.getElementById("wp-admin-bar-rmc");
+                                    // Change the color
+                                    element.style.color = "grey"; // Replace "red" with your desired color
+                                    // Append text
+                                    element.textContent = "Media Harmony - Sync In Progress " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
+
+                                } else {
+                                    loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
+                                }
+
                             }
                         }
                     }
@@ -71,21 +99,38 @@
                         if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){   
                             console.log('.progress-bar not present');
                  
-                            var element = document.getElementById("wpwrap");
-                            element.classList.add("active-loader");
-                            const f_wpwrap = document.querySelector("#wpwrap");
-                            const f_wpcontent = document.querySelector("#wpcontent");
-                            if (f_wpwrap) {
-                                f_wpwrap.classList.add('loader');
-                                f_wpcontent.insertAdjacentHTML('beforebegin', `
-                                    <div class="progress-bar"></div>
-                                    <div class="centered-blob">
-                                        <div class="blob-1"></div>
-                                        <div class="blob-2"></div>
-                                    </div>
-                                    <div class="page-counter">Please do not refresh the page!</div>
-                                `);
+                            if(destination !== 'media-cleaner'){
+                                var element = document.getElementById("wp-admin-bar-rmc");
+                                // Change the color
+                                element.style.color = "grey"; // Replace "red" with your desired color
+                                // Append text
+                                element.textContent = "Media Harmony - Sync In Progress " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
+
+                                setTimeout(() => {
+                                    if(data.data == '99%'){
+                                        location.reload();
+                                    }
+                                }, 100000);
+                            } else {
+                                var element = document.getElementById("wpwrap");
+                                element.classList.add("active-loader");
+                                const f_wpwrap = document.querySelector("#wpwrap");
+                                const f_wpcontent = document.querySelector("#wpcontent");
+                                if (f_wpwrap) {
+                                    f_wpwrap.classList.add('loader');
+                                    f_wpcontent.insertAdjacentHTML('beforebegin', `
+                                        <div class="progress-bar"></div>
+                                        <div class="centered-blob">
+                                            <div class="blob-1"></div>
+                                            <div class="blob-2"></div>
+                                        </div>
+                                        <div class="page-counter">Please do not refresh the page!</div>
+                                    `);
+                                }
                             }
+
+
+
                             console.log(data);
                         } else {
                             console.log('TEST');
@@ -118,7 +163,7 @@
                   }, intervalTime*2);
             }
         } catch (err) {
-            console.error('Error validating API key:', err);
+            // console.error('Error validating API key:', err);
         }
     }
 
@@ -160,11 +205,13 @@
         }
         setInterval(pingValidator, intervalTime);
 
-        if (window.location.href.includes("options-ronik-base_media_cleaner")) {
-            function pingMediaProgressValidator() {
-                initRonikMediaProgress();
-            }
-            setInterval(pingMediaProgressValidator, intervalTime/2);
+        function pingMediaProgressValidator(destination) {
+            initRonikMediaProgress(destination);
+        }
+        if  (window.location.href.includes("options-ronik-base_media_cleaner") ) {
+            setInterval(() => pingMediaProgressValidator('media-cleaner'), intervalTime / 2);
+        } else if(window.location.href.includes("/wp-admin/")){
+            setInterval(() => pingMediaProgressValidator('wp-admin'), intervalTime / 2);
         }
     }
 

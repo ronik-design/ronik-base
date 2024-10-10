@@ -1,17 +1,87 @@
 <?php 
 function ronikdesignsbase_mediacleaner_data( $data ) {
+    // Access the referer from headers
+    $referer = $data->get_header( 'referer' );
+    // Log the referer to error log for debugging
+    error_log('Referer: ' . $referer);
     // Update the memory option.
     $helper = new RonikBaseHelper;
     $helper->ronikdesigns_increase_memory();
     
-    // Get all the data IDS
-    $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+
+    // Retrieve the 'media_id' from the referer
+    function get_media_id($referer){
+        $media_id = null;
+        if ($referer) {
+            // Parse the URL to extract the query parameters
+            $url_parts = parse_url($referer);
+            if (isset($url_parts['query'])) {
+                parse_str($url_parts['query'], $query_params);
+                if (isset($query_params['media_id'])) {
+                    $media_id = intval($query_params['media_id']);
+                }
+            }
+        }
+        return $media_id;
+        // error_log('Media ID: ' . ($media_id !== null ? $media_id : 'Not found'));
+    }
+
+
+
+    function getPreservedData() {
+        // Get all image attachment IDs
+        $args = array(
+            'post_type'      => 'attachment',
+            // 'post_mime_type' => 'image',
+            'post_status'    => 'inherit',
+            'numberposts'    => -1,
+            'fields'         => 'ids',
+        );
+    
+        $image_ids = get_posts($args);
+        $meta_temp_saved_array = array();
+        // Loop through each image ID and check the metadata
+        foreach ($image_ids as $image_id) {
+            $meta_datas = wp_get_attachment_metadata($image_id); // Get the structured metadata
+    
+            if ($meta_datas) {
+                foreach ($meta_datas as $meta_data) {
+                    if ($meta_data == 'rbp_media_cleaner_isdetached_temp-saved') {
+                        $meta_temp_saved_array[] = $image_id;
+                        break; // Exit the loop once a match is found
+                    }
+                }
+            }
+        }
+        // Return the filtered image IDs
+        return $meta_temp_saved_array;
+    }
+    
+
+
+
+
+    if (str_contains($referer, 'page=options-ronik-base_preserved')) {
+        $rbp_media_cleaner_media_data = getPreservedData();
+    } else{        
+        // Get all the data IDS
+        $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+    }
+
+
+
+
+
     if(!$rbp_media_cleaner_media_data){
         $rbp_media_cleaner_media_data = array();
     }
 
 
-    function id_reformatter_media_data($mediacollector_data){
+
+
+
+    
+    function id_reformatter_media_data($mediacollector_data, $referer){
         $helper = new RonikBaseHelper;
 
         $f_reformatted_collector = array();
@@ -120,7 +190,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         return $f_reformatted_collector;
     }
 
-    function mediaDataSizeFormatter($rbp_media_cleaner_media_data, $slug){
+    function mediaDataSizeFormatter($rbp_media_cleaner_media_data, $slug, $referer){
         $f_filter_collector = array();
         foreach ( $rbp_media_cleaner_media_data as $i => $image_id ){    
             $upload_dir = wp_upload_dir();
@@ -156,7 +226,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         if($slug == 'large'){         
             if(isset($f_filter_collector_high) && $f_filter_collector_high){            
                 $rbp_media_cleaner_media_data = array_keys($f_filter_collector_high);
-                return id_reformatter_media_data($rbp_media_cleaner_media_data);
+                return id_reformatter_media_data($rbp_media_cleaner_media_data, $referer);
             }
         }
         // mediacollector small to large
@@ -164,10 +234,10 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
             if(isset($f_filter_collector_high) && $f_filter_collector_high){
                 $f_filter_collector_low = array_reverse(array_keys($f_filter_collector_high));
                 $rbp_media_cleaner_media_data = $f_filter_collector_low;
-                return id_reformatter_media_data($rbp_media_cleaner_media_data);
+                return id_reformatter_media_data($rbp_media_cleaner_media_data, $referer);
             }
         }
-        return id_reformatter_media_data($rbp_media_cleaner_media_data);
+        return id_reformatter_media_data($rbp_media_cleaner_media_data, $referer);
     }
 
     $filters = $data->get_param( 'filter' );
@@ -176,7 +246,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         if( !str_contains($filters, 'gif') && !str_contains($filters, 'jpg') && !str_contains($filters, 'png') && !str_contains($filters, 'video')  && !str_contains($filters, 'misc') ){
             if($data['slug'] == 'large' || $data['slug'] == 'small'){
                 if($rbp_media_cleaner_media_data){
-                    return mediaDataSizeFormatter($rbp_media_cleaner_media_data, $data['slug']);
+                    return mediaDataSizeFormatter($rbp_media_cleaner_media_data, $data['slug'], $referer);
                 }
             }
         }
@@ -184,8 +254,19 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
     
     // mediacollector
     if($filters){
-        $rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        // $rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
         
+        if (str_contains($referer, 'page=options-ronik-base_preserved')) {
+            $rbp_media_cleaner_media_data = getPreservedData();
+            $rmc_media_cleaner_media_data_collectors_image_id_array = getPreservedData();
+
+        } else{        
+            // Get all the data IDS
+            $rmc_media_cleaner_media_data_collectors_image_id_array = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        }
+
+
+
         if(!is_array($rmc_media_cleaner_media_data_collectors_image_id_array)){
             return 'no-images';
         }
@@ -194,7 +275,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         if($filters_array){
             foreach($filters_array as $filter_array){
                 $select_attachment_type = cleaner_post_mime_type($filter_array);
-                foreach ($rmc_media_cleaner_media_data_collectors_image_id_array as $image_id_array){			
+                foreach ($rmc_media_cleaner_media_data_collectors_image_id_array as $image_id_array){	
                     if(array_search( get_post_mime_type($image_id_array) , $select_attachment_type)){
                         $rbp_media_cleaner_media_data_collector_refomat_specific_id[] = $image_id_array;
                     }
@@ -202,9 +283,9 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
             }
             if(isset($rbp_media_cleaner_media_data_collector_refomat_specific_id)){
                 if( (!str_contains($filters, 'all') || !empty($filters)) ){   
-                    return mediaDataSizeFormatter( $rbp_media_cleaner_media_data_collector_refomat_specific_id, $data['slug'] );
+                    return mediaDataSizeFormatter( $rbp_media_cleaner_media_data_collector_refomat_specific_id, $data['slug'] , $referer );
                 }
-                return id_reformatter_media_data($rbp_media_cleaner_media_data_collector_refomat_specific_id);
+                return id_reformatter_media_data($rbp_media_cleaner_media_data_collector_refomat_specific_id, $referer);
             } else{
                 return 'no-images';
             }
@@ -213,12 +294,19 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
     }
 
     if($data['slug'] == 'all' && str_contains($filters, 'all') ){
-        $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        if (str_contains($referer, 'page=options-ronik-base_preserved')) {
+            $rbp_media_cleaner_media_data = getPreservedData();
+        } else{        
+            // Get all the data IDS
+            $rbp_media_cleaner_media_data = get_transient( 'rmc_media_cleaner_media_data_collectors_image_id_array_finalized' );
+        }
+
+
         // $rbp_media_cleaner_media_data = get_option('rbp_media_cleaner_media_data');
         if(!$rbp_media_cleaner_media_data){
             $rbp_media_cleaner_media_data = array();
         }
-        return id_reformatter_media_data($rbp_media_cleaner_media_data);
+        return id_reformatter_media_data($rbp_media_cleaner_media_data, $referer);
     }
 
     // Temp Saved mediacollector
@@ -267,7 +355,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 )
             )
         );
-        return id_reformatter_media_data(get_posts( $args ));
+        return id_reformatter_media_data(get_posts( $args ), $referer);
     }
 }
 

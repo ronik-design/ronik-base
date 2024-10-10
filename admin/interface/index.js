@@ -10,6 +10,9 @@ import LoadGeneralScreen from './templates/general.js';
 import LoadMediaCleanerScreen from './templates/media_cleaner.js';
 import LoadMediaCleanerSupportScreen from './templates/media_cleaner_support.js';
 
+
+import LoadMediaCleanerPreservedScreen from './templates/preserved.js';
+
 // Function to render a component into a DOM node
 const renderComponent = (selector, Component) => {
     const domNode = document.querySelector(selector);
@@ -32,5 +35,9 @@ document.addEventListener('readystatechange', (event) => {
         renderComponent('#ronik-base_support-media-cleaner', LoadMediaCleanerSupportScreen);
         renderComponent('#ronik-base_general', LoadGeneralScreen);
         renderComponent('#ronik-base_media_cleaner', LoadMediaCleanerScreen);
+
+
+        renderComponent('#ronik-base_media_cleaner_preserved', LoadMediaCleanerPreservedScreen);
+
     }
 });
