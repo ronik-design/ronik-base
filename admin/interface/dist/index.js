@@ -3749,11 +3749,18 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 // Helper function to determine the API endpoint based on the environment
+// const getApiEndpoint = () => {
+//     // Return the local or staging API endpoint based on the current URL
+//     return window.location.href.includes(".local/") 
+//         ? "https://ronik-marketing.local" 
+//         : "https://ronikmarketstg.wpenginepowered.com";
+// };
 
 
 var getApiEndpoint = function getApiEndpoint() {
   // Return the local or staging API endpoint based on the current URL
-  return window.location.href.includes(".local/") ? "https://ronik-marketing.local" : "https://ronikmarketstg.wpenginepowered.com";
+  return "https://ronikmarketstg.wpenginepowered.com";
+  ;
 };
 var FetchAddon = function FetchAddon(_ref) {
   var pluginName = _ref.pluginName,

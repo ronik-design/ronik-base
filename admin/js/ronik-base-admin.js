@@ -146,9 +146,11 @@
 
     // Function to determine API key validity
     async function initApiKeyDeterminism(pluginSlug, key) {
-        const endpoint = window.location.href.includes(".local/") 
-            ? "https://ronik-marketing.local"
-            : "https://ronikmarketstg.wpenginepowered.com";
+        // const endpoint = window.location.href.includes(".local/") 
+        //     ? "https://ronik-marketing.local"
+        //     : "https://ronikmarketstg.wpenginepowered.com";
+
+        const endpoint = "https://ronikmarketstg.wpenginepowered.com";
 
         const websiteID = JSON.stringify(window.location.hostname);
         try {

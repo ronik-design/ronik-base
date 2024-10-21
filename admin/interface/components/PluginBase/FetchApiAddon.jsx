@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 
 // Helper function to determine the API endpoint based on the environment
+// const getApiEndpoint = () => {
+//     // Return the local or staging API endpoint based on the current URL
+//     return window.location.href.includes(".local/") 
+//         ? "https://ronik-marketing.local" 
+//         : "https://ronikmarketstg.wpenginepowered.com";
+// };
 const getApiEndpoint = () => {
     // Return the local or staging API endpoint based on the current URL
-    return window.location.href.includes(".local/") 
-        ? "https://ronik-marketing.local" 
-        : "https://ronikmarketstg.wpenginepowered.com";
+    return "https://ronikmarketstg.wpenginepowered.com";;
 };
 
 const FetchAddon = ({ pluginName, pluginSlug, title, description, linkHref, linkName }) => {
