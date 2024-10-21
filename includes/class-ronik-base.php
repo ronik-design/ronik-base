@@ -280,14 +280,21 @@ class Ronik_Base {
 	 * @return    string    .
 	 */
 	public function get_media_cleaner_state() {
-		// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
-		$rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
-		$rbp_media_cleaner_validation = get_option('rbp_media_cleaner_api_key_validation') ? get_option('rbp_media_cleaner_api_key_validation') : "invalid";
-		if($rbp_media_cleaner_api_key && ($rbp_media_cleaner_validation !== "invalid")){
-			$media_cleaner_state = true;
+		if($this->get_beta_mode()){
+			return true;
 		} else {
-			$media_cleaner_state = false;
+			update_option('rbp_media_cleaner_file_import','off');
+
+			// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
+			$rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
+			$rbp_media_cleaner_validation = get_option('rbp_media_cleaner_api_key_validation') ? get_option('rbp_media_cleaner_api_key_validation') : "invalid";
+			if($rbp_media_cleaner_api_key && ($rbp_media_cleaner_validation !== "invalid")){
+				$media_cleaner_state = true;
+			} else {
+				$media_cleaner_state = false;
+			}
 		}
+		
 		return $media_cleaner_state;
 	}
 
@@ -296,7 +303,7 @@ class Ronik_Base {
 		// update_option('rbp_media_cleaner_file_size', 0.1);
 		// Backup
 		update_option('rbp_media_cleaner_file_import','off');
-		return true;
+		return false;
 	}
 
 

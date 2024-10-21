@@ -109,7 +109,7 @@ html {
             padding: 0 25px;
 
             &--message{
-              padding: 0px;
+              padding: 0;
               transition: all .4s;
             }
             &--valid{
@@ -295,7 +295,6 @@ html {
 
 
 .switch {
-  display: block;
   margin: 0 10px;
   position: relative;
   display: flex;
@@ -481,6 +480,8 @@ html {
   align-items: center;
   background: #ffffff;
   border-radius: 4px;
+  margin-right: 10px;
+  padding-right: 5px;
 
 
   & > div{
@@ -563,7 +564,7 @@ html {
     color: #fff;
   }
    td,  th {
-    border: 0px solid #ddd;
+    border: 0 solid #ddd;
     padding: 10px;
     background: #5b656c;
     color: #fff;
@@ -576,8 +577,8 @@ html {
     color: white;
   }
   tr{
-    border: 0px solid #ddd;
-    padding: 0px;		
+    border: 0 solid #ddd;
+    padding: 0;		
   }
   table tr, table td, table th{
     width: 100%;
@@ -626,6 +627,7 @@ html {
 }
 .filter-nav{
   display: flex;
+  flex-direction: column;
   width: 100%;
   padding-top: 30px;
   padding-bottom: 15px;
@@ -635,10 +637,15 @@ html {
     padding-top: 0;
   }
   .filter-nav__button{
-    margin: 5px;
+    margin: 2px;
     background-color: white;
     color: gray;
     transition: all .4s;
+
+    &-sort{
+      font-size: 0;
+      background-color: transparent !important;
+   }
     &:hover, &:focus{
       background-color: gray;
       color: white;
@@ -652,10 +659,49 @@ html {
       cursor: pointer !important;
     }
   }
+
+
+
+  [data-filter="small"] {
+    position: relative; // Ensure the pseudo-element is positioned correctly
+  
+    &:after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #3498db; /* Color for small */
+      position: absolute; /* Adjust positioning if needed */
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  [data-filter="large"] {
+    position: relative; // Ensure the pseudo-element is positioned correctly
+    &:after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top:  10px solid #e74c3c; /* Color for small */
+      position: absolute; /* Adjust positioning if needed */
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+
+
 }
 
 .media-collector-table{
-  width:100%;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -665,7 +711,6 @@ html {
   border-spacing: 0;
   
   .media-collector-table__tbody{
-    width:100%;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
@@ -708,6 +753,17 @@ html {
         }
         a{
           color:#6700ff;
+        }
+      }
+      .media-collector-table__th{
+        display: flex;
+        align-items: flex-start;
+
+        .filter-nav{
+          display: flex;
+          padding: 0;
+          margin: 0;
+          width: auto;
         }
       }
     }

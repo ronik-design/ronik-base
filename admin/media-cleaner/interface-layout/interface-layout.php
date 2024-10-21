@@ -9,7 +9,18 @@ add_menu_page(
     6 // menu position
 );
 
-// if(!$this->beta_mode_stat && false){
+// Add Integrations page.
+add_submenu_page(
+    'options-ronik-base-mediacleaner', // parent page slug
+    'Integrations',
+    'Integrations',
+    'manage_options',
+    'options-ronik-base_integrations',
+    'ronikbase_integrations_callback_media_cleaner',
+    2 // menu position
+);
+
+if($this->media_cleaner_state){
     // Add Settings page.
     add_submenu_page(
         'options-ronik-base-mediacleaner', // parent page slug
@@ -20,43 +31,37 @@ add_menu_page(
         'ronikbase_support_settings_media_cleaner',
         1 // menu position
     );
-// }
-// Add Support page.
-add_submenu_page(
-    'options-ronik-base-mediacleaner', // parent page slug
-    'Support',
-    'Support',
-    'manage_options',
-    'options-ronik-base_support_media_cleaner', //
-    'ronikbase_support_callback_media_cleaner',
-    3 // menu position
-);
-
-
-        
-// Add Media Cleaner page.
-add_submenu_page(
-    'options-ronik-base-mediacleaner', // parent page slug
-    'Media Harmony Dashboard',
-    'Media Harmony Dashboard',
-    'manage_options',
-    'options-ronik-base_media_cleaner', //
-    'ronikbase_media_cleaner_callback',
-    4 // menu position
-);
-
-
-// Add Media Cleaner page.
-add_submenu_page(
-    'options-ronik-base-mediacleaner', // parent page slug
-    'Preserved Media',
-    'Preserved Media',
-    'manage_options',
-    'options-ronik-base_preserved', //
-    'ronikbase_media_cleaner_preserved_callback',
-    4 // menu position
-);
-
+    // Add Support page.
+    add_submenu_page(
+        'options-ronik-base-mediacleaner', // parent page slug
+        'Support',
+        'Support',
+        'manage_options',
+        'options-ronik-base_support_media_cleaner', //
+        'ronikbase_support_callback_media_cleaner',
+        3 // menu position
+    );
+    // Add Media Cleaner page.
+    add_submenu_page(
+        'options-ronik-base-mediacleaner', // parent page slug
+        'Media Harmony Dashboard',
+        'Media Harmony Dashboard',
+        'manage_options',
+        'options-ronik-base_media_cleaner', //
+        'ronikbase_media_cleaner_callback',
+        4 // menu position
+    );
+    // Add Media Cleaner page.
+    add_submenu_page(
+        'options-ronik-base-mediacleaner', // parent page slug
+        'Preserved Media',
+        'Preserved Media',
+        'manage_options',
+        'options-ronik-base_preserved', //
+        'ronikbase_media_cleaner_preserved_callback',
+        4 // menu position
+    );
+}
 
 function ronikbase_media_cleaner_callback(){ 
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
@@ -74,7 +79,6 @@ function ronikbase_media_cleaner_callback(){
         $is_running = 'invalid';
     }
 ?>
-
     <!-- The main container  --> 
     <div id="ronik-base_media_cleaner" data-sync="<?= $is_running; ?>" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
     <canvas></canvas>
@@ -127,5 +131,21 @@ function ronikbase_support_settings_media_cleaner(){
 function ronikbase_support_callback_media_cleaner(){
     echo '
         <div id="ronik-base_support-media-cleaner"></div>
+    ';
+}
+
+
+function ronikbase_integrations_callback_media_cleaner(){
+    $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
+    $rbp_optimization_api_key = get_option('rbp_optimization_api_key') ? get_option('rbp_optimization_api_key') : "";
+    $rbp_media_cleaner_validation = get_option('rbp_media_cleaner_api_key_validation') ? get_option('rbp_media_cleaner_api_key_validation') : "invalid";
+    $rbp_optimization_validation = get_option('rbp_optimization_api_key_validation') ? get_option('rbp_optimization_api_key_validation') : "invalid";
+    // This is critical we setup some variables that will help with js & php communication.
+    echo '
+        <div id="ronik-base_integrations"></div>
+        <div id="ronik_media_cleaner_api_key" data-api='.$rbp_media_cleaner_api_key.'></div>
+        <div id="ronik_optimization_api_key" data-api='.$rbp_optimization_api_key.'></div>
+        <div id="ronik_media_cleaner_api_key_validation" data-api-validation='.$rbp_media_cleaner_validation.'></div>
+        <div id="ronik_optimization_api_key_validation" data-api-validation='.$rbp_optimization_validation.'></div>
     ';
 }

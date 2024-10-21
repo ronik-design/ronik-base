@@ -3105,25 +3105,40 @@ var FilterNav = function FilterNav(_ref) {
     if (item['media_size'].includes('bytes')) size *= 1e-6;
     return acc + (isNaN(size) ? 0 : size);
   }, 0);
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "filter-nav",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
-        type: "button",
-        title: "Sort Largest to Smallest File Size",
-        onClick: filter_size,
-        "data-filter": "large",
-        className: "filter-nav__button filter-nav__button--".concat(filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'),
-        children: "Sort Largest to Smallest File Size"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
         type: "button",
         title: "Sort Smallest to Largest File Size",
         onClick: filter_size,
         "data-filter": "small",
-        className: "filter-nav__button filter-nav__button--".concat(filterMode === 'small' ? 'active' : 'inactive'),
+        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === 'small' ? 'active' : 'inactive'),
         children: "Sort Smallest to Largest File Size"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        type: "button",
+        title: "Sort Largest to Smallest File Size",
+        onClick: filter_size,
+        "data-filter": "large",
+        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'),
+        children: "Sort Largest to Smallest File Size"
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+    })
+  });
+};
+
+// FilterNav component
+var FilterNavData = function FilterNavData(_ref2) {
+  var mediaCollector = _ref2.mediaCollector;
+  var totalSize = mediaCollector.reduce(function (acc, item) {
+    var size = parseFloat(item['media_size']);
+    if (item['media_size'].includes('KB')) size /= 1024;
+    if (item['media_size'].includes('GB')) size *= 1000;
+    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    return acc + (isNaN(size) ? 0 : size);
+  }, 0);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
       className: "overall-number",
       children: ["Number of unlinked files found: ", mediaCollector.length]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
@@ -3134,12 +3149,12 @@ var FilterNav = function FilterNav(_ref) {
 };
 
 // PagerNav component
-var PagerNav = function PagerNav(_ref2) {
-  var pager = _ref2.pager,
-    setFilterPager = _ref2.setFilterPager,
-    _ref2$mediaCollector = _ref2.mediaCollector,
-    mediaCollector = _ref2$mediaCollector === void 0 ? [] : _ref2$mediaCollector,
-    itemsPerPage = _ref2.itemsPerPage;
+var PagerNav = function PagerNav(_ref3) {
+  var pager = _ref3.pager,
+    setFilterPager = _ref3.setFilterPager,
+    _ref3$mediaCollector = _ref3.mediaCollector,
+    mediaCollector = _ref3$mediaCollector === void 0 ? [] : _ref3$mediaCollector,
+    itemsPerPage = _ref3.itemsPerPage;
   var totalItems = mediaCollector.length || 0;
   var totalPages = Math.ceil(totalItems / itemsPerPage);
   var pageNumbers = _toConsumableArray(Array(totalPages).keys()); // Generates [0, 1, 2, ...]
@@ -3164,21 +3179,21 @@ var PagerNav = function PagerNav(_ref2) {
 };
 
 // MediaCollectorTable component
-var MediaCollectorTable = function MediaCollectorTable(_ref3) {
-  var type = _ref3.type,
-    mediaCollector = _ref3.mediaCollector,
-    selectedFormValues = _ref3.selectedFormValues,
-    filterMode = _ref3.filterMode,
-    setFilterMode = _ref3.setFilterMode,
-    setFilterPager = _ref3.setFilterPager,
-    setSelectedFormValues = _ref3.setSelectedFormValues,
-    setSelectedDataFormValues = _ref3.setSelectedDataFormValues,
-    filter_size = _ref3.filter_size,
-    filterPager = _ref3.filterPager,
-    mediaCollectorHigh = _ref3.mediaCollectorHigh,
-    mediaCollectorLow = _ref3.mediaCollectorLow,
-    activateDelete = _ref3.activateDelete,
-    activatePreserve = _ref3.activatePreserve;
+var MediaCollectorTable = function MediaCollectorTable(_ref4) {
+  var type = _ref4.type,
+    mediaCollector = _ref4.mediaCollector,
+    selectedFormValues = _ref4.selectedFormValues,
+    filterMode = _ref4.filterMode,
+    setFilterMode = _ref4.setFilterMode,
+    setFilterPager = _ref4.setFilterPager,
+    setSelectedFormValues = _ref4.setSelectedFormValues,
+    setSelectedDataFormValues = _ref4.setSelectedDataFormValues,
+    filter_size = _ref4.filter_size,
+    filterPager = _ref4.filterPager,
+    mediaCollectorHigh = _ref4.mediaCollectorHigh,
+    mediaCollectorLow = _ref4.mediaCollectorLow,
+    activateDelete = _ref4.activateDelete,
+    activatePreserve = _ref4.activatePreserve;
   if (type === 'preserved') return null;
   if (!mediaCollector || mediaCollector === 'no-images') {
     var f_wpwrap = document.querySelector("#wpwrap");
@@ -3260,7 +3275,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref3) {
       setFilterMode: setFilterMode,
       setSelectedFormValues: setSelectedFormValues,
       setSelectedDataFormValues: setSelectedDataFormValues
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNavData, {
       mediaCollector: mediaCollector,
       filterMode: filterMode,
       filter_size: filter_size
@@ -3284,9 +3299,13 @@ var MediaCollectorTable = function MediaCollectorTable(_ref3) {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Type"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("th", {
             className: "media-collector-table__th",
-            children: "File Size"
+            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+              mediaCollector: mediaCollector,
+              filterMode: filterMode,
+              filter_size: filter_size
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File ID"
@@ -3312,21 +3331,21 @@ var MediaCollectorTable = function MediaCollectorTable(_ref3) {
 };
 
 // PreservedMediaCollectorTable component
-var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref4) {
-  var type = _ref4.type,
-    mediaCollectorPreserved = _ref4.mediaCollectorPreserved,
-    activatePreserve = _ref4.activatePreserve,
-    selectedFormValues = _ref4.selectedFormValues,
-    filterMode = _ref4.filterMode,
-    setFilterMode = _ref4.setFilterMode,
-    setFilterPager = _ref4.setFilterPager,
-    setSelectedFormValues = _ref4.setSelectedFormValues,
-    setSelectedDataFormValues = _ref4.setSelectedDataFormValues,
-    filter_size = _ref4.filter_size,
-    filterPager = _ref4.filterPager,
-    mediaCollectorHigh = _ref4.mediaCollectorHigh,
-    mediaCollectorLow = _ref4.mediaCollectorLow,
-    activateDelete = _ref4.activateDelete;
+var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref5) {
+  var type = _ref5.type,
+    mediaCollectorPreserved = _ref5.mediaCollectorPreserved,
+    activatePreserve = _ref5.activatePreserve,
+    selectedFormValues = _ref5.selectedFormValues,
+    filterMode = _ref5.filterMode,
+    setFilterMode = _ref5.setFilterMode,
+    setFilterPager = _ref5.setFilterPager,
+    setSelectedFormValues = _ref5.setSelectedFormValues,
+    setSelectedDataFormValues = _ref5.setSelectedDataFormValues,
+    filter_size = _ref5.filter_size,
+    filterPager = _ref5.filterPager,
+    mediaCollectorHigh = _ref5.mediaCollectorHigh,
+    mediaCollectorLow = _ref5.mediaCollectorLow,
+    activateDelete = _ref5.activateDelete;
   if (!mediaCollectorPreserved) return null;
   if (type !== 'preserved') {
     return;
@@ -3403,7 +3422,7 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref4) 
       setFilterMode: setFilterMode,
       setSelectedFormValues: setSelectedFormValues,
       setSelectedDataFormValues: setSelectedDataFormValues
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNavData, {
       mediaCollector: mediaCollectorPreserved,
       filterMode: filterMode,
       filter_size: filter_size
@@ -3424,9 +3443,13 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref4) 
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Type"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("th", {
             className: "media-collector-table__th",
-            children: "File Size"
+            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+              mediaCollector: mediaCollectorPreserved,
+              filterMode: filterMode,
+              filter_size: filter_size
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File ID"
@@ -50105,51 +50128,46 @@ var getDataAttribute = function getDataAttribute(selector, attribute) {
 var MediaCleanerSettings = function MediaCleanerSettings() {
   // Default value for file size from the data attribute
   var fileSizeDefault = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-size');
-  function isScientificNotationNumber(value) {
-    if (typeof value === 'number' && isFinite(value)) {
-      var stringValue = value.toExponential();
-      return stringValue.includes('e') || stringValue.includes('E');
-    }
-    return false;
-  }
-  // if(isScientificNotationNumber(fileSizeDefault)){
 
-  // }
-
-  // State to manage form input values
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_defineProperty({}, 'filesize-option', fileSizeDefault)),
+  // State to manage form input values and backup status
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      'filesize-option': fileSizeDefault
+    }),
     _useState2 = _slicedToArray(_useState, 2),
     formValues = _useState2[0],
     setFormValues = _useState2[1];
-  // State to manage the response status
-  var _useState4 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-    _useState5 = _slicedToArray(_useState4, 2),
-    dataResponse = _useState5[0],
-    setDataResponse = _useState5[1];
-  // State to manage backup status
-  var _useState6 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('off'),
-    _useState7 = _slicedToArray(_useState6, 2),
-    backupEnabled = _useState7[0],
-    setBackupEnabled = _useState7[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState4 = _slicedToArray(_useState3, 2),
+    dataResponse = _useState4[0],
+    setDataResponse = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('off'),
+    _useState6 = _slicedToArray(_useState5, 2),
+    backupEnabled = _useState6[0],
+    setBackupEnabled = _useState6[1];
 
-  // Effect hook to handle form data changes and perform updates
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    // Handle file size change if it is valid
-    if (formValues['filesize-option'] > 0) {
-      handlePostData(formValues['filesize-option'], 'changed', 'invalid', 'invalid');
-    }
-
-    // Handle file import option change if it is set
-    if (formValues['fileimport-option']) {
-      handlePostData('invalid', 'invalid', formValues['fileimport-option'], 'changed');
-    }
-  }, [formValues]);
-
-  // Effect hook to initialize backup settings
+  // Effect hook to initialize backup settings and handle form changes
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fileBackupEnabled = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-backup');
     setBackupEnabled(fileBackupEnabled === 'on' ? 'valid' : 'invalid');
   }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (formValues['filesize-option'] > 0) {
+      handlePostData({
+        fileSizeSelector: formValues['filesize-option'],
+        fileSizeSelectorChanged: 'changed',
+        fileImportSelector: 'invalid',
+        fileImportSelectorChanged: 'invalid'
+      });
+    }
+    if (formValues['fileimport-option']) {
+      handlePostData({
+        fileSizeSelector: 'invalid',
+        fileSizeSelectorChanged: 'invalid',
+        fileImportSelector: formValues['fileimport-option'],
+        fileImportSelectorChanged: 'changed'
+      });
+    }
+  }, [formValues]);
 
   // Handle changes to the file size input
   var handleChange = function handleChange(e) {
@@ -50176,11 +50194,12 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
 
   // Post data to the server
   var handlePostData = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged) {
-      var data, response, result;
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+      var fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged, data, response, result;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
+            fileSizeSelector = _ref.fileSizeSelector, fileSizeSelectorChanged = _ref.fileSizeSelectorChanged, fileImportSelector = _ref.fileImportSelector, fileImportSelectorChanged = _ref.fileImportSelectorChanged;
             data = new FormData();
             data.append('action', 'rmc_ajax_media_cleaner_settings');
             data.append('nonce', wpVars.nonce);
@@ -50188,38 +50207,38 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
             data.append('file_size_selection', fileSizeSelector);
             data.append('file_import_selector', fileImportSelectorChanged);
             data.append('file_import_selection', fileImportSelector);
-            _context.prev = 7;
-            _context.next = 10;
+            _context.prev = 8;
+            _context.next = 11;
             return fetch(wpVars.ajaxURL, {
               method: 'POST',
               credentials: 'same-origin',
               body: data
             });
-          case 10:
+          case 11:
             response = _context.sent;
-            _context.next = 13;
+            _context.next = 14;
             return response.json();
-          case 13:
+          case 14:
             result = _context.sent;
             if ((result === null || result === void 0 ? void 0 : result.data) === 'Done') {
               setDataResponse('complete');
               // Optionally reload or handle success state
               // setTimeout(() => location.reload(), 500);
             }
-            _context.next = 20;
+            _context.next = 21;
             break;
-          case 17:
-            _context.prev = 17;
-            _context.t0 = _context["catch"](7);
+          case 18:
+            _context.prev = 18;
+            _context.t0 = _context["catch"](8);
             console.error('[WP Pageviews Plugin]', _context.t0);
-          case 20:
+          case 21:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[7, 17]]);
+      }, _callee, null, [[8, 18]]);
     }));
-    return function handlePostData(_x2, _x3, _x4, _x5) {
-      return _ref.apply(this, arguments);
+    return function handlePostData(_x2) {
+      return _ref2.apply(this, arguments);
     };
   }();
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -50235,15 +50254,15 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
         type: "number",
         id: "file-size-selector",
-        name: "file-size-selector",
+        name: "filesize-option",
         min: "0.1",
         max: "1000",
         step: ".01",
         value: formValues['filesize-option'],
         onChange: handleChange
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
         id: "file-size-selector_val",
-        children: [formValues['filesize-option'], " MB"]
+        children: formValues['filesize-option'] < 1 ? "".concat((formValues['filesize-option'] * 1024).toFixed(2), " KB") : "".concat(formValues['filesize-option'], " MB")
       })]
     })]
   });
@@ -50313,7 +50332,7 @@ function Mediacleaner() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Welcome to the Preserved Libaray!",
+      title: "Welcome to the Preserved Library!",
       description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
       type: "preserved"

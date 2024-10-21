@@ -21,7 +21,8 @@ if (!is_user_logged_in()) {
 $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key', '');
 if($this->beta_mode_state){
     // error_log(print_r('BETA API KEY', true));
-    $rbp_media_cleaner_api_key = 'beta-key';
+    // $rbp_media_cleaner_api_key = 'beta-key';
+    $rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key', '');
 }
 
 
@@ -83,7 +84,7 @@ switch (true) {
         break;
 
     case isset($_POST['api_validation']) && $_POST['api_validation'] === 'invalidate':
-        handleApiValidation();
+        handleApiValidation($rbp_media_cleaner_api_key);
         break;
 
     case isset($_POST['api_key']) && $_POST['api_key'] === 'ronik_media_cleaner':
@@ -136,7 +137,7 @@ function handleApiValidation() {
         update_option('rbp_media_cleaner_api_key_validation', 'invalid');
         wp_send_json_success('Reload');
     } else {
-        wp_send_json_success('No change required');
+        // wp_send_json_success('No change required');
     }
 }
 

@@ -1,7 +1,9 @@
 <?php 
 // Sync Bar
 /* Your code to add menu on admin bar */
-add_action('admin_bar_menu', 'add_item', 100);
+if($this->media_cleaner_state){
+    add_action('admin_bar_menu', 'add_item', 100);
+}
 function add_item( $admin_bar ){
     global $pagenow;
 

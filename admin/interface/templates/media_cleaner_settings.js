@@ -11,68 +11,61 @@ const MediaCleanerSettings = () => {
     // Default value for file size from the data attribute
     const fileSizeDefault = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-size');
 
-    function isScientificNotationNumber(value) {
-        if (typeof value === 'number' && isFinite(value)) {
-            const stringValue = value.toExponential();
-            return stringValue.includes('e') || stringValue.includes('E');
-        }
-        return false;
-    }
-    // if(isScientificNotationNumber(fileSizeDefault)){
-
-    // }
-    
-
-    // State to manage form input values
-    const [formValues, setFormValues] = useState({ ['filesize-option']: fileSizeDefault });
-    // State to manage the response status
+    // State to manage form input values and backup status
+    const [formValues, setFormValues] = useState({ 'filesize-option': fileSizeDefault });
     const [dataResponse, setDataResponse] = useState('');
-    // State to manage backup status
     const [backupEnabled, setBackupEnabled] = useState('off');
 
-    // Effect hook to handle form data changes and perform updates
-    useEffect(() => {
-        // Handle file size change if it is valid
-        if (formValues['filesize-option'] > 0) {
-            handlePostData(formValues['filesize-option'], 'changed', 'invalid', 'invalid');
-        }
-
-        // Handle file import option change if it is set
-        if (formValues['fileimport-option']) {
-            handlePostData('invalid', 'invalid', formValues['fileimport-option'], 'changed');
-        }
-    }, [formValues]);
-
-    // Effect hook to initialize backup settings
+    // Effect hook to initialize backup settings and handle form changes
     useEffect(() => {
         const fileBackupEnabled = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-backup');
         setBackupEnabled(fileBackupEnabled === 'on' ? 'valid' : 'invalid');
     }, []);
 
+    useEffect(() => {
+        if (formValues['filesize-option'] > 0) {
+            handlePostData({
+                fileSizeSelector: formValues['filesize-option'],
+                fileSizeSelectorChanged: 'changed',
+                fileImportSelector: 'invalid',
+                fileImportSelectorChanged: 'invalid',
+            });
+        }
+
+        if (formValues['fileimport-option']) {
+            handlePostData({
+                fileSizeSelector: 'invalid',
+                fileSizeSelectorChanged: 'invalid',
+                fileImportSelector: formValues['fileimport-option'],
+                fileImportSelectorChanged: 'changed',
+            });
+        }
+    }, [formValues]);
+
     // Handle changes to the file size input
     const handleChange = (e) => {
-        setFormValues(prevValues => ({
+        setFormValues((prevValues) => ({
             ...prevValues,
-            'filesize-option': e.target.value
+            'filesize-option': e.target.value,
         }));
     };
 
     // Handle changes to the file import checkbox
     const handleImportChange = (e) => {
         const isChecked = e.target.checked;
-        setFormValues(prevValues => ({
+        setFormValues((prevValues) => ({
             ...prevValues,
-            'fileimport-option': isChecked ? 'on' : 'off'
+            'fileimport-option': isChecked ? 'on' : 'off',
         }));
         setBackupEnabled(isChecked ? 'valid' : 'invalid');
-        
+
         if (isChecked) {
             alert('Your files will be backed up within the file: /ronik-base/admin/media-cleaner/ronikdetached');
         }
     };
 
     // Post data to the server
-    const handlePostData = async (fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged) => {
+    const handlePostData = async ({ fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged }) => {
         const data = new FormData();
         data.append('action', 'rmc_ajax_media_cleaner_settings');
         data.append('nonce', wpVars.nonce);
@@ -85,7 +78,7 @@ const MediaCleanerSettings = () => {
             const response = await fetch(wpVars.ajaxURL, {
                 method: 'POST',
                 credentials: 'same-origin',
-                body: data
+                body: data,
             });
             const result = await response.json();
 
@@ -106,7 +99,6 @@ const MediaCleanerSettings = () => {
                 title="Media Cleaner Settings:"
                 description="Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
             />
-            {/* Display general settings message */}
             <ContentBlock
                 title=""
                 description="Please note that if you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files."
@@ -117,33 +109,31 @@ const MediaCleanerSettings = () => {
                 <input
                     type="number"
                     id="file-size-selector"
-                    name="file-size-selector"
+                    name="filesize-option"
                     min="0.1"
                     max="1000"
                     step=".01"
                     value={formValues['filesize-option']}
                     onChange={handleChange}
                 />
-                <p id="file-size-selector_val">{formValues['filesize-option']} MB</p>
-            </div>
+                <p id="file-size-selector_val">
+                    {formValues['filesize-option'] < 1
+                        ? `${(formValues['filesize-option'] * 1024).toFixed(2)} KB`
+                        : `${formValues['filesize-option']} MB`}
+                </p>
 
-            {/* Backup settings */}
-            {/* <ContentBlock
-                title="Backup files:"
-                description="Turn on to automatically backup files. Please note that this may take an additional 1-2 minutes.  "
-            />
-            <br />
-            <div className='media-cleaner-item-settings__file-size'>
-                <label className="switch">
-                    <input
-                        type="checkbox"
-                        checked={backupEnabled === 'valid'}
-                        className={backupEnabled}
-                        onChange={handleImportChange}
-                    />
-                    <span className="slider round"></span>
-                </label>
-            </div> */}
+                {/* Additional KB Input Field */}
+                {/* <input
+                    type="number"
+                    id="file-size-kb-selector"
+                    name="filesize-kb-option"
+                    min="0"
+                    step=".01"
+                    value={formValues['filesize-kb-option']}
+                    readOnly // You can make this read-only if you want it to reflect the conversion
+                />
+                <p id="file-size-kb-selector_val">{formValues['filesize-kb-option']} KB</p> */}
+            </div>
         </div>
     );
 };

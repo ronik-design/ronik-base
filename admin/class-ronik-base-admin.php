@@ -161,55 +161,13 @@ class Ronik_Base_Admin {
 
 	// We create our own option page due to ACF in-effective
 	public function rbp_plugin_interface() {
-
-		if($this->media_cleaner_state && !$this->beta_mode_state){
-			add_menu_page(
-				'General - Ronik Base', // page <title>Title</title>
-				'Ronik Base', // link text
-				'manage_options', // user capabilities
-				'options-ronik-base', // page slug
-				'ronikbase_support_general', // this function prints the page content
-				'dashicons-visibility', // icon (from Dashicons for example)
-				6 // menu position
-			);
-			// Add Settings page.
-			add_submenu_page(
-				'options-ronik-base', // parent page slug
-				'Ronik Base Settings',
-				'Settings',
-				'manage_options',
-				'options-ronik-base_settings', //
-				'ronikbase_support_settings',
-				1 // menu position
-			);
-			// Add Integrations page.
-			add_submenu_page(
-				'options-ronik-base', // parent page slug
-				'Integrations',
-				'Integrations',
-				'manage_options',
-				'options-ronik-base_integrations',
-				'ronikbase_integrations_callback',
-				2 // menu position
-			);
-			// Add Support page.
-			add_submenu_page(
-				'options-ronik-base', // parent page slug
-				'Support',
-				'Support',
-				'manage_options',
-				'options-ronik-base_support', //
-				'ronikbase_support_callback',
-				3 // menu position
-			);
-
-		}
-		if($this->media_cleaner_state){
-			$_POST['media_cleaner_state'] = 'valid';
 			// Include the interface Fields
 			foreach (glob(dirname(__FILE__) . '/media-cleaner/interface-layout/*.php') as $file) {
 				include $file;
 			}
+
+		if($this->media_cleaner_state){
+			$_POST['media_cleaner_state'] = 'valid';
 		} else {
 			$_POST['media_cleaner_state'] = 'invalid';
 		}
@@ -221,14 +179,6 @@ class Ronik_Base_Admin {
 			}
 		} else{
 			$_POST['optimization_state'] = 'invalid';
-		}
-
-		if(!$this->media_cleaner_state && $this->beta_mode_state){
-			$_POST['media_cleaner_state'] = 'valid';
-			// Include the interface Fields
-			foreach (glob(dirname(__FILE__) . '/media-cleaner/interface-layout/*.php') as $file) {
-				include $file;
-			}
 		}
 
 

@@ -57,28 +57,53 @@ const FilterNav = ({
         </button> */}
         <button
           type="button"
-          title="Sort Largest to Smallest File Size"
-          onClick={filter_size}
-          data-filter="large"
-          className={`filter-nav__button filter-nav__button--${filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'}`}
-        >
-          Sort Largest to Smallest File Size
-        </button>
-        <button
-          type="button"
           title="Sort Smallest to Largest File Size"
           onClick={filter_size}
           data-filter="small"
-          className={`filter-nav__button filter-nav__button--${filterMode === 'small' ? 'active' : 'inactive'}`}
+          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${filterMode === 'small' ? 'active' : 'inactive'}`}
         >
           Sort Smallest to Largest File Size
         </button>
+
+        <button
+          type="button"
+          title="Sort Largest to Smallest File Size"
+          onClick={filter_size}
+          data-filter="large"
+          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'}`}
+        >
+          Sort Largest to Smallest File Size
+        </button>
+
       </div>
+      {/* <span className="overall-number">Number of unlinked files found: {mediaCollector.length}</span>
+      <span className="overall-number">Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB</span> */}
+    </>
+  );
+};
+
+
+// FilterNav component
+const FilterNavData = ({
+  mediaCollector
+}) => {
+  const totalSize = mediaCollector.reduce((acc, item) => {
+    let size = parseFloat(item['media_size']);
+    if (item['media_size'].includes('KB')) size /= 1024;
+    if (item['media_size'].includes('GB')) size *= 1000;
+    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    return acc + (isNaN(size) ? 0 : size);
+  }, 0);
+
+  return (
+    <>
       <span className="overall-number">Number of unlinked files found: {mediaCollector.length}</span>
       <span className="overall-number">Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB</span>
     </>
   );
 };
+
+
 
 // PagerNav component
 const PagerNav = ({ pager, setFilterPager, mediaCollector = [], itemsPerPage }) => {
@@ -188,7 +213,7 @@ const MediaCollectorTable = ({
         setSelectedFormValues={setSelectedFormValues}
         setSelectedDataFormValues={setSelectedDataFormValues}
       />
-      <FilterNav
+      <FilterNavData
         mediaCollector={mediaCollector}
         filterMode={filterMode}
         filter_size={filter_size}
@@ -205,7 +230,13 @@ const MediaCollectorTable = ({
             <th className='media-collector-table__th'>Permanently Delete</th>
             <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
             <th className='media-collector-table__th'>File Type</th>
-            <th className='media-collector-table__th'>File Size</th>
+            <th className='media-collector-table__th'>File Size 
+            <FilterNav
+              mediaCollector={mediaCollector}
+              filterMode={filterMode}
+              filter_size={filter_size}
+            />
+            </th>
             <th className='media-collector-table__th'>File ID</th>
             <th className='media-collector-table__th'>Media Library Link</th>
             <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
@@ -308,7 +339,7 @@ const PreservedMediaCollectorTable = ({
         setSelectedFormValues={setSelectedFormValues}
         setSelectedDataFormValues={setSelectedDataFormValues}
       />
-      <FilterNav
+      <FilterNavData
         mediaCollector={mediaCollectorPreserved}
         filterMode={filterMode}
         filter_size={filter_size}
@@ -324,7 +355,13 @@ const PreservedMediaCollectorTable = ({
           <tr className='media-collector-table__tr'>
             <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
             <th className='media-collector-table__th'>File Type</th>
-            <th className='media-collector-table__th'>File Size</th>
+            <th className='media-collector-table__th'>File Size
+            <FilterNav
+              mediaCollector={mediaCollectorPreserved}
+              filterMode={filterMode}
+              filter_size={filter_size}
+            />
+            </th>
             <th className='media-collector-table__th'>File ID</th>
             <th className='media-collector-table__th'>Media Library Link</th>
             <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>

@@ -163,7 +163,7 @@
                   }, intervalTime*2);
             }
         } catch (err) {
-            // console.error('Error validating API key:', err);
+            console.error('Error validating API key:', err);
         }
     }
 
