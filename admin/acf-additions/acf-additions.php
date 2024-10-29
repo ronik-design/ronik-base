@@ -5,6 +5,10 @@
  *
  * @param array $field The field settings array.
  */
+if (!function_exists('acf_render_field_setting')) {
+    return;
+}
+
 function ronikdesigns_acf_post_load($field) {
     // Add a custom setting for the 'select' field type to enable dynamic post loader
     acf_render_field_setting($field, array(

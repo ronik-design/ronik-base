@@ -99,8 +99,11 @@ class Ronik_Base {
 					$this->define_admin_hooks();
 					$this->define_public_hooks();
 				} else {
-					deactivate_plugins( 'ronik-base/ronik-base.php' );
-					add_action( 'admin_notices', 'ronik_admin_notice__error' );
+					$this->define_admin_hooks();
+					$this->define_public_hooks();
+
+					// deactivate_plugins( 'ronik-base/ronik-base.php' );
+					// add_action( 'admin_notices', 'ronik_admin_notice__error' );
 				}
 			}
 
@@ -179,10 +182,12 @@ class Ronik_Base {
 		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode() );
 
 		$this->loader->add_action('init', $plugin_admin, 'rbp_helper_functions_cookies', 1);
-		$this->loader->add_action('acf/init', $plugin_admin, 'rbp_helper_functions', 1);
+		// $this->loader->add_action('acf/init', $plugin_admin, 'rbp_helper_functions', 1);
+		$this->loader->add_action('init', $plugin_admin, 'rbp_helper_functions', 1);
 
 		// Lets check to see if dependencies are met before continuing...
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
+		// Disable the ACF DEPENDENCY
+		// $this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
 		// Let us load the plugin interface.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rbp_plugin_interface' );
 		// Enque Scripts
@@ -196,8 +201,11 @@ class Ronik_Base {
 		// rmc_ajax_media_cleaner
 			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
 		if( $this->get_media_cleaner_state() || $this->get_beta_mode() ){
-			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
-			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
+			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
+			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
+			$this->loader->add_action('init', $plugin_admin, 'rmc_classes', 30);
+			$this->loader->add_action('init', $plugin_admin, 'rmc_functions', 30);
+
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_swap', $plugin_admin, 'rmc_ajax_media_swap');

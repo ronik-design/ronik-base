@@ -149,7 +149,7 @@ class Ronik_Base_Admin {
 	public function rbp_plugin_dependencies() {
 		if ( is_admin() && current_user_can( 'activate_plugins' ) && !class_exists('ACF') ) {
 			add_action( 'admin_notices', 'child_plugin_notice' );
-			deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' );
+			// deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' );
 			if ( isset( $_GET['activate'] ) ) {
 				unset( $_GET['activate'] );
 			}
