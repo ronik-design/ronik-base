@@ -203,12 +203,17 @@
         console.log('Ping validator started');
         console.log('API KEY DISABLED');
         function pingValidator() {
-            initRonikDeterminism('ronik_media_cleaner', 'valid');
+            setTimeout(() => {
+                initRonikDeterminism('ronik_media_cleaner', 'valid');
+            }, 400);
         }
         setInterval(pingValidator, intervalTime);
 
         function pingMediaProgressValidator(destination) {
-            initRonikMediaProgress(destination);
+            setTimeout(() => {
+                initRonikMediaProgress(destination);
+                // console.log("Delayed for 1 second.");
+              }, 400);
         }
         if  (window.location.href.includes("options-ronik-base_media_cleaner") ) {
             setInterval(() => pingMediaProgressValidator('media-cleaner'), intervalTime / 2);

@@ -352,7 +352,15 @@ class Ronik_Base_Admin {
 			// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
 				$maxIncrement = ceil($throttle_detector/$select_numberposts);
 			// File Size
-				$targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : .1;
+				// $targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : .1;
+				$targetFileSize = (get_option('rbp_media_cleaner_file_size') === '0') 
+				? 0 
+				: (get_option('rbp_media_cleaner_file_size') ?: .1);
+
+
+				error_log(print_r('$targetFileSize' , true));
+				error_log(print_r($targetFileSize , true));
+
 			// Gather all the posts ID of the entire database...
 				$transient_rmc_media_cleaner_media_data_collectors_posts_array = get_transient( 'rmc_media_cleaner_media_data_collectors_posts_array' );
 				if( ! empty( $transient_rmc_media_cleaner_media_data_collectors_posts_array ) ) {
