@@ -9,15 +9,15 @@
  * that starts the plugin.
  *
  * @link              https://www.ronikdesign.com/
- * @since             1.2.91
+ * @since             0.0.0.1
  * @package           Ronik_Base
  *
  * @wordpress-plugin
- * Plugin Name:       Ronik
+ * Plugin Name:       Ronik Tools: Media Harmony
  * Plugin URI:        https://www.ronikdesign.com/
- * Description:       Clean out unused media -- your website will thank you!
- * Version:           1.2.91
- * Author:            Kevin Mancuso
+ * Description:       Clean out unused media -- your website will thank you! This plugin uses Advanced Custom Fields to run
+ * Version:           0.0.0.1
+ * Author:            Ronik
  * Author URI:        https://www.ronikdesign.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'RONIK_BASE_VERSION', '1.2.91' );
+define( 'RONIK_BASE_VERSION', '0.0.0.1' );
 
 
 /**

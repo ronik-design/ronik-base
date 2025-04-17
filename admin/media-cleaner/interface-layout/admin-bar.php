@@ -14,7 +14,7 @@ function add_item( $admin_bar ){
     $f_message = '';
     
     if($f_detector && $f_detector > 0){
-        $f_message = $f_sync;
+        $f_message = 'Last Sync: '.$f_sync;
         $f_outdated = 'rmc-sync__outdated-low';
     }
     if (strtotime('-1 day') > strtotime($f_sync)) {
@@ -24,7 +24,7 @@ function add_item( $admin_bar ){
         $f_message = 'Outdated synchronization.';
         $f_outdated = 'rmc-sync__outdated-medium';
     } else{
-        $f_message = $f_sync;
+        $f_message = 'Last Sync: '.$f_sync;
         $f_outdated = 'rmc-sync__outdated-low';
     }
 
@@ -56,8 +56,8 @@ function add_item( $admin_bar ){
             )
         )
     );
+    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __($f_message), 'id' => 'rmc-drafts',  'href' => '', 'meta' => array('target' => '_blank')));
     $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Initiate Scan'), 'id' => 'rmc-sync', 'href' => '/', 'meta' => array('target' => '_blank')));
-    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Last Sync: '. $f_message), 'id' => 'rmc-drafts',  'href' => '', 'meta' => array('target' => '_blank')));
 }
 
 /* Here you trigger the ajax handler function using jQuery */

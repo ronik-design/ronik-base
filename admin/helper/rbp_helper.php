@@ -32,10 +32,10 @@ class RbpHelper{
 		}
 
 
-		// $f_error_email = get_field('error_email', 'option');
-        // if(!$f_error_email){
-		// }
-		$f_error_email = 'kevin@ronikdesign.com';
+		$f_error_email = get_field('error_email', 'option');
+        if(!$f_error_email){
+            $f_error_email = 'kevin@ronikdesign.com';
+        }
 		// Lets run a backtrace to get more useful information.
 		$t = debug_backtrace();
 		$t_file = 'File Path Location: ' . $t[0]['file'];

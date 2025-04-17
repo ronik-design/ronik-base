@@ -8,7 +8,7 @@ Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Clean out unused media -- your website will thank you!
+Clean out unused media -- your website will thank you! This plugin uses Advanced Custom Fields to run. 
 
 == Description ==
 

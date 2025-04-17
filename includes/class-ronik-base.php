@@ -94,16 +94,13 @@ class Ronik_Base {
 				$this->define_admin_hooks();
 				$this->define_public_hooks();
 			} else {
-				
+
 				if(!empty(get_mu_plugins()['acf.php'])){
 					$this->define_admin_hooks();
 					$this->define_public_hooks();
 				} else {
-					$this->define_admin_hooks();
-					$this->define_public_hooks();
-
-					// deactivate_plugins( 'ronik-base/ronik-base.php' );
-					// add_action( 'admin_notices', 'ronik_admin_notice__error' );
+					deactivate_plugins( 'ronik-base/ronik-base.php' );
+					add_action( 'admin_notices', 'ronik_admin_notice__error' );
 				}
 			}
 
@@ -196,16 +193,13 @@ class Ronik_Base {
 		// Add Ajax
 		$this->loader->add_action('wp_ajax_nopriv_api_checkpoint', $plugin_admin, 'api_checkpoint');
 		$this->loader->add_action('wp_ajax_api_checkpoint', $plugin_admin, 'api_checkpoint');
-		
+
 
 		// rmc_ajax_media_cleaner
 			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
 		if( $this->get_media_cleaner_state() || $this->get_beta_mode() ){
-			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
-			// $this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
-			$this->loader->add_action('init', $plugin_admin, 'rmc_classes', 30);
-			$this->loader->add_action('init', $plugin_admin, 'rmc_functions', 30);
-
+			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
+			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_swap', $plugin_admin, 'rmc_ajax_media_swap');
@@ -302,7 +296,7 @@ class Ronik_Base {
 				$media_cleaner_state = false;
 			}
 		}
-		
+
 		return $media_cleaner_state;
 	}
 
@@ -311,7 +305,7 @@ class Ronik_Base {
 		// update_option('rbp_media_cleaner_file_size', 0.1);
 		// Backup
 		update_option('rbp_media_cleaner_file_import','off');
-		return false;
+		return true;
 	}
 
 

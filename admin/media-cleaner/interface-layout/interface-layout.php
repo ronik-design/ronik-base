@@ -10,27 +10,31 @@ add_menu_page(
 );
 
 // Add Integrations page.
-add_submenu_page(
-    'options-ronik-base-mediacleaner', // parent page slug
-    'Integrations',
-    'Integrations',
-    'manage_options',
-    'options-ronik-base_integrations',
-    'ronikbase_integrations_callback_media_cleaner',
-    2 // menu position
-);
+if(!$this->beta_mode_state){
+    add_submenu_page(
+        'options-ronik-base-mediacleaner', // parent page slug
+        'Integrations',
+        'Integrations',
+        'manage_options',
+        'options-ronik-base_integrations',
+        'ronikbase_integrations_callback_media_cleaner',
+        2 // menu position
+    );
+}
 
 if($this->media_cleaner_state){
     // Add Settings page.
-    add_submenu_page(
-        'options-ronik-base-mediacleaner', // parent page slug
-        'Ronik Base Settings',
-        'Settings',
-        'manage_options',
-        'options-ronik-base_settings_media_cleaner', //
-        'ronikbase_support_settings_media_cleaner',
-        1 // menu position
-    );
+    if(!$this->beta_mode_state){
+        add_submenu_page(
+            'options-ronik-base-mediacleaner', // parent page slug
+            'Ronik Base Settings',
+            'Settings',
+            'manage_options',
+            'options-ronik-base_settings_media_cleaner', //
+            'ronikbase_support_settings_media_cleaner',
+            1 // menu position
+        );
+    }
     // Add Support page.
     add_submenu_page(
         'options-ronik-base-mediacleaner', // parent page slug

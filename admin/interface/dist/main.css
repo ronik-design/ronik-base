@@ -119,13 +119,11 @@ html {
 }
 
 .rmc-sync__outdated-medium a {
-  background-color: rgb(255, 98, 0) !important;
-  color: #fff !important;
+  color: rgb(255, 98, 0) !important;
 }
 
 .rmc-sync__outdated-max a {
-  background-color: red !important;
-  color: #fff !important;
+  color: red !important;
 }
 
 #wpwrap.loader {
