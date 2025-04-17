@@ -138,7 +138,8 @@ class Ronik_Base_Admin {
 		// Ajax & Nonce
 		wp_localize_script($this->plugin_name, 'wpVars', array(
 			'ajaxURL' => admin_url('admin-ajax.php'),
-			'nonce'	  => wp_create_nonce('ajax-nonce')
+			'nonce'	  => wp_create_nonce('ajax-nonce'),
+			'betaMode' => $this->beta_mode_state ? true : false,
 		));
 	}
 	/**

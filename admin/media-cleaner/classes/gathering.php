@@ -672,8 +672,10 @@ class RmcDataGathering{
             }
         }
 
-        error_log(print_r( $meta_temp_saved_array, true));
-        $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1b imagePreserveAudit  ' . $meta_temp_saved_array , 'low', 'rbp_media_cleaner');
+        if($meta_temp_saved_array){
+            error_log(print_r( $meta_temp_saved_array, true));
+            $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1b imagePreserveAudit  ' . $meta_temp_saved_array , 'low', 'rbp_media_cleaner');
+        }
 
         $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_unique(array_filter($meta_temp_saved_array))));
         $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1a imagePreserveAudit DONE ', 'low', 'rbp_media_cleaner');
