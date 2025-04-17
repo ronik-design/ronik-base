@@ -50,6 +50,10 @@
             dataType: 'json',
             success: function(data) {
                 const loaderElement = document.querySelector('.progress-bar');
+
+                console.log(loaderElement);
+
+                
                 if (loaderElement) {
                     console.log('loaderElement');
                     console.log(data);
@@ -93,12 +97,15 @@
                         }
                     }
                 } else {
+
+                    console.log(data);
+
                     if(!data.data){
 
                     } else{
                         if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){   
                             console.log('.progress-bar not present');
-                 
+
                             if(destination !== 'media-cleaner'){
                                 var element = document.getElementById("wp-admin-bar-rmc");
                                 // Change the color
@@ -128,12 +135,6 @@
                                     `);
                                 }
                             }
-
-
-
-                            console.log(data);
-                        } else {
-                            console.log('TEST');
                         }
                     }
                 }
@@ -146,9 +147,10 @@
 
     // Function to determine API key validity
     async function initApiKeyDeterminism(pluginSlug, key) {
-        // const endpoint = window.location.href.includes(".local/") 
-        //     ? "https://ronik-marketing.local"
-        //     : "https://ronikmarketstg.wpenginepowered.com";
+        if(wpVars.betaMode){
+            console.log('initApiKeyDeterminism Beta Mode Enabled');
+            return;
+        }
 
         const endpoint = "https://ronikmarketstg.wpenginepowered.com";
 
@@ -201,13 +203,16 @@
     // Function to start validation and progress checking
     function ronikbasePingValidator() {
         console.log('Ping validator started');
-        console.log('API KEY DISABLED');
-        function pingValidator() {
-            setTimeout(() => {
-                initRonikDeterminism('ronik_media_cleaner', 'valid');
-            }, 400);
+        if(!wpVars.betaMode){
+            function pingValidator() {
+                setTimeout(() => {
+                    initRonikDeterminism('ronik_media_cleaner', 'valid');
+                }, 400);
+            }
+            setInterval(pingValidator, intervalTime);
+        } else{
+            console.log('Beta Mode Enabled');
         }
-        setInterval(pingValidator, intervalTime);
 
         function pingMediaProgressValidator(destination) {
             setTimeout(() => {
