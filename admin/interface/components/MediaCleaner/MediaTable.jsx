@@ -10,12 +10,36 @@ function getQueryParameter(name) {
   return urlParams.get(name);
 }
 
+// Add this copy function near the top of the file
+const copyToClipboard = (text) => {
+  // Create a temporary textarea element
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed'; // Prevent scrolling to bottom
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
 
-
-
-
-
-
+  try {
+    // Select and copy the text
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Show feedback on the button
+    const button = document.querySelector(`button[data-url="${text}"]`);
+    if (button) {
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 2000);
+    }
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+  } finally {
+    // Clean up
+    document.body.removeChild(textarea);
+  }
+};
 
 // Helper function to handle pagination logic
 const getPaginatedData = (data, page, itemsPerPage) => {
@@ -197,7 +221,15 @@ const MediaCollectorTable = ({
       <td className='media-collector-table__td'>
         <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
       </td>
-      <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
+      <td className='media-collector-table__td media-collector-table__td--img-url'>
+        <button 
+          onClick={() => copyToClipboard(collector['media_file'])}
+          data-url={collector['media_file']}
+          className="copy-url-button"
+        >
+          Copy URL
+        </button>
+      </td>
       <td className='media-collector-table__td media-collector-table__td--preserve'>
         <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve File</button>
       </td>
@@ -321,8 +353,16 @@ const PreservedMediaCollectorTable = ({
       <td className='media-collector-table__td'>
         <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
       </td>
-      <td className='media-collector-table__td media-collector-table__td--img-url'>{collector['media_file']}</td>
-      <td className='media-collector-table__td media-collector-table__td--preserve'>
+      <td className='media-collector-table__td media-collector-table__td--img-url'>
+        <button 
+          onClick={() => copyToClipboard(collector['media_file'])}
+          data-url={collector['media_file']}
+          className="copy-url-button"
+        >
+          Copy URL
+        </button>
+      </td>
+      <td className='media-collector-table__td media-collector-table__td--unpreserve '>
         <button onClick={activatePreserve} data-unpreserve-media={collector['id']}>Un-preserve file</button>
       </td>
     </tr>
@@ -365,7 +405,7 @@ const PreservedMediaCollectorTable = ({
             <th className='media-collector-table__th'>File ID</th>
             <th className='media-collector-table__th'>Media Library Link</th>
             <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
-            <th className='media-collector-table__th media-collector-table__th--preserve'>Temporarily Preserve</th>
+            <th className='media-collector-table__th media-collector-table__th--unpreserve'>Temporarily Preserve</th>
           </tr>
           {mediaCollectorItems}
         </tbody>

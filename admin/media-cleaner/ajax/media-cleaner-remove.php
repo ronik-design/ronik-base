@@ -2,7 +2,7 @@
 /**
 * Init Remove Unused Media .
 */
-
+$RmcDataGathering = new RmcDataGathering;
 $rbpHelper = new RbpHelper;
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 8a, Init Remove Unused Media . ', 'low', 'rbp_media_cleaner');
 
@@ -17,25 +17,7 @@ if($rbp_media_cleaner_media_data){
 		databaseScannerMedia__cleaner();
 		// Throttle after cleaner.
 		sleep(1);
-
-        // RESET EVERYTHING
-        update_option('rbp_media_cleaner_sync_running', 'not-running');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
-        delete_transient('rmc_media_cleaner_media_data_collectors_posts_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array');
-        delete_transient('rmc_media_cleaner_media_data_collectors_image_option_auditor_array');
-
-        delete_option('rbp_media_cleaner_increment');
-        delete_option('rbp_media_cleaner_counter');
-        delete_option('rbp_media_cleaner_media_data');
-
-
+        $RmcDataGathering->rmc_reset_alldata();
         // Send sucess message!
         wp_send_json_success('Cleaner-Done'); 
     }

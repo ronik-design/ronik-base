@@ -1,5 +1,26 @@
-<?php 
+<?php
 class RmcDataGathering{
+    public function rmc_reset_alldata(){
+        // RESET EVERYTHING
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized');
+        delete_transient('rmc_media_cleaner_media_data_collectors_posts_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array_not_preserve');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_filesystem_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_option_auditor_array');
+        delete_transient('rmc_media_cleaner_media_data_collectors_image_id_array');
+        delete_option('rbp_media_cleaner_increment');
+        delete_option('rbp_media_cleaner_counter');
+        delete_option('rbp_media_cleaner_media_data');
+        delete_option('rbp_media_cleaner_sync-time');
+        delete_option('rbp_media_cleaner_sync_running-time');
+        update_option('rbp_media_cleaner_sync_running', 'not-running');
+        error_log(print_r('Completed Reseting Everything!', true));
+    }
+
     public function rmc_getLineWithString_ronikdesigns($fileName, $id) {
         $f_attached_file = get_attached_file( $id );
         $pieces = explode('/', $f_attached_file ) ;
@@ -10,7 +31,7 @@ class RmcDataGathering{
             }
         }
     }
-    
+
      // This function pretty much scans all the files of the entire active theme.
         // We try to ignore files that are not using images within.
     public function rmc_receiveAllFiles_ronikdesigns($dir, $image_id){
@@ -96,7 +117,7 @@ class RmcDataGathering{
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('postIDCollector: Ref 1a postIDCollector Started ', 'low', 'rbp_media_cleaner');
 
-        $counter = 0; 
+        $counter = 0;
         if($select_post_type){
             $count_posts = array();
             foreach($select_post_type as $post_type){
@@ -126,13 +147,13 @@ class RmcDataGathering{
         }
 
         // We throttle the number of images so it doesnt kill the server.
-        $rmc_data_collectors_post_ids_array = array(); 
+        $rmc_data_collectors_post_ids_array = array();
         $numbers = range( 0 , $maxIncrement);
         foreach( $numbers as $number){
             $increment = $number;
-            $offsetValue = $increment * $select_numberposts;	
+            $offsetValue = $increment * $select_numberposts;
             $rmc_data_collectors_post_ids_array[] = postIDCollector($select_post_status, $select_post_type, $offsetValue, $select_numberposts );
-        }	
+        }
 
         $rbpHelper->ronikdesigns_write_log_devmode('postIDCollector: Ref 1b postIDCollector Done ', 'low', 'rbp_media_cleaner');
 
@@ -163,24 +184,32 @@ class RmcDataGathering{
                 foreach ($allimagesid as $imageID){
                     $data = wp_get_attachment_metadata( $imageID ); // get the data structured
                     if( $data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved'){
-                        $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false'; 
+
+
+                        error_log(print_r( $data['rbp_media_cleaner_isdetached'] , true ));
+                        error_log(print_r( $imageID , true ));
+
+
+
+                        $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false';
                         wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
-                    }
-                    if( file_exists( get_attached_file( $imageID ) ) ){
-                        // finds the total file / image size
-                        $filesize = filesize( get_attached_file( $imageID ) );
-                        // converts bits to mega bytes
-                        $filesize_convert = $filesize / 1024 / 1024;
-                        // converts number to format based on locale
-                        $filesize  = number_format_i18n( $filesize_convert, 3 );
-                        // creates new meta field with file size of an image
-                        update_post_meta( $imageID, '_wp_attachment_image_filesize', $filesize );
-                        
-                        // $all_image_ids[] = $imageID;
-                        // This is responsible for only getting the large images rather then the tiny ones.
-                        if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
-                            // error_log(print_r( 'ssss', true));
-                            $all_image_ids[] = $imageID;
+
+                        if( file_exists( get_attached_file( $imageID ) ) ){
+                            // finds the total file / image size
+                            $filesize = filesize( get_attached_file( $imageID ) );
+                            // converts bits to mega bytes
+                            $filesize_convert = $filesize / 1024 / 1024;
+                            // converts number to format based on locale
+                            $filesize  = number_format_i18n( $filesize_convert, 3 );
+                            // creates new meta field with file size of an image
+                            update_post_meta( $imageID, '_wp_attachment_image_filesize', $filesize );
+
+                            // $all_image_ids[] = $imageID;
+                            // This is responsible for only getting the large images rather then the tiny ones.
+                            if( filesize( get_attached_file( $imageID ) ) >= $file_size ){
+                                // error_log(print_r( 'ssss', true));
+                                $all_image_ids[] = $imageID;
+                            }
                         }
                     }
 
@@ -190,11 +219,11 @@ class RmcDataGathering{
             }
         }
         // We throttle the number of images so it doesnt kill the server.
-        $rmc_data_collectors_ids_array = array(); 
+        $rmc_data_collectors_ids_array = array();
         $numbers = range( 0 , $maxIncrement);
         foreach( $numbers as $number){
             $increment = $number;
-            $offsetValue = $increment * $select_numberposts;	
+            $offsetValue = $increment * $select_numberposts;
             $rmc_data_collectors_ids_array[$number] = imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size );
         }
 
@@ -224,19 +253,19 @@ class RmcDataGathering{
                         if(wp_get_post_parent_id($image_id)){
                             // $all_image_attachement_ids[] = $all_image_attachement_ids[] = $image_id;
                             $all_image_attachement_ids[] = $image_id;
-    
-                        }                
+
+                        }
                     }
                 }
                 return $all_image_attachement_ids;
             }
         }
         // We throttle the number of images so it doesnt kill the server.
-        $all_image_attachement_ids_array = array(); 
+        $all_image_attachement_ids_array = array();
         $numbers_attachement = range( 0 , $maxIncrement_attachement);
         foreach( $numbers_attachement as $number){
             $increment = $number;
-            $offsetValue = $increment * $select_numberposts;	
+            $offsetValue = $increment * $select_numberposts;
             $allimagesid_array = array_slice($allimagesid, $offsetValue, $select_numberposts, true);
             $all_image_attachement_ids_array[] = specificImageAttachement($allimagesid_array);
         }
@@ -275,17 +304,17 @@ class RmcDataGathering{
                         // $all_image_attachement_ids[] = $all_image_attachement_ids[] = $image_id;
                         $all_image_attachement_ids[] = $image_id;
 
-                    }                
+                    }
                 }
             }
             return $all_image_attachement_ids;
         }
         // We throttle the number of images so it doesnt kill the server.
-        $all_image_attachement_ids_array = array(); 
+        $all_image_attachement_ids_array = array();
         $numbers_attachement = range( 0 , $maxIncrement_attachement);
         foreach( $numbers_attachement as $number){
             $increment = $number;
-            $offsetValue = $increment * $select_numberposts;	
+            $offsetValue = $increment * $select_numberposts;
             $allimagesid_array = array_slice($allimagesid, $offsetValue, $select_numberposts, true);
             $all_image_attachement_ids_array[] = imageAttachement($allimagesid_array);
         }
@@ -308,14 +337,14 @@ class RmcDataGathering{
             return $all_post_thumbnail_ids;
         }
         // We throttle the number of images so it doesnt kill the server.
-        $all_post_thumbnail_ids_array = array(); 
+        $all_post_thumbnail_ids_array = array();
         $numbers_thumbnail = range( 0 , $maxIncrement_thumbnail);
         foreach( $numbers_thumbnail as $number){
             $increment = $number;
-            $offsetValue = $increment * $select_numberposts;	
+            $offsetValue = $increment * $select_numberposts;
             $get_all_post_pages_array = array_slice($get_all_post_pages, $offsetValue, $select_numberposts, true);
             $all_post_thumbnail_ids_array[] = postThumbnail($get_all_post_pages_array);
-        }	
+        }
 
         $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter(array_merge(...$all_post_thumbnail_ids_array))));
         $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1c imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
@@ -411,7 +440,7 @@ class RmcDataGathering{
                             $wp_postsmeta_id_audit_array[] = $image_id;
                         }
                     }
-                    
+
                 }
             }
         }
@@ -451,7 +480,7 @@ class RmcDataGathering{
         return $arr_checkpoint_1a;
     }
 
-    
+
 
 
 
@@ -476,8 +505,8 @@ class RmcDataGathering{
                             $wp_postsmeta_wp_content_id_audit_array[] = $image_id;
                         }
                     }
-                }  
-        
+                }
+
             }
         }
 
@@ -633,7 +662,7 @@ class RmcDataGathering{
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1a imageFilesystemAudit Started ', 'low', 'rbp_media_cleaner');
         $rbpHelper->ronikdesigns_write_log_devmode('imageFilesystemAudit: Ref 1b imageFilesystemAudit ' . get_theme_file_path(), 'low', 'rbp_media_cleaner');
-        
+
         $wp_infiles_array = array();
         if($allimagesid){
             foreach($allimagesid as $image_id){
@@ -673,7 +702,6 @@ class RmcDataGathering{
         }
 
         if($meta_temp_saved_array){
-            error_log(print_r( $meta_temp_saved_array, true));
             $rbpHelper->ronikdesigns_write_log_devmode('imagePreserveAudit: Ref 1b imagePreserveAudit  ' . $meta_temp_saved_array , 'low', 'rbp_media_cleaner');
         }
 
@@ -683,7 +711,7 @@ class RmcDataGathering{
         return $arr_checkpoint_1a;
     }
 
-        
+
 
 
 
@@ -695,8 +723,10 @@ class RmcDataGathering{
         if($allimagesid){
             foreach($allimagesid as $imageid){
                 $data = wp_get_attachment_metadata( $imageid ); // get the data structured
-				$data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true'; 
-				wp_update_attachment_metadata( $imageid, $data );  // save it back to the db
+                if($data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved'){
+                    $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_true';
+                    wp_update_attachment_metadata( $imageid, $data );  // save it back to the db
+                }
             }
         }
         $rbpHelper->ronikdesigns_write_log_devmode('imageMarker: Ref 1b imageMarker DONE ', 'low', 'rbp_media_cleaner');
@@ -722,7 +752,7 @@ class RmcDataGathering{
         } else {
             $rbp_media_cleaner_media_data = $imagesid;
         }
-        
+
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11b, imageCloneSave. '. $rbp_media_cleaner_media_data , 'low', 'rbp_media_cleaner');
 
         if($f_file_import == 'off' || !isset($f_file_import)){
@@ -763,7 +793,7 @@ class RmcDataGathering{
                 // We must use the get_attached_file function
                 $link = get_attached_file($rbp_data_id);
                 $file_path = $link;
-                $file_name = basename ( get_attached_file( $rbp_data_id ) );                    
+                $file_name = basename ( get_attached_file( $rbp_data_id ) );
                 $file_path_date = str_replace( $upload_dir['baseurl'], '', $link);
                 $file_path_date_mod = str_replace($file_name , '', $file_path_date);
                 $file_path_date_mod_array = explode('/wp-content/uploads', $file_path_date_mod);
@@ -782,12 +812,12 @@ class RmcDataGathering{
                     //Create our directory.
                     mkdir(dirname(__FILE__, 2).'/ronikdetached/', 0777, true);
                 }
-          
+
                 // Erase old files and database
                 if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-database.sql')) {
                     unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql' );
                 }
-                if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-media.zip')) {                
+                if (file_exists(dirname(__FILE__, 2).'/ronikdetached/archive-media.zip')) {
                     unlink(  dirname(__FILE__, 2).'/ronikdetached/archive-media.zip' );
                 }
 
@@ -813,7 +843,7 @@ class RmcDataGathering{
                     $delete_attachment_clone = wp_delete_attachment(  attachment_url_to_postid( $clone_path[0] ) , true);
                     if($delete_attachment_clone){
                         //Delete attachment file from disk
-                        if (file_exists(get_attached_file( $clone_path ))) { 
+                        if (file_exists(get_attached_file( $clone_path ))) {
                             unlink( get_attached_file( $clone_path ) );
                         }
                         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11e, imageCloneSave. Clone File Deleted ' , 'low', 'rbp_media_cleaner');
@@ -825,12 +855,12 @@ class RmcDataGathering{
                 if($delete_attachment){
                     //Delete attachment file from disk
                     if(get_attached_file( $rbp_data_id )){
-                        if (file_exists(get_attached_file( $rbp_data_id ))) {                          
+                        if (file_exists(get_attached_file( $rbp_data_id ))) {
                             unlink( get_attached_file( $rbp_data_id ) );
                         }
                     }
                     $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, imageCloneSave.  File Deleted ' , 'low', 'rbp_media_cleaner');
-                } 
+                }
             }
 
             $dbhost = DB_HOST;
@@ -859,7 +889,7 @@ class RmcDataGathering{
                         while ($row = mysqli_fetch_row($result)) {
                             $sqlScript .= "INSERT INTO $table VALUES(";
                             for ($j = 0; $j < $columnCount; $j ++) {
-                                $row[$j] = $row[$j];           
+                                $row[$j] = $row[$j];
                                 if (isset($row[$j])) {
                                     $sqlScript .= '"' . mysqli_real_escape_string($con,$row[$j]) . '"';
                                 } else {
@@ -871,8 +901,8 @@ class RmcDataGathering{
                             }
                             $sqlScript .= ");\n";
                         }
-                    }   
-                    $sqlScript .= "\n"; 
+                    }
+                    $sqlScript .= "\n";
                 }
                 if(!empty($sqlScript)) {
                     $backup_file_name =  dirname(__FILE__, 2).'/ronikdetached/archive-database.sql';
@@ -884,7 +914,7 @@ class RmcDataGathering{
                     $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, imageCloneSave. BACKUP '. $message , 'low', 'rbp_media_cleaner');
                 }
             return true;
-        }   
-        return true;     
+        }
+        return true;
     }
 }

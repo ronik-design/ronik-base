@@ -46,7 +46,9 @@ function databaseScannerMedia__cleaner( ) {
     }
 }
 
-error_log(print_r(  'preserve', true));
+error_log(print_r( $_POST, true));
+
+
 
 if ($_POST['post_overide'] == 'media-preserve'){
 	error_log(print_r(  'preserve 2 ', true));

@@ -19,8 +19,8 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
         // }
     }, [dataSync ]);
 
-    // Toggle the loader and initiate data post
-    const handleLoaderState = (syncStatus, syncProgress) => {
+    // Update handleLoaderState to accept and use userOption
+    const handleLoaderState = (userOption) => {
         const f_wpwrap = document.querySelector("#wpwrap");
         const f_wpcontent = document.querySelector("#wpcontent");
 
@@ -34,10 +34,11 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
                 </div>
                 <div class="page-counter">Please do not refresh the page!</div>
             `);
-            handlePostData(formValues['user-option'], 'all', increment, 'inprogress');
+            // Pass the userOption directly to handlePostData
+            handlePostData(userOption, 'all', increment, 'inprogress');
         }
     };
-    
+
     // Handle form changes
     const handleChange = (e) => {
         setFormValues({ 'user-option': e.target.value });
@@ -114,48 +115,36 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
         }
     };
 
+    const handleSubmitWithAction = (action) => (e) => {
+        e.preventDefault();
+        const userOption = action; // Simplify this - use the action directly
+        
+        handleLoaderState(userOption); // Pass the userOption to handleLoaderState
+    };
+
     return (
         <div className="media-cleaner-block">
             <div className="media-cleaner-block__inner">
                 <div className="media-cleaner-item" id={requestType}>
                     <div className="media-cleaner-item__inner">
                         <div className="media-cleaner-item__content">
-                            <form className='media-cleaner-item__form' onSubmit={handleSubmit}>
-                                <div className="media-cleaner-item__input-group">
-                                    <div className="radio-switch">
-                                        <div className="radio-switch-field">
-                                            <input
-                                                id="switch-off"
-                                                type="radio"
-                                                name="radio-switch"
-                                                value="fetch-media"
-                                                checked={formValues['user-option'] === 'fetch-media'}
-                                                onChange={handleChange}
-                                            />
-                                            <label htmlFor="switch-off">Manual Media Library Scan</label>
-                                        </div>
-                                        <div className="radio-switch-field">
-                                            <input
-                                                id="switch-on"
-                                                type="radio"
-                                                name="radio-switch"
-                                                value="delete-media"
-                                                checked={formValues['user-option'] === 'delete-media'}
-                                                onChange={handleChange}
-                                            />
-                                            <label htmlFor="switch-on">Bulk Delete Media</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
+                            <div className="media-cleaner-item__actions">
                                 <button 
-                                    type="submit" 
+                                    onClick={handleSubmitWithAction('fetch-media')}
                                     className={isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn'}
-                                    disabled={isButtonDisabled}  // Disable the button if syncIsRunning is valid
+                                    disabled={isButtonDisabled}
                                 >
-                                    {formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan' : 'Delete Media'}
+                                    {isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan'}
                                 </button>
-                            </form>
+
+                                <button 
+                                    onClick={handleSubmitWithAction('delete-media')}
+                                    className={isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn delete-btn'}
+                                    disabled={isButtonDisabled}
+                                >
+                                    Delete Media
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

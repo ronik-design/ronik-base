@@ -3081,6 +3081,36 @@ function getQueryParameter(name) {
   return urlParams.get(name);
 }
 
+// Add this copy function near the top of the file
+var copyToClipboard = function copyToClipboard(text) {
+  // Create a temporary textarea element
+  var textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed'; // Prevent scrolling to bottom
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  try {
+    // Select and copy the text
+    textarea.select();
+    document.execCommand('copy');
+
+    // Show feedback on the button
+    var button = document.querySelector("button[data-url=\"".concat(text, "\"]"));
+    if (button) {
+      var originalText = button.textContent;
+      button.textContent = 'Copied!';
+      setTimeout(function () {
+        button.textContent = originalText;
+      }, 2000);
+    }
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+  } finally {
+    // Clean up
+    document.body.removeChild(textarea);
+  }
+};
+
 // Helper function to handle pagination logic
 var getPaginatedData = function getPaginatedData(data, page, itemsPerPage) {
   return data.reduce(function (resultArray, item, index) {
@@ -3256,7 +3286,14 @@ var MediaCollectorTable = function MediaCollectorTable(_ref4) {
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
-        children: collector['media_file']
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+          onClick: function onClick() {
+            return copyToClipboard(collector['media_file']);
+          },
+          "data-url": collector['media_file'],
+          className: "copy-url-button",
+          children: "Copy URL"
+        })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--preserve",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
@@ -3401,9 +3438,16 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref5) 
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
-        children: collector['media_file']
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+          onClick: function onClick() {
+            return copyToClipboard(collector['media_file']);
+          },
+          "data-url": collector['media_file'],
+          className: "copy-url-button",
+          children: "Copy URL"
+        })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
-        className: "media-collector-table__td media-collector-table__td--preserve",
+        className: "media-collector-table__td media-collector-table__td--unpreserve ",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
           onClick: activatePreserve,
           "data-unpreserve-media": collector['id'],
@@ -3460,7 +3504,7 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref5) 
             className: "media-collector-table__th media-collector-table__th--img-url",
             children: "File Path"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
-            className: "media-collector-table__th media-collector-table__th--preserve",
+            className: "media-collector-table__th media-collector-table__th--unpreserve",
             children: "Temporarily Preserve"
           })]
         }), mediaCollectorItems]
@@ -3540,14 +3584,15 @@ var FetchAddon = function FetchAddon(_ref) {
     // }
   }, [dataSync]);
 
-  // Toggle the loader and initiate data post
-  var handleLoaderState = function handleLoaderState(syncStatus, syncProgress) {
+  // Update handleLoaderState to accept and use userOption
+  var handleLoaderState = function handleLoaderState(userOption) {
     var f_wpwrap = document.querySelector("#wpwrap");
     var f_wpcontent = document.querySelector("#wpcontent");
     if (f_wpwrap) {
       f_wpwrap.classList.add('loader');
       f_wpcontent.insertAdjacentHTML('beforebegin', "\n                <div class=\"progress-bar\"></div>\n                <div class=\"centered-blob\">\n                    <div class=\"blob-1\"></div>\n                    <div class=\"blob-2\"></div>\n                </div>\n                <div class=\"page-counter\">Please do not refresh the page!</div>\n            ");
-      handlePostData(formValues['user-option'], 'all', increment, 'inprogress');
+      // Pass the userOption directly to handlePostData
+      handlePostData(userOption, 'all', increment, 'inprogress');
     }
   };
 
@@ -3651,6 +3696,15 @@ var FetchAddon = function FetchAddon(_ref) {
         }
     }
   };
+  var handleSubmitWithAction = function handleSubmitWithAction(action) {
+    return function (e) {
+      e.preventDefault();
+      var userOption = action; // Simplify this - use the action directly
+
+      handleLoaderState(userOption); // Pass the userOption to handleLoaderState
+    };
+  };
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     className: "media-cleaner-block",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
@@ -3662,47 +3716,18 @@ var FetchAddon = function FetchAddon(_ref) {
           className: "media-cleaner-item__inner",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
             className: "media-cleaner-item__content",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
-              className: "media-cleaner-item__form",
-              onSubmit: handleSubmit,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-                className: "media-cleaner-item__input-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-                  className: "radio-switch",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-                    className: "radio-switch-field",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      id: "switch-off",
-                      type: "radio",
-                      name: "radio-switch",
-                      value: "fetch-media",
-                      checked: formValues['user-option'] === 'fetch-media',
-                      onChange: handleChange
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-                      htmlFor: "switch-off",
-                      children: "Manual Media Library Scan"
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-                    className: "radio-switch-field",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      id: "switch-on",
-                      type: "radio",
-                      name: "radio-switch",
-                      value: "delete-media",
-                      checked: formValues['user-option'] === 'delete-media',
-                      onChange: handleChange
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-                      htmlFor: "switch-on",
-                      children: "Bulk Delete Media"
-                    })]
-                  })]
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                type: "submit",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              className: "media-cleaner-item__actions",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: handleSubmitWithAction('fetch-media'),
                 className: isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn',
-                disabled: isButtonDisabled // Disable the button if syncIsRunning is valid
-                ,
-                children: formValues['user-option'] === 'fetch-media' ? isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan' : 'Delete Media'
+                disabled: isButtonDisabled,
+                children: isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan'
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: handleSubmitWithAction('delete-media'),
+                className: isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn delete-btn',
+                disabled: isButtonDisabled,
+                children: "Delete Media"
               })]
             })
           })
