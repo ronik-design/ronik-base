@@ -1,4 +1,17 @@
-<?php
+<?php 
+$autoloadPath = dirname(__FILE__, 3) . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+} else {
+    error_log('❌ Autoload not found at: ' . $autoloadPath);
+    wp_die('Autoload file missing.');
+}
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RmcDataGathering;
+// use Ronik\Base\RonikBaseHelper;
+
+
+
 $rbpHelper = new RbpHelper;
 $RmcDataGathering = new RmcDataGathering;
 

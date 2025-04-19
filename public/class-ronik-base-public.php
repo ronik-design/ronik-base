@@ -45,7 +45,7 @@ class Ronik_Base_Public {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $media_cleaner   
+	 * @var      string    $media_cleaner
 	 */
 	private $media_cleaner_state;
 
@@ -54,7 +54,7 @@ class Ronik_Base_Public {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $optimization_state 
+	 * @var      string    $optimization_state
 	 */
 	private $optimization_state;
 
@@ -64,7 +64,7 @@ class Ronik_Base_Public {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $beta_mode_state   
+	 * @var      string    $beta_mode_state
 	 */
 	private $beta_mode_state;
 
@@ -127,7 +127,7 @@ class Ronik_Base_Public {
 
 	// Public facing rest api.
 	public function ronikdesignsbase_rest_api_init(){
-		
+
 		if($this->media_cleaner_state){
 			// Include the dynamic rest api.
 			foreach (glob(dirname(__FILE__) . '/rest-api/media_cleaner/*.php') as $file) {
@@ -153,6 +153,6 @@ class Ronik_Base_Public {
 				include $file;
 			}
 		}
-		
+
 	}
 }

@@ -2,6 +2,20 @@
 /**
  * Init Unused Media Migration.
  */
+// require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+$autoloadPath = dirname(__FILE__, 4) . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+
+	error_log('❌Sucees media-cleaner_init: ' . $autoloadPath);
+
+} else {
+    error_log('❌ Autoload not found at media-cleaner_init: ' . $autoloadPath);
+    wp_die('Autoload file missing.');
+}
+
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RonikBaseHelper;
 
 // Create an instance of the helper class.
 $helper = new RonikBaseHelper;
@@ -38,35 +52,23 @@ $finalizedImageIds = get_transient('rmc_media_cleaner_media_data_collectors_imag
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6b, Running First Time: ' . $syncRunning , 'low', 'rbp_media_cleaner');
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6c, Progress: ' . $progress , 'low', 'rbp_media_cleaner');
 
-// If the sync process is currently running, return the progress status.
+// Simplified sync progress handling
 if ($syncRunning === 'running') {
-    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6d, Running: ' . $progress , 'low', 'rbp_media_cleaner');
     wp_send_json_success([
-        'sync' => $progress,
-        'response' => 'Collector-Sync-inprogress-' . rand(),
+        'sync' => $progress ?: '0%',
+        'response' => 'IN_PROGRESS',
     ]);
     exit;
 }
 
-// If progress is not set to 'DONE', initiate or continue the sync process.
 if (empty($progress) || $progress !== 'DONE') {
-    // Call the method to start or continue the media sync process.
     $this->rmc_media_sync();
-    sleep(2); // Short delay to ensure the sync process is updated.
+    sleep(2);
 
-    // Retrieve the updated progress status.
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
-
-    // If progress is 'DONE', send a success response indicating completion.
-    if ($progress === 'DONE') {
-        wp_send_json_success('COMPLETED');
-        exit;
-    }
-
-    // Return the sync progress status with a random response string.
-    wp_send_json_success([
-        'sync' => '0%',
-        'response' => 'Collector-Sync-inprogress-' . rand(),
+    wp_send_json_success($progress === 'DONE' ? 'COMPLETED' : [
+        'sync' => $progress ?: '0%',
+        'response' => 'IN_PROGRESS',
     ]);
     exit;
 }

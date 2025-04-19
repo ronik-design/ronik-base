@@ -1,4 +1,6 @@
 <?php 
+
+
 $rbpHelper = new RbpHelper;
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 10a, Media Swap. ', 'low', 'rbp_media_cleaner');
 

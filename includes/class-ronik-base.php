@@ -90,20 +90,23 @@ class Ronik_Base {
 			<?php }
 
 			//plugin is activated ACF,
-			if (is_plugin_active('advanced-custom-fields-pro/acf.php')) {
-				$this->define_admin_hooks();
-				$this->define_public_hooks();
-			} else {
+			// if (is_plugin_active('advanced-custom-fields-pro/acf.php')) {
+			// 	$this->define_admin_hooks();
+			// 	$this->define_public_hooks();
+			// } else {
 
-				if(!empty(get_mu_plugins()['acf.php'])){
-					$this->define_admin_hooks();
-					$this->define_public_hooks();
-				} else {
-					deactivate_plugins( 'ronik-base/ronik-base.php' );
-					add_action( 'admin_notices', 'ronik_admin_notice__error' );
-				}
-			}
+			// 	if(!empty(get_mu_plugins()['acf.php'])){
+			// 		$this->define_admin_hooks();
+			// 		$this->define_public_hooks();
+			// 	} else {
+			// 		deactivate_plugins( 'ronik-base/ronik-base.php' );
+			// 		add_action( 'admin_notices', 'ronik_admin_notice__error' );
+			// 	}
+			// }
 
+
+			$this->define_admin_hooks();
+			$this->define_public_hooks();
 	}
 
 	/**
@@ -185,6 +188,13 @@ class Ronik_Base {
 		// Lets check to see if dependencies are met before continuing...
 		// Disable the ACF DEPENDENCY
 		// $this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
+
+		$this->loader->add_action( 'admin_notices', $plugin_admin, 'ronik_base_admin_notices' );
+
+		
+
+
+
 		// Let us load the plugin interface.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rbp_plugin_interface' );
 		// Enque Scripts

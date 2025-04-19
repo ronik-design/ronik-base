@@ -1,4 +1,8 @@
 <?php
+namespace Ronik\Base;
+
+use Ronik\Base\RbpHelper;
+
 class RmcDataGathering{
     public function rmc_reset_alldata(){
         // RESET EVERYTHING
@@ -183,13 +187,7 @@ class RmcDataGathering{
                 $all_image_ids = array();
                 foreach ($allimagesid as $imageID){
                     $data = wp_get_attachment_metadata( $imageID ); // get the data structured
-                    if( $data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved'){
-
-
-                        error_log(print_r( $data['rbp_media_cleaner_isdetached'] , true ));
-                        error_log(print_r( $imageID , true ));
-
-
+                    if( isset($data['rbp_media_cleaner_isdetached']) && $data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved'){
 
                         $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false';
                         wp_update_attachment_metadata( $imageID, $data );  // save it back to the db
@@ -531,7 +529,7 @@ class RmcDataGathering{
                 return false;
             }
             if (is_array($option_value) || is_object($option_value)) {
-                foreach ($option_value as $value) {
+                foreach ($option_value as $value) {          
                     if (search_value_in_option($value, $search_term, $depth + 1)) {
                         return true;  // Match found, exit immediately
                     }
@@ -605,7 +603,8 @@ class RmcDataGathering{
                 $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1l Processing option: '.$option_name, 'low', 'rbp_media_cleaner');
 
                 foreach ($allimagesid as $image_id) {
-                    $pattern_id = '/(?:^|\W)' . $image_id . '(?:$|\W)/'; // Direct image ID pattern
+                    $pattern_id = '/(?<![\d.])(?<![a-zA-Z])' . preg_quote((string)$image_id, '/') . '(?![\d.])/';
+
                     $pattern_serialized = '/i:' . $image_id . ';/'; // Serialized image ID pattern
                     $pattern_file_path = get_attached_file($image_id); // Full file path
                     $pattern_file_name = basename($pattern_file_path); // File name
@@ -619,6 +618,19 @@ class RmcDataGathering{
                     $pattern_ids = '"id":' . $image_id;
 
                     $match_found = false;
+
+
+                    if (is_string($option_value) && preg_match($pattern_id, $option_value, $matches)) {
+                        error_log('Matched imagOptionAuditor: ' . print_r($matches, true));
+                    }
+                    if (is_array($option_value)) {
+                        $flattened = json_encode($option_value);
+                        if (preg_match($pattern_id, $flattened, $matches)) {
+                            error_log('Matched in array via json_encode: ' . print_r($matches, true));
+                        }
+                    }
+
+                    
                     // Check for image ID matches in various formats
                     if (is_string($option_value)) {
                         if (preg_match($pattern_id, $option_value)

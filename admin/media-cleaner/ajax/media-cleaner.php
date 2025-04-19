@@ -1,4 +1,17 @@
 <?php
+$autoloadPath = dirname(__FILE__, 4) . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+} else {
+    error_log('❌ Autoload not found at media-cleaner: ' . $autoloadPath);
+    wp_die('Autoload file missing.');
+}
+
+
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RmcDataGathering;
+use Ronik\Base\RonikBaseHelper;
+
 $rbpHelper = new RbpHelper;
 
 if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {

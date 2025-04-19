@@ -1,4 +1,8 @@
 <?php 
+ use Ronik\Base\RbpHelper;
+ use Ronik\Base\RmcDataGathering;
+ use Ronik\Base\RonikBaseHelper;
+
 function ronikdesignsbase_mediacleaner_data( $data ) {
     // Access the referer from headers
     $referer = $data->get_header( 'referer' );
@@ -363,8 +367,12 @@ function my_custom_permission_check() {
     return current_user_can('manage_options'); // Adjust capability as needed
 }
 
+
 register_rest_route( 'mediacleaner/v1', '/mediacollector/(?P<slug>\w+)', array(
     'methods' => 'GET',
     'callback' => 'ronikdesignsbase_mediacleaner_data',
     // 'permission_callback' => 'my_custom_permission_check', // Restrict access based on custom logic
 ));
+
+
+

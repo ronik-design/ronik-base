@@ -1,0 +1,22 @@
+{
+  "name": "ronik/ronik-base",
+  "description": "Media Harmony plugin to clean unused media.",
+  "type": "wordpress-plugin",
+  "autoload": {
+    "psr-4": {
+      "Ronik\\Base\\": [
+        "admin/classes/",
+        "admin/helper/",
+        "admin/media-cleaner/classes/",
+        "admin/media-cleaner/functions/"
+      ]
+    }
+  },
+  "authors": [
+    {
+      "name": "Kevin Mancuso",
+      "email": "kevin@ronikdesign.com"
+    }
+  ],
+  "require": {}
+}

@@ -20,6 +20,13 @@
  * @subpackage Ronik_Base/admin
  * @author     Kevin Mancuso <kevin@ronikdesign.com>
  */
+
+ use Ronik\Base\RbpHelper;
+ use Ronik\Base\RmcDataGathering;
+ use Ronik\Base\RonikBaseHelper;
+
+ 
+
 class Ronik_Base_Admin
 {
 
@@ -146,6 +153,20 @@ class Ronik_Base_Admin
 			'betaMode' => $this->beta_mode_state ? true : false,
 		));
 	}
+
+	public function ronik_base_admin_notices(){
+		if (get_option('permalink_structure') === '') {
+			echo '<div class="notice notice-error"><p>';
+			echo '🚨 <strong>Warning:</strong> The Media Harmony REST API requires <em>“pretty permalinks”</em> to be enabled in order for <code>/wp-json/</code> routes to function correctly.';
+			echo ' <a href="' . esc_url(admin_url('options-permalink.php')) . '">Fix it now</a>.';
+			echo '</p></div>';
+		}
+	}
+
+	
+
+
+	
 	/**
 	 * Deactive if the dependent plugin is not install & activated.
 	 *
@@ -153,6 +174,7 @@ class Ronik_Base_Admin
 	 */
 	public function rbp_plugin_dependencies()
 	{
+		
 		if (is_admin() && current_user_can('activate_plugins') && !class_exists('ACF')) {
 			add_action('admin_notices', 'child_plugin_notice');
 			// deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' );
@@ -349,7 +371,7 @@ class Ronik_Base_Admin
 					return false;
 				}
 
-				error_log( print_r(  'RONIK TEST Removal', true) ;
+				error_log( print_r(  'RONIK TEST Removal', true)) ;
 				$RmcDataGathering = new RmcDataGathering;
 				$RmcDataGathering->rmc_reset_alldata();
 

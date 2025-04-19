@@ -30,6 +30,15 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+// Load Composer autoloader if it exists
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
+
+use Ronik\Base\RmcDataGathering;
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RonikBaseHelper;
+
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org

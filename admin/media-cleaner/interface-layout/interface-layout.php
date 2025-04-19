@@ -1,8 +1,11 @@
 <?php
+$capability = current_user_can('manage_media_cleaner') ? 'manage_media_cleaner' : 'manage_options';
+
+
 add_menu_page(
     'General - Ronik Base', // page <title>Title</title>
     'Media Harmony', // link text
-    'manage_options', // user capabilities
+    $capability, // user capabilities
     'options-ronik-base-mediacleaner', // page slug
     'ronikbase_support_general', // this function prints the page content
     'dashicons-visibility', // icon (from Dashicons for example)
@@ -15,7 +18,7 @@ if(!$this->beta_mode_state){
         'options-ronik-base-mediacleaner', // parent page slug
         'Integrations',
         'Integrations',
-        'manage_options',
+        $capability,
         'options-ronik-base_integrations',
         'ronikbase_integrations_callback_media_cleaner',
         2 // menu position
@@ -29,7 +32,7 @@ if($this->media_cleaner_state){
             'options-ronik-base-mediacleaner', // parent page slug
             'Ronik Base Settings',
             'Settings',
-            'manage_options',
+            $capability,
             'options-ronik-base_settings_media_cleaner', //
             'ronikbase_support_settings_media_cleaner',
             1 // menu position
@@ -40,7 +43,7 @@ if($this->media_cleaner_state){
         'options-ronik-base-mediacleaner', // parent page slug
         'Support',
         'Support',
-        'manage_options',
+        $capability,
         'options-ronik-base_support_media_cleaner', //
         'ronikbase_support_callback_media_cleaner',
         3 // menu position
@@ -50,7 +53,7 @@ if($this->media_cleaner_state){
         'options-ronik-base-mediacleaner', // parent page slug
         'Media Harmony Dashboard',
         'Media Harmony Dashboard',
-        'manage_options',
+        $capability,
         'options-ronik-base_media_cleaner', //
         'ronikbase_media_cleaner_callback',
         4 // menu position
@@ -60,7 +63,7 @@ if($this->media_cleaner_state){
         'options-ronik-base-mediacleaner', // parent page slug
         'Preserved Media',
         'Preserved Media',
-        'manage_options',
+        $capability,
         'options-ronik-base_preserved', //
         'ronikbase_media_cleaner_preserved_callback',
         4 // menu position
