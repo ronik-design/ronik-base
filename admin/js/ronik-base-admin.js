@@ -1,4 +1,4 @@
-(function($) {
+(function ($) {
     'use strict';
     // Initialize a counter variable
     let progressCounter = 0;
@@ -13,7 +13,7 @@
 
         let clearOut = 1;
         let safeGuard = 5;
-        if(destination !== 'media-cleaner'){
+        if (destination !== 'media-cleaner') {
             clearOut = 5;
             safeGuard = 20;
         }
@@ -22,19 +22,20 @@
         // Time is lame so we convert milliseconds to seconds.
         // This helps with the intervall counter to make essentially a countdown clock.
         function timeAdjust(counter) {
-            return (counter*intervalTime)*0.001;
+            return (counter * intervalTime) * 0.001;
         }
-        
-        // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data. 
+
+        // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data.
         console.log("initRonikMediaProgress count:", progressCounter);
-        if(timeAdjust(progressCounter) > 60*clearOut){
+        if (timeAdjust(progressCounter) > 60 * clearOut) {
             // Clear the console
             console.clear();
             // Reset the counter to 0.
             progressCounter = 0;
         }
         // Pretty much this is a safe guard we simply reload the entire page incase things are acting wacky or slow.
-        if(timeAdjust(progressTimerCounter) > 60*safeGuard){
+        if (timeAdjust(progressTimerCounter) > 60 * safeGuard) {
+            // alert('RONIK TEST progressTimerCounter safeGuard');
             window.location.reload(true);
         }
 
@@ -48,25 +49,26 @@
                 media_progress: 'checker_run'
             },
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 const loaderElement = document.querySelector('.progress-bar');
 
                 console.log(loaderElement);
 
-                
+
                 if (loaderElement) {
                     console.log('loaderElement');
                     console.log(data);
 
-                    if ( data.data === 'COMPLETED' ) {
+                    if (data.data === 'COMPLETED') {
                         setTimeout(() => {
                             console.log(data);
+                            // alert('RONIK TEST 2 COMPLETED');
                             window.location.reload(true);
                         }, 500);
                     } else {
-                        if(data.data === 'SEMI_SUCCESS'){
+                        if (data.data === 'SEMI_SUCCESS') {
                             loaderElement.innerHTML = `Progress Status: Done`;
-                            if(destination !== 'media-cleaner'){
+                            if (destination !== 'media-cleaner') {
                                 var element = document.getElementById("wp-admin-bar-rmc");
                                 // Change the color
                                 element.style.color = "grey"; // Replace "red" with your desired color
@@ -77,18 +79,17 @@
                             }
 
                         } else {
-                            if(data.data === 'NOT_RUNNING'){
+                            if (data.data === 'NOT_RUNNING') {
                                 // alert('Not Running');
-                                window.location.reload(true);
-
-                            } else {                                                 
-                                if(destination !== 'media-cleaner'){
+                                // alert('RONIK TEST 3 NOT_RUNNING');
+                                // window.location.reload(true);
+                            } else {
+                                if (destination !== 'media-cleaner') {
                                     var element = document.getElementById("wp-admin-bar-rmc");
                                     // Change the color
                                     element.style.color = "grey"; // Replace "red" with your desired color
                                     // Append text
-                                    element.textContent = "Media Harmony - Sync In Progress " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
-
+                                    element.textContent = "Media Harmony - Sync In Progress | " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
                                 } else {
                                     loaderElement.innerHTML = data.data ? `Progress Status: ${data.data}` : 'Progress Status: 0%';
                                 }
@@ -100,21 +101,35 @@
 
                     console.log(data);
 
-                    if(!data.data){
+                    if (!data.data) {
 
-                    } else{
-                        if(data.data !== 'COMPLETED' && data.data !== 'SEMI_SUCCESS' && data.data !== 'NOT_RUNNING'){   
+                    } else {
+                        if (data.data === 'COMPLETED' || data.data === 'SEMI_SUCCESS') {
+                            // Update admin bar to show Done only if element is strictly active (not nonactive)
+                            var element = document.getElementById("wp-admin-bar-rmc");
+                            if (
+                                element &&
+                                element.className.includes('active') &&
+                                !element.className.includes('nonactive')
+                            ) {
+                                element.style.color = "grey";
+                                element.textContent = "Media Harmony - Progress Status: Done";
+                                // alert('RONIK TEST 4 wp-admin-bar-rmc');
+                                setTimeout(() => window.location.reload(true), 500);
+                            }
+                        } else if (data.data !== 'NOT_RUNNING') {
                             console.log('.progress-bar not present');
 
-                            if(destination !== 'media-cleaner'){
+                            if (destination !== 'media-cleaner') {
                                 var element = document.getElementById("wp-admin-bar-rmc");
                                 // Change the color
-                                element.style.color = "grey"; // Replace "red" with your desired color
+                                element.style.color = "grey";
                                 // Append text
-                                element.textContent = "Media Harmony - Sync In Progress " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
+                                element.textContent = "Media Harmony - Sync In Progress | " + (data.data ? `Progress Status: ${data.data}` : "Progress Status: 0%");
 
                                 setTimeout(() => {
-                                    if(data.data == '99%'){
+                                    if (data.data == '99%') {
+                                        // alert('RONIK TEST 5 wp-admin-bar-rmc');
                                         location.reload();
                                     }
                                 }, 100000);
@@ -139,7 +154,7 @@
                     }
                 }
             },
-            error: function(err) {
+            error: function (err) {
                 console.error('Error fetching media progress:', err);
             }
         });
@@ -147,7 +162,7 @@
 
     // Function to determine API key validity
     async function initApiKeyDeterminism(pluginSlug, key) {
-        if(wpVars.betaMode){
+        if (wpVars.betaMode) {
             console.log('initApiKeyDeterminism Beta Mode Enabled');
             return;
         }
@@ -164,7 +179,7 @@
                 setTimeout(() => {
                     console.log("Delayed");
                     initRonikDeterminism(pluginSlug, 'invalidate');
-                  }, intervalTime*2);
+                }, intervalTime * 2);
             }
         } catch (err) {
             console.error('Error validating API key:', err);
@@ -185,7 +200,7 @@
                 checker_run: checkerRun
             },
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 if (data.data === 'Reload') {
                     alert('Yikes, looks like this license key is invalid and may be expired.');
                     setTimeout(() => window.location.reload(true), 500);
@@ -194,7 +209,7 @@
                     initApiKeyDeterminism(pluginSlug, data.data);
                 }
             },
-            error: function(err) {
+            error: function (err) {
                 console.error('Error initializing Ronik determinism:', err);
             }
         });
@@ -203,14 +218,14 @@
     // Function to start validation and progress checking
     function ronikbasePingValidator() {
         console.log('Ping validator started');
-        if(!wpVars.betaMode){
+        if (!wpVars.betaMode) {
             function pingValidator() {
                 setTimeout(() => {
                     initRonikDeterminism('ronik_media_cleaner', 'valid');
                 }, 400);
             }
             setInterval(pingValidator, intervalTime);
-        } else{
+        } else {
             console.log('Beta Mode Enabled');
         }
 
@@ -218,11 +233,11 @@
             setTimeout(() => {
                 initRonikMediaProgress(destination);
                 // console.log("Delayed for 1 second.");
-              }, 400);
+            }, 400);
         }
-        if  (window.location.href.includes("options-ronik-base_media_cleaner") ) {
+        if (window.location.href.includes("options-ronik-base_media_cleaner")) {
             setInterval(() => pingMediaProgressValidator('media-cleaner'), intervalTime / 2);
-        } else if(window.location.href.includes("/wp-admin/")){
+        } else if (window.location.href.includes("/wp-admin/")) {
             setInterval(() => pingMediaProgressValidator('wp-admin'), intervalTime / 2);
         }
     }
@@ -244,7 +259,7 @@
                 color: '#fff',
                 borderRadius: '5px'
             }
-        }).appendTo($('#page_media_cleaner_field')).on('click', function() {
+        }).appendTo($('#page_media_cleaner_field')).on('click', function () {
             alert('Data is processing. Please do not reload!');
             $('.wp-core-ui').css({ 'pointer-events': 'none', 'opacity': 0.5 });
 
@@ -256,19 +271,19 @@
                     nonce: wpVars.nonce
                 },
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     if (data.success) {
                         alert('Data processing. Page will reload after processing! Please do not reload!');
                         setTimeout(() => window.location.reload(true), 500);
                     } else {
-                        alert(data.data === 'No rows found!' 
-                            ? 'Great News! No un-detached images were found. Please try again later!' 
+                        alert(data.data === 'No rows found!'
+                            ? 'Great News! No un-detached images were found. Please try again later!'
                             : 'Whoops! Something went wrong! Please try again later!');
                         setTimeout(() => window.location.reload(true), 500);
                     }
                     $('.wp-core-ui').css({ 'pointer-events': '', 'opacity': '' });
                 },
-                error: function(err) {
+                error: function (err) {
                     console.error('Error initializing unused media migration:', err);
                     $('.wp-core-ui').css({ 'pointer-events': '', 'opacity': '' });
                     alert('Whoops! Something went wrong! Please try again later!');
@@ -296,7 +311,7 @@
                 color: '#fff',
                 borderRadius: '5px'
             }
-        }).appendTo($('#page_media_cleaner_field')).on('click', function() {
+        }).appendTo($('#page_media_cleaner_field')).on('click', function () {
             $('.wp-core-ui').css({ 'pointer-events': 'none', 'opacity': 0.5 });
 
             $.ajax({
@@ -307,7 +322,7 @@
                     nonce: wpVars.nonce
                 },
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     if (data.success) {
                         alert('Data processing. Page will reload after processing! Please do not reload!');
                         setTimeout(() => window.location.reload(true), 500);
@@ -317,7 +332,7 @@
                     }
                     $('.wp-core-ui').css({ 'pointer-events': '', 'opacity': '' });
                 },
-                error: function(err) {
+                error: function (err) {
                     console.error('Error deleting unused media:', err);
                     $('.wp-core-ui').css({ 'pointer-events': '', 'opacity': '' });
                     alert('Whoops! Something went wrong! Please try again later!');
@@ -328,7 +343,7 @@
     }
 
     // Initialize functions once the window has loaded
-    $(window).on('load', function() {
+    $(window).on('load', function () {
         setTimeout(() => {
             initUnusedMedia();
             deleteUnusedMedia();

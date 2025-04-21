@@ -144,15 +144,19 @@ html {
     .media-cleaner-item {
       &__inner {
         .media-cleaner-item__content {
-          .media-cleaner-item__form {
+          .media-cleaner-item__actions {
             .submit-btn {
               background-color: #00c666;
               color: #fff;
+              margin-right: 10px;
               // pointer-events: none;
+            }
+            .delete-btn{
+              background-color: #c6003f;
+              color: #fff;
             }
             .submit-btn-disabled {
               cursor: progress;
-              background-color: gray;
               opacity: 0.2;
             }
             .media-cleaner-item__checkboxes {
@@ -710,17 +714,17 @@ html {
       }
       .media-collector-table__th,
       .media-collector-table__td {
-        max-width: 7%;
+        max-width: 10%;
 
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
 
         &--img-thumb {
           max-width: 15%;
         }
         &--img-url {
-          max-width: 20%;
+          max-width: 10%;
         }
         &--preserve {
           max-width: 15%;
@@ -741,7 +745,7 @@ html {
       }
       .media-collector-table__th {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
 
         .filter-nav {
           display: flex;

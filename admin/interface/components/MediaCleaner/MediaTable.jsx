@@ -1,8 +1,14 @@
-import React, { useMemo } from 'react';
-import Select from 'react-select';
-import parse from 'html-react-parser'; // Importing HTML parser
+import React, { useMemo } from "react";
+import Select from "react-select";
+import parse from "html-react-parser"; // Importing HTML parser
+import TriggerAjaxRequest from "../MediaCleaner/TriggerAjaxRequest.jsx"; // Importing TriggerAjaxRequest component
 
-import FilterType from './MediaFilter';
+import FilterType from "./MediaFilter";
+
+// Check if there is an element with data-sync="valid"
+const syncIsRunning = document.querySelector('[data-sync="valid"]');
+// Determine if the button should be disabled
+const isButtonDisabled = syncIsRunning !== null;
 
 // Function to get the value of a query parameter from the URL
 function getQueryParameter(name) {
@@ -13,28 +19,28 @@ function getQueryParameter(name) {
 // Add this copy function near the top of the file
 const copyToClipboard = (text) => {
   // Create a temporary textarea element
-  const textarea = document.createElement('textarea');
+  const textarea = document.createElement("textarea");
   textarea.value = text;
-  textarea.style.position = 'fixed'; // Prevent scrolling to bottom
-  textarea.style.opacity = '0';
+  textarea.style.position = "fixed"; // Prevent scrolling to bottom
+  textarea.style.opacity = "0";
   document.body.appendChild(textarea);
 
   try {
     // Select and copy the text
     textarea.select();
-    document.execCommand('copy');
-    
+    document.execCommand("copy");
+
     // Show feedback on the button
     const button = document.querySelector(`button[data-url="${text}"]`);
     if (button) {
       const originalText = button.textContent;
-      button.textContent = 'Copied!';
+      button.textContent = "Copied!";
       setTimeout(() => {
         button.textContent = originalText;
       }, 2000);
     }
   } catch (err) {
-    console.error('Failed to copy text: ', err);
+    console.error("Failed to copy text: ", err);
   } finally {
     // Clean up
     document.body.removeChild(textarea);
@@ -43,33 +49,31 @@ const copyToClipboard = (text) => {
 
 // Helper function to handle pagination logic
 const getPaginatedData = (data, page, itemsPerPage) => {
-  return data.reduce((resultArray, item, index) => {
-    const chunkIndex = Math.floor(index / itemsPerPage);
-    if (!resultArray[chunkIndex]) {
-      resultArray[chunkIndex] = [];
-    }
-    resultArray[chunkIndex].push(item);
-    return resultArray;
-  }, [])[page] || [];
+  return (
+    data.reduce((resultArray, item, index) => {
+      const chunkIndex = Math.floor(index / itemsPerPage);
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = [];
+      }
+      resultArray[chunkIndex].push(item);
+      return resultArray;
+    }, [])[page] || []
+  );
 };
 
 // FilterNav component
-const FilterNav = ({
-  mediaCollector,
-  filterMode,
-  filter_size,
-}) => {
+const FilterNav = ({ mediaCollector, filterMode, filter_size }) => {
   const totalSize = mediaCollector.reduce((acc, item) => {
-    let size = parseFloat(item['media_size']);
-    if (item['media_size'].includes('KB')) size /= 1024;
-    if (item['media_size'].includes('GB')) size *= 1000;
-    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    let size = parseFloat(item["media_size"]);
+    if (item["media_size"].includes("KB")) size /= 1024;
+    if (item["media_size"].includes("GB")) size *= 1000;
+    if (item["media_size"].includes("bytes")) size *= 1e-6;
     return acc + (isNaN(size) ? 0 : size);
   }, 0);
 
   return (
     <>
-      <div className='filter-nav'>
+      <div className="filter-nav">
         {/* <button
           type="button"
           title="Filter All"
@@ -84,7 +88,9 @@ const FilterNav = ({
           title="Sort Smallest to Largest File Size"
           onClick={filter_size}
           data-filter="small"
-          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${filterMode === 'small' ? 'active' : 'inactive'}`}
+          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${
+            filterMode === "small" ? "active" : "inactive"
+          }`}
         >
           Sort Smallest to Largest File Size
         </button>
@@ -94,11 +100,14 @@ const FilterNav = ({
           title="Sort Largest to Smallest File Size"
           onClick={filter_size}
           data-filter="large"
-          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'}`}
+          className={`filter-nav__button filter-nav__button-sort filter-nav__button--${
+            filterMode === "large" || filterMode === "all"
+              ? "active"
+              : "inactive"
+          }`}
         >
           Sort Largest to Smallest File Size
         </button>
-
       </div>
       {/* <span className="overall-number">Number of unlinked files found: {mediaCollector.length}</span>
       <span className="overall-number">Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB</span> */}
@@ -106,44 +115,53 @@ const FilterNav = ({
   );
 };
 
-
 // FilterNav component
-const FilterNavData = ({
-  mediaCollector
-}) => {
+const FilterNavData = ({ mediaCollector }) => {
   const totalSize = mediaCollector.reduce((acc, item) => {
-    let size = parseFloat(item['media_size']);
-    if (item['media_size'].includes('KB')) size /= 1024;
-    if (item['media_size'].includes('GB')) size *= 1000;
-    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    let size = parseFloat(item["media_size"]);
+    if (item["media_size"].includes("KB")) size /= 1024;
+    if (item["media_size"].includes("GB")) size *= 1000;
+    if (item["media_size"].includes("bytes")) size *= 1e-6;
     return acc + (isNaN(size) ? 0 : size);
   }, 0);
 
   return (
     <>
-      <span className="overall-number">Number of unlinked files found: {mediaCollector.length}</span>
-      <span className="overall-number">Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB</span>
+      <span className="overall-number">
+        Number of unlinked files found: {mediaCollector.length}
+      </span>
+      <span className="overall-number">
+        Total unlinked media file size: {Math.round(totalSize * 100) / 100} MB
+      </span>
     </>
   );
 };
 
-
-
 // PagerNav component
-const PagerNav = ({ pager, setFilterPager, mediaCollector = [], itemsPerPage }) => {
+const PagerNav = ({
+  pager,
+  setFilterPager,
+  mediaCollector = [],
+  itemsPerPage,
+}) => {
   const totalItems = mediaCollector.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const pageNumbers = [...Array(totalPages).keys()]; // Generates [0, 1, 2, ...]
 
   return (
-    <div className='filter-nav filter-nav--no-space-top'>
-      <p>Showing {pager * itemsPerPage + 1}-{Math.min((pager + 1) * itemsPerPage, totalItems)} of {totalItems}</p>
-      <div className='pagination'>
-        {pageNumbers.map(pageNumber => (
+    <div className="filter-nav filter-nav--no-space-top">
+      <p>
+        Showing {pager * itemsPerPage + 1}-
+        {Math.min((pager + 1) * itemsPerPage, totalItems)} of {totalItems}
+      </p>
+      <div className="pagination">
+        {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
-            className={`filter-nav__button ${pageNumber === pager ? 'filter-nav__button--active' : ''}`}
+            className={`filter-nav__button ${
+              pageNumber === pager ? "filter-nav__button--active" : ""
+            }`}
             onClick={() => setFilterPager(pageNumber)}
           >
             {pageNumber + 1}
@@ -169,14 +187,14 @@ const MediaCollectorTable = ({
   mediaCollectorHigh,
   mediaCollectorLow,
   activateDelete,
-  activatePreserve
+  activatePreserve,
 }) => {
-  if (type === 'preserved') return null;
+  if (type === "preserved") return null;
 
-  if (!mediaCollector || mediaCollector === 'no-images') {
+  if (!mediaCollector || mediaCollector === "no-images") {
     const f_wpwrap = document.querySelector("#wpwrap");
     const element = document.getElementsByClassName("centered-blob");
-    if (f_wpwrap) f_wpwrap.classList.remove('loader');
+    if (f_wpwrap) f_wpwrap.classList.remove("loader");
     if (element[0]) element[0].remove();
     if (element[1]) element[1].remove();
     return (
@@ -187,58 +205,95 @@ const MediaCollectorTable = ({
           setSelectedFormValues={setSelectedFormValues}
           setSelectedDataFormValues={setSelectedDataFormValues}
         />
-        <p>No Media Found!</p>
+        <TriggerAjaxRequest requestType="rmc_ajax_media_cleaner" />
+        {/* <p>No Media Found!</p> */}
+        {isButtonDisabled ? <p>No Media Found!</p> : ""}
       </>
     );
   }
 
   const page = parseInt(filterPager) || 0;
 
-
   let itemsPerPage = 20;
-  const mediaId = getQueryParameter('media_id');
-  if(mediaId){
+  const mediaId = getQueryParameter("media_id");
+  if (mediaId) {
     itemsPerPage = 2000;
   }
 
   const output = getPaginatedData(
-    filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollector,
+    filterMode === "high"
+      ? mediaCollectorHigh
+      : filterMode === "low"
+      ? mediaCollectorLow
+      : mediaCollector,
     page,
     itemsPerPage
   );
 
-  const mediaCollectorItems = output.map(collector => (
-    <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-      <td className='media-collector-table__td'>
-        <button onClick={activateDelete} data-delete-media={collector['id']}>
-          <img src={`/wp-content/plugins/${document.querySelector(type === 'preserved' ? '#ronik-base_media_cleaner_preserved' : '#ronik-base_media_cleaner')?.getAttribute("data-plugin-name")}/admin/media-cleaner/image/big-trash-can.svg`} alt="Delete" />
+  const mediaCollectorItems = output.map((collector) => (
+    <tr
+      className="media-collector-table__tr"
+      data-media-id={collector["id"]}
+      key={collector["id"]}
+    >
+      <td className="media-collector-table__td">
+        <button onClick={activateDelete} data-delete-media={collector["id"]}>
+          <img
+            src={`/wp-content/plugins/${document
+              .querySelector(
+                type === "preserved"
+                  ? "#ronik-base_media_cleaner_preserved"
+                  : "#ronik-base_media_cleaner"
+              )
+              ?.getAttribute(
+                "data-plugin-name"
+              )}/admin/media-cleaner/image/big-trash-can.svg`}
+            alt="Delete"
+          />
         </button>
       </td>
-      <td className='media-collector-table__td media-collector-table__td--img-thumb'>{parse(collector['img-thumb'])}</td>
-      <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
-      <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
-      <td className='media-collector-table__td'>{collector['id']}</td>
-      <td className='media-collector-table__td'>
-        <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
+      <td className="media-collector-table__td media-collector-table__td--img-thumb">
+        {parse(collector["img-thumb"])}
       </td>
-      <td className='media-collector-table__td media-collector-table__td--img-url'>
-        <button 
-          onClick={() => copyToClipboard(collector['media_file'])}
-          data-url={collector['media_file']}
+      <td className="media-collector-table__td file-type">
+        {collector["media_file_type"]}
+      </td>
+      <td className="media-collector-table__td file-size">
+        {collector["media_size"]}
+      </td>
+      <td className="media-collector-table__td">{collector["id"]}</td>
+      <td className="media-collector-table__td">
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/wp-admin/post.php?post=${collector["id"]}&action=edit`}
+        >
+          Go to media
+        </a>
+      </td>
+      <td className="media-collector-table__td media-collector-table__td--img-url">
+        <button
+          onClick={() => copyToClipboard(collector["media_file"])}
+          data-url={collector["media_file"]}
           className="copy-url-button"
         >
           Copy URL
         </button>
       </td>
-      <td className='media-collector-table__td media-collector-table__td--preserve'>
-        <button onClick={activatePreserve} data-preserve-media={collector['id']}>Preserve File</button>
+      <td className="media-collector-table__td media-collector-table__td--preserve">
+        <button
+          onClick={activatePreserve}
+          data-preserve-media={collector["id"]}
+        >
+          Preserve File
+        </button>
       </td>
     </tr>
   ));
 
   return (
     <>
-        <p>Filter by file type</p>
+      <p>Filter by file type</p>
       <FilterType
         selectedFormValues={selectedFormValues}
         setFilterMode={setFilterMode}
@@ -250,29 +305,39 @@ const MediaCollectorTable = ({
         filterMode={filterMode}
         filter_size={filter_size}
       />
-      <PagerNav
+      {/* <PagerNav
         pager={filterPager}
         setFilterPager={setFilterPager}
         mediaCollector={mediaCollector}
         itemsPerPage={itemsPerPage}
-      />
-      <table className='media-collector-table'>
-        <tbody className='media-collector-table__tbody'>
-          <tr className='media-collector-table__tr'>
-            <th className='media-collector-table__th'>Permanently Delete</th>
-            <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
-            <th className='media-collector-table__th'>File Type</th>
-            <th className='media-collector-table__th'>File Size 
-            <FilterNav
-              mediaCollector={mediaCollector}
-              filterMode={filterMode}
-              filter_size={filter_size}
-            />
+      /> */}
+      <TriggerAjaxRequest requestType="rmc_ajax_media_cleaner" />
+
+      <br></br>
+      <table className="media-collector-table">
+        <tbody className="media-collector-table__tbody">
+          <tr className="media-collector-table__tr">
+            <th className="media-collector-table__th">Permanently Delete</th>
+            <th className="media-collector-table__th media-collector-table__th--img-thumb">
+              Thumbnail Image
             </th>
-            <th className='media-collector-table__th'>File ID</th>
-            <th className='media-collector-table__th'>Media Library Link</th>
-            <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
-            <th className='media-collector-table__th media-collector-table__th--preserve'>Preserve</th>
+            <th className="media-collector-table__th">File Type</th>
+            <th className="media-collector-table__th">
+              File Size
+              <FilterNav
+                mediaCollector={mediaCollector}
+                filterMode={filterMode}
+                filter_size={filter_size}
+              />
+            </th>
+            <th className="media-collector-table__th">File ID</th>
+            <th className="media-collector-table__th">Media Library Link</th>
+            <th className="media-collector-table__th media-collector-table__th--img-url">
+              File Path
+            </th>
+            <th className="media-collector-table__th media-collector-table__th--preserve">
+              Preserve
+            </th>
           </tr>
           {mediaCollectorItems}
         </tbody>
@@ -302,68 +367,95 @@ const PreservedMediaCollectorTable = ({
   filterPager,
   mediaCollectorHigh,
   mediaCollectorLow,
-  activateDelete
+  activateDelete,
 }) => {
   if (!mediaCollectorPreserved) return null;
 
-  if(type !== 'preserved'){
+  if (type !== "preserved") {
     return;
-    }
+  }
 
+  if (!mediaCollectorPreserved || mediaCollectorPreserved === "no-images") {
+    const f_wpwrap = document.querySelector("#wpwrap");
+    const element = document.getElementsByClassName("centered-blob");
+    if (f_wpwrap) f_wpwrap.classList.remove("loader");
+    if (element[0]) element[0].remove();
+    if (element[1]) element[1].remove();
+    return (
+      <>
+        <FilterType
+          selectedFormValues={selectedFormValues}
+          setFilterMode={setFilterMode}
+          setSelectedFormValues={setSelectedFormValues}
+          setSelectedDataFormValues={setSelectedDataFormValues}
+        />
+        <TriggerAjaxRequest requestType="rmc_ajax_media_cleaner" />
 
-    if (!mediaCollectorPreserved || mediaCollectorPreserved === 'no-images') {
-        const f_wpwrap = document.querySelector("#wpwrap");
-        const element = document.getElementsByClassName("centered-blob");
-        if (f_wpwrap) f_wpwrap.classList.remove('loader');
-        if (element[0]) element[0].remove();
-        if (element[1]) element[1].remove();
-        return (
-          <>
-            <FilterType
-              selectedFormValues={selectedFormValues}
-              setFilterMode={setFilterMode}
-              setSelectedFormValues={setSelectedFormValues}
-              setSelectedDataFormValues={setSelectedDataFormValues}
-            />
-            <p>No Media Found!</p>
-          </>
-        );
-      }
-
+        {isButtonDisabled ? <p>No Media Found!</p> : ""}
+      </>
+    );
+  }
 
   const page = parseInt(filterPager) || 0;
   // const itemsPerPage = 20;
   let itemsPerPage = 20;
-  const mediaId = getQueryParameter('media_id');
-  if(mediaId){
+  const mediaId = getQueryParameter("media_id");
+  if (mediaId) {
     itemsPerPage = 2000;
   }
   const output = getPaginatedData(
-    filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollectorPreserved,
+    filterMode === "high"
+      ? mediaCollectorHigh
+      : filterMode === "low"
+      ? mediaCollectorLow
+      : mediaCollectorPreserved,
     page,
     itemsPerPage
   );
 
-  const mediaCollectorItems = output.map(collector => (
-    <tr className='media-collector-table__tr' data-media-id={collector['id']} key={collector['id']}>
-      <td className='media-collector-table__td media-collector-table__td--img-thumb'>{collector['img-thumb'] ? parse(collector['img-thumb']) : 'No Image Found'}</td>
-      <td className='media-collector-table__td file-type'>{collector['media_file_type']}</td>
-      <td className='media-collector-table__td file-size'>{collector['media_size']}</td>
-      <td className='media-collector-table__td'>{collector['id']}</td>
-      <td className='media-collector-table__td'>
-        <a target="_blank" rel="noopener noreferrer" href={`/wp-admin/post.php?post=${collector['id']}&action=edit`}>Go to media</a>
+  const mediaCollectorItems = output.map((collector) => (
+    <tr
+      className="media-collector-table__tr"
+      data-media-id={collector["id"]}
+      key={collector["id"]}
+    >
+      <td className="media-collector-table__td media-collector-table__td--img-thumb">
+        {collector["img-thumb"]
+          ? parse(collector["img-thumb"])
+          : "No Image Found"}
       </td>
-      <td className='media-collector-table__td media-collector-table__td--img-url'>
-        <button 
-          onClick={() => copyToClipboard(collector['media_file'])}
-          data-url={collector['media_file']}
+      <td className="media-collector-table__td file-type">
+        {collector["media_file_type"]}
+      </td>
+      <td className="media-collector-table__td file-size">
+        {collector["media_size"]}
+      </td>
+      <td className="media-collector-table__td">{collector["id"]}</td>
+      <td className="media-collector-table__td">
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/wp-admin/post.php?post=${collector["id"]}&action=edit`}
+        >
+          Go to media
+        </a>
+      </td>
+      <td className="media-collector-table__td media-collector-table__td--img-url">
+        <button
+          onClick={() => copyToClipboard(collector["media_file"])}
+          data-url={collector["media_file"]}
           className="copy-url-button"
         >
           Copy URL
         </button>
       </td>
-      <td className='media-collector-table__td media-collector-table__td--unpreserve '>
-        <button onClick={activatePreserve} data-unpreserve-media={collector['id']}>Un-preserve file</button>
+      <td className="media-collector-table__td media-collector-table__td--unpreserve ">
+        <button
+          onClick={activatePreserve}
+          data-unpreserve-media={collector["id"]}
+        >
+          Un-preserve file
+        </button>
       </td>
     </tr>
   ));
@@ -372,7 +464,7 @@ const PreservedMediaCollectorTable = ({
     <>
       <h1>Preserved Files</h1>
 
-        <p>Filter by file type</p>
+      <p>Filter by file type</p>
       <FilterType
         selectedFormValues={selectedFormValues}
         setFilterMode={setFilterMode}
@@ -390,22 +482,29 @@ const PreservedMediaCollectorTable = ({
         mediaCollector={mediaCollectorPreserved}
         itemsPerPage={itemsPerPage}
       />
-      <table className='media-collector-table'>
-        <tbody className='media-collector-table__tbody'>
-          <tr className='media-collector-table__tr'>
-            <th className='media-collector-table__th media-collector-table__th--img-thumb'>Thumbnail Image</th>
-            <th className='media-collector-table__th'>File Type</th>
-            <th className='media-collector-table__th'>File Size
-            <FilterNav
-              mediaCollector={mediaCollectorPreserved}
-              filterMode={filterMode}
-              filter_size={filter_size}
-            />
+      <table className="media-collector-table">
+        <tbody className="media-collector-table__tbody">
+          <tr className="media-collector-table__tr">
+            <th className="media-collector-table__th media-collector-table__th--img-thumb">
+              Thumbnail Image
             </th>
-            <th className='media-collector-table__th'>File ID</th>
-            <th className='media-collector-table__th'>Media Library Link</th>
-            <th className='media-collector-table__th media-collector-table__th--img-url'>File Path</th>
-            <th className='media-collector-table__th media-collector-table__th--unpreserve'>Temporarily Preserve</th>
+            <th className="media-collector-table__th">File Type</th>
+            <th className="media-collector-table__th">
+              File Size
+              <FilterNav
+                mediaCollector={mediaCollectorPreserved}
+                filterMode={filterMode}
+                filter_size={filter_size}
+              />
+            </th>
+            <th className="media-collector-table__th">File ID</th>
+            <th className="media-collector-table__th">Media Library Link</th>
+            <th className="media-collector-table__th media-collector-table__th--img-url">
+              File Path
+            </th>
+            <th className="media-collector-table__th media-collector-table__th--unpreserve">
+              Temporarily Preserve
+            </th>
           </tr>
           {mediaCollectorItems}
         </tbody>

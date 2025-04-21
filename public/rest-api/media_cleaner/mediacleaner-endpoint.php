@@ -7,7 +7,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
     // Access the referer from headers
     $referer = $data->get_header( 'referer' );
     // Log the referer to error log for debugging
-    error_log('Referer: ' . $referer);
+    // error_log('Referer: ' . $referer);
     // Update the memory option.
     $helper = new RonikBaseHelper;
     $helper->ronikdesigns_increase_memory();

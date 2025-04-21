@@ -2335,14 +2335,14 @@ var FilterMedia = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].FilterMedi
   PreservedMediaCollectorTable = _MediaTable__WEBPACK_IMPORTED_MODULE_1__["default"].PreservedMediaCollectorTable;
 var MediaCollector = function MediaCollector(_ref) {
   var type = _ref.type;
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('page', 'options-ronik-base_media_cleaner') == 'options-ronik-base_media_cleaner' ? 'mediacollector' : 'mediacollectorpreserved'),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("page", "options-ronik-base_media_cleaner") == "options-ronik-base_media_cleaner" ? "mediacollector" : "mediacollectorpreserved"),
     _useState2 = _slicedToArray(_useState, 2),
     pageDetector = _useState2[0],
     setPageDetector = _useState2[1];
-  var fileSize = 'large';
+  var fileSize = "large";
   // if(pageDetector == 'mediacollectorpreserved'){
   //     fileSize = 'all';
-  // } 
+  // }
 
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
@@ -2352,15 +2352,15 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState6 = _slicedToArray(_useState5, 2),
     mediaCollector = _useState6[0],
     setMediaCollector = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam('page_number', 0))),
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam("page_number", 0))),
     _useState8 = _slicedToArray(_useState7, 2),
     filterPager = _useState8[0],
     setFilterPager = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_size', fileSize)),
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_size", fileSize)),
     _useState10 = _slicedToArray(_useState9, 2),
     filterMode = _useState10[0],
     setFilterMode = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam('filter_type', 'all')),
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_type", "all")),
     _useState12 = _slicedToArray(_useState11, 2),
     filterType = _useState12[0],
     setFilterType = _useState12[1];
@@ -2384,13 +2384,13 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState22 = _slicedToArray(_useState21, 2),
     deleteImageId = _useState22[0],
     setDeleteImageId = _useState22[1];
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(['all']),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["all"]),
     _useState24 = _slicedToArray(_useState23, 2),
     selectedDataFormValues = _useState24[0],
     setSelectedDataFormValues = _useState24[1];
   var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      value: 'all',
-      label: 'All'
+      value: "all",
+      label: "All"
     }]),
     _useState26 = _slicedToArray(_useState25, 2),
     selectedFormValues = _useState26[0],
@@ -2417,13 +2417,13 @@ var MediaCollector = function MediaCollector(_ref) {
             return res.blob();
           }) // Gets the response and returns it as a blob
           .then(function (blob) {
-            var imageSelector = document.querySelector('[data-id="' + lazyImage.getAttribute('data-id') + '"]');
+            var imageSelector = document.querySelector('[data-id="' + lazyImage.getAttribute("data-id") + '"]');
             lazyImage.className = " reveal-enabled";
             var c = document.createElement("canvas");
             var ctx = c.getContext("2d");
             var img = new Image();
             img.crossOrigin = ""; // if from different origin
-            img.src = lazyImage.getAttribute('data-src');
+            img.src = lazyImage.getAttribute("data-src");
             img.onload = function () {
               c.width = this.naturalWidth; // update canvas size to match image
               c.height = this.naturalHeight;
@@ -2432,13 +2432,13 @@ var MediaCollector = function MediaCollector(_ref) {
                 // get content as JPEG blob
                 // here the image is a blob
                 imageSelector.src = URL.createObjectURL(blob);
-              }, lazyImage.getAttribute('data-type'), 0.5);
+              }, lazyImage.getAttribute("data-type"), 0.5);
             };
           });
         }
       });
     });
-    var arr = document.querySelectorAll('img.lzy_img');
+    var arr = document.querySelectorAll("img.lzy_img");
     arr.forEach(function (v) {
       imageObserver.observe(v);
     });
@@ -2457,14 +2457,14 @@ var MediaCollector = function MediaCollector(_ref) {
   // Effect to handle preserving images
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (preserveImageId.length > 0) {
-      handlePostDataPreserve(preserveImageId, 'invalid');
+      handlePostDataPreserve(preserveImageId, "invalid");
     }
   }, [preserveImageId]);
 
   // Effect to handle un-preserving images and fetching preserved media
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (unPreserveImageId.length > 0) {
-      handlePostDataPreserve('invalid', unPreserveImageId);
+      handlePostDataPreserve("invalid", unPreserveImageId);
     }
     fetchPreservedMedia();
     lazyLoader();
@@ -2483,7 +2483,7 @@ var MediaCollector = function MediaCollector(_ref) {
       setHasLoaded(true);
       removeLoader();
     })["catch"](function (error) {
-      console.error('Error fetching preserved media:', error);
+      console.error("Error fetching preserved media:", error);
       setHasLoaded(true);
       removeLoader();
     });
@@ -2492,7 +2492,7 @@ var MediaCollector = function MediaCollector(_ref) {
   // Effect to fetch media collector data based on filters
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     setHasLoaded(false);
-    var route = selectedDataFormValues.includes("all") ? 'all' : selectedDataFormValues.join('?');
+    var route = selectedDataFormValues.includes("all") ? "all" : selectedDataFormValues.join("?");
     var endpoint = filterMode ? "".concat(filterMode, "?filter=").concat(route) : "all?filter=".concat(route);
     // alert(pageDetector);
     fetch("/wp-json/mediacleaner/v1/mediacollector/".concat(endpoint)).then(function (response) {
@@ -2507,7 +2507,7 @@ var MediaCollector = function MediaCollector(_ref) {
         }, 1000);
       }
     })["catch"](function (error) {
-      console.error('Error fetching media collector data:', error);
+      console.error("Error fetching media collector data:", error);
       setHasLoaded(true);
       removeLoader();
     });
@@ -2516,24 +2516,24 @@ var MediaCollector = function MediaCollector(_ref) {
   // Effect to update URL based on filter mode
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var params = new URLSearchParams(window.location.search);
-    params.set('filter_size', filterMode);
-    params.set('page_number', getQueryParam('page_number', 0));
+    params.set("filter_size", filterMode);
+    params.set("page_number", getQueryParam("page_number", 0));
     var newURL = new URL(window.location.href);
     newURL.search = params.toString();
     window.history.pushState({
       path: newURL.href
-    }, '', newURL.href);
+    }, "", newURL.href);
   }, [filterMode]);
 
   // Effect to update URL based on filter pager
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var params = new URLSearchParams(window.location.search);
-    params.set('page_number', filterPager);
+    params.set("page_number", filterPager);
     var newURL = new URL(window.location.href);
     newURL.search = params.toString();
     window.history.pushState({
       path: newURL.href
-    }, '', newURL.href);
+    }, "", newURL.href);
   }, [filterPager]);
 
   // Function to handle filter size changes
@@ -2547,13 +2547,13 @@ var MediaCollector = function MediaCollector(_ref) {
             filter = e.target.getAttribute("data-filter");
             if (filter) {
               setFilterMode(filter);
-              route = filter === 'high' ? 'large' : 'small';
-              endpoint = "/wp-json/mediacleaner/v1/mediacollector/".concat(route, "?filter=").concat(selectedDataFormValues.join('?'));
+              route = filter === "high" ? "large" : "small";
+              endpoint = "/wp-json/mediacleaner/v1/mediacollector/".concat(route, "?filter=").concat(selectedDataFormValues.join("?"));
               fetch(endpoint).then(function (response) {
                 return response.json();
               }).then(function (data) {
                 if (data.length) {
-                  filter === 'high' ? setMediaCollectorHigh(data) : setMediaCollectorLow(data);
+                  filter === "high" ? setMediaCollectorHigh(data) : setMediaCollectorLow(data);
                 }
               })["catch"](function (error) {
                 return console.error("Error fetching ".concat(filter, " media:"), error);
@@ -2581,15 +2581,15 @@ var MediaCollector = function MediaCollector(_ref) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             data = new FormData();
-            data.append('action', 'rmc_ajax_media_cleaner');
-            data.append('nonce', wpVars.nonce);
-            data.append('post_overide', "media-delete-indiv");
-            data.append('imageId', imageId);
+            data.append("action", "rmc_ajax_media_cleaner");
+            data.append("nonce", wpVars.nonce);
+            data.append("post_overide", "media-delete-indiv");
+            data.append("imageId", imageId);
             _context2.prev = 5;
             _context2.next = 8;
             return fetch(wpVars.ajaxURL, {
               method: "POST",
-              credentials: 'same-origin',
+              credentials: "same-origin",
               body: data
             });
           case 8:
@@ -2598,7 +2598,7 @@ var MediaCollector = function MediaCollector(_ref) {
             return response.json();
           case 11:
             result = _context2.sent;
-            if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
+            if ((result === null || result === void 0 ? void 0 : result.data) === "Reload") {
               setTimeout(function () {
                 return location.reload();
               }, 1000);
@@ -2608,7 +2608,7 @@ var MediaCollector = function MediaCollector(_ref) {
           case 15:
             _context2.prev = 15;
             _context2.t0 = _context2["catch"](5);
-            console.error('[WP Pageviews Plugin]', _context2.t0);
+            console.error("[WP Pageviews Plugin]", _context2.t0);
           case 18:
           case "end":
             return _context2.stop();
@@ -2628,16 +2628,16 @@ var MediaCollector = function MediaCollector(_ref) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
             data = new FormData();
-            data.append('action', 'rmc_ajax_media_cleaner');
-            data.append('nonce', wpVars.nonce);
-            data.append('post_overide', "media-preserve");
-            data.append('preserveImageId', preserveImageId);
-            data.append('unPreserveImageId', unPreserveImageId);
+            data.append("action", "rmc_ajax_media_cleaner");
+            data.append("nonce", wpVars.nonce);
+            data.append("post_overide", "media-preserve");
+            data.append("preserveImageId", preserveImageId);
+            data.append("unPreserveImageId", unPreserveImageId);
             _context3.prev = 6;
             _context3.next = 9;
             return fetch(wpVars.ajaxURL, {
               method: "POST",
-              credentials: 'same-origin',
+              credentials: "same-origin",
               body: data
             });
           case 9:
@@ -2646,17 +2646,17 @@ var MediaCollector = function MediaCollector(_ref) {
             return response.json();
           case 12:
             result = _context3.sent;
-            if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
+            if ((result === null || result === void 0 ? void 0 : result.data) === "Reload") {
               // alert('preserveImageId' + preserveImageId);
               // alert('unPreserveImageId' + unPreserveImageId);
 
-              if (preserveImageId !== 'invalid') {
+              if (preserveImageId !== "invalid") {
                 $res_message = "Media is preserved. Would you like to view the preserved content?";
-                $res_url = '/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=' + preserveImageId;
+                $res_url = "/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=" + preserveImageId;
               }
-              if (unPreserveImageId !== 'invalid') {
+              if (unPreserveImageId !== "invalid") {
                 $res_message = "Media is unpreserved. Would you like to view the unpreserved content?";
-                $res_url = '/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=' + unPreserveImageId;
+                $res_url = "/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=" + unPreserveImageId;
               }
               if (confirm($res_message)) {
                 // User clicked OK
@@ -2677,7 +2677,7 @@ var MediaCollector = function MediaCollector(_ref) {
           case 16:
             _context3.prev = 16;
             _context3.t0 = _context3["catch"](6);
-            console.error('[WP Pageviews Plugin handlePostDataPreserve]', _context3.t0);
+            console.error("[WP Pageviews Plugin handlePostDataPreserve]", _context3.t0);
           case 19:
           case "end":
             return _context3.stop();
@@ -2695,9 +2695,9 @@ var MediaCollector = function MediaCollector(_ref) {
     var centeredBlob = document.querySelector(".centered-blob");
 
     // For ping validator we need to add a class to the wpwrap to ensure user cant click call.
-    if (!wpwrap.classList.contains('active-loader')) {
+    if (!wpwrap.classList.contains("active-loader")) {
       if (wpwrap) {
-        wpwrap.classList.remove('loader');
+        wpwrap.classList.remove("loader");
       }
       if (centeredBlob) {
         centeredBlob.remove();
@@ -2712,24 +2712,24 @@ var MediaCollector = function MediaCollector(_ref) {
     var target = e.target;
     var mediaId = target.getAttribute("data-preserve-media");
     if (mediaId) {
-      alert('Media is preserved!');
+      alert("Media is preserved!");
       setPreserveImageId([mediaId]);
     } else {
-      alert('Media is unpreserved!');
+      alert("Media is unpreserved!");
       setUnPreserveImageId([target.getAttribute("data-unpreserve-media")]);
     }
     // Find the closest <tr> element
-    var row = target.closest('tr');
+    var row = target.closest("tr");
     if (row) {
       // Remove the row if found
       row.remove();
     } else {
-      console.error('No <tr> ancestor found.');
+      console.error("No <tr> ancestor found.");
     }
   };
   var activateDelete = function activateDelete(e) {
     var target = e.target;
-    var mediaId = target.getAttribute("data-delete-media") || target.closest('tr').getAttribute("data-media-id");
+    var mediaId = target.getAttribute("data-delete-media") || target.closest("tr").getAttribute("data-media-id");
     if (mediaId) {
       if (confirm("Are you sure you want to continue?")) {
         setDeleteImageId(mediaId);
@@ -2739,7 +2739,7 @@ var MediaCollector = function MediaCollector(_ref) {
 
   // Render component
   if (!hasLoaded) {
-    return 'Loading...';
+    return "Loading...";
   }
 
   // Function to get the value of a query parameter from the URL
@@ -2756,7 +2756,7 @@ var MediaCollector = function MediaCollector(_ref) {
     // Find the element with the matching data-media-id attribute
     var element = document.querySelector("tr[data-media-id=\"".concat(mediaId, "\"]"));
     if (element) {
-      element.classList.add('highlighted'); // Replace 'highlighted' with your desired class name
+      element.classList.add("highlighted"); // Replace 'highlighted' with your desired class name
 
       // Calculate the position to scroll to, accounting for the offset
       var elementPosition = element.getBoundingClientRect().top + window.scrollY;
@@ -2765,7 +2765,7 @@ var MediaCollector = function MediaCollector(_ref) {
       // Smoothly scroll to the calculated position
       window.scrollTo({
         top: scrollToPosition,
-        behavior: 'smooth'
+        behavior: "smooth"
       });
     } else {
       console.log("Element with data-media-id=\"".concat(mediaId, "\" not found."));
@@ -2774,7 +2774,7 @@ var MediaCollector = function MediaCollector(_ref) {
   // Specify an offset value (e.g., 100 pixels)
   var offsetValue = 100;
   // Get the 'media_id' parameter value from the URL
-  var mediaId = getQueryParameter('media_id');
+  var mediaId = getQueryParameter("media_id");
 
   // Set a delay (e.g., 500 milliseconds) before calling the scrollToMediaItem function
   setTimeout(function () {
@@ -3058,8 +3058,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var html_react_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! html-react-parser */ "./node_modules/html-react-parser/index.mjs");
-/* harmony import */ var _MediaFilter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MediaFilter */ "./admin/interface/components/MediaCleaner/MediaFilter.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../MediaCleaner/TriggerAjaxRequest.jsx */ "./admin/interface/components/MediaCleaner/TriggerAjaxRequest.jsx");
+/* harmony import */ var _MediaFilter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MediaFilter */ "./admin/interface/components/MediaCleaner/MediaFilter.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -3069,13 +3070,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
  // Importing HTML parser
+ // Importing TriggerAjaxRequest component
 
 
+
+// Check if there is an element with data-sync="valid"
+
+
+
+var syncIsRunning = document.querySelector('[data-sync="valid"]');
+// Determine if the button should be disabled
+var isButtonDisabled = syncIsRunning !== null;
 
 // Function to get the value of a query parameter from the URL
-
-
-
 function getQueryParameter(name) {
   var urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(name);
@@ -3084,27 +3091,27 @@ function getQueryParameter(name) {
 // Add this copy function near the top of the file
 var copyToClipboard = function copyToClipboard(text) {
   // Create a temporary textarea element
-  var textarea = document.createElement('textarea');
+  var textarea = document.createElement("textarea");
   textarea.value = text;
-  textarea.style.position = 'fixed'; // Prevent scrolling to bottom
-  textarea.style.opacity = '0';
+  textarea.style.position = "fixed"; // Prevent scrolling to bottom
+  textarea.style.opacity = "0";
   document.body.appendChild(textarea);
   try {
     // Select and copy the text
     textarea.select();
-    document.execCommand('copy');
+    document.execCommand("copy");
 
     // Show feedback on the button
     var button = document.querySelector("button[data-url=\"".concat(text, "\"]"));
     if (button) {
       var originalText = button.textContent;
-      button.textContent = 'Copied!';
+      button.textContent = "Copied!";
       setTimeout(function () {
         button.textContent = originalText;
       }, 2000);
     }
   } catch (err) {
-    console.error('Failed to copy text: ', err);
+    console.error("Failed to copy text: ", err);
   } finally {
     // Clean up
     document.body.removeChild(textarea);
@@ -3129,28 +3136,28 @@ var FilterNav = function FilterNav(_ref) {
     filterMode = _ref.filterMode,
     filter_size = _ref.filter_size;
   var totalSize = mediaCollector.reduce(function (acc, item) {
-    var size = parseFloat(item['media_size']);
-    if (item['media_size'].includes('KB')) size /= 1024;
-    if (item['media_size'].includes('GB')) size *= 1000;
-    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    var size = parseFloat(item["media_size"]);
+    if (item["media_size"].includes("KB")) size /= 1024;
+    if (item["media_size"].includes("GB")) size *= 1000;
+    if (item["media_size"].includes("bytes")) size *= 1e-6;
     return acc + (isNaN(size) ? 0 : size);
   }, 0);
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
       className: "filter-nav",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
         type: "button",
         title: "Sort Smallest to Largest File Size",
         onClick: filter_size,
         "data-filter": "small",
-        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === 'small' ? 'active' : 'inactive'),
+        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === "small" ? "active" : "inactive"),
         children: "Sort Smallest to Largest File Size"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
         type: "button",
         title: "Sort Largest to Smallest File Size",
         onClick: filter_size,
         "data-filter": "large",
-        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === 'large' || filterMode === 'all' ? 'active' : 'inactive'),
+        className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === "large" || filterMode === "all" ? "active" : "inactive"),
         children: "Sort Largest to Smallest File Size"
       })]
     })
@@ -3161,17 +3168,17 @@ var FilterNav = function FilterNav(_ref) {
 var FilterNavData = function FilterNavData(_ref2) {
   var mediaCollector = _ref2.mediaCollector;
   var totalSize = mediaCollector.reduce(function (acc, item) {
-    var size = parseFloat(item['media_size']);
-    if (item['media_size'].includes('KB')) size /= 1024;
-    if (item['media_size'].includes('GB')) size *= 1000;
-    if (item['media_size'].includes('bytes')) size *= 1e-6;
+    var size = parseFloat(item["media_size"]);
+    if (item["media_size"].includes("KB")) size /= 1024;
+    if (item["media_size"].includes("GB")) size *= 1000;
+    if (item["media_size"].includes("bytes")) size *= 1e-6;
     return acc + (isNaN(size) ? 0 : size);
   }, 0);
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
       className: "overall-number",
       children: ["Number of unlinked files found: ", mediaCollector.length]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
       className: "overall-number",
       children: ["Total unlinked media file size: ", Math.round(totalSize * 100) / 100, " MB"]
     })]
@@ -3189,15 +3196,15 @@ var PagerNav = function PagerNav(_ref3) {
   var totalPages = Math.ceil(totalItems / itemsPerPage);
   var pageNumbers = _toConsumableArray(Array(totalPages).keys()); // Generates [0, 1, 2, ...]
 
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
     className: "filter-nav filter-nav--no-space-top",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
       children: ["Showing ", pager * itemsPerPage + 1, "-", Math.min((pager + 1) * itemsPerPage, totalItems), " of ", totalItems]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
       className: "pagination",
       children: pageNumbers.map(function (pageNumber) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
-          className: "filter-nav__button ".concat(pageNumber === pager ? 'filter-nav__button--active' : ''),
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+          className: "filter-nav__button ".concat(pageNumber === pager ? "filter-nav__button--active" : ""),
           onClick: function onClick() {
             return setFilterPager(pageNumber);
           },
@@ -3224,141 +3231,140 @@ var MediaCollectorTable = function MediaCollectorTable(_ref4) {
     mediaCollectorLow = _ref4.mediaCollectorLow,
     activateDelete = _ref4.activateDelete,
     activatePreserve = _ref4.activatePreserve;
-  if (type === 'preserved') return null;
-  if (!mediaCollector || mediaCollector === 'no-images') {
+  if (type === "preserved") return null;
+  if (!mediaCollector || mediaCollector === "no-images") {
     var f_wpwrap = document.querySelector("#wpwrap");
     var element = document.getElementsByClassName("centered-blob");
-    if (f_wpwrap) f_wpwrap.classList.remove('loader');
+    if (f_wpwrap) f_wpwrap.classList.remove("loader");
     if (element[0]) element[0].remove();
     if (element[1]) element[1].remove();
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_3__["default"], {
         selectedFormValues: selectedFormValues,
         setFilterMode: setFilterMode,
         setSelectedFormValues: setSelectedFormValues,
         setSelectedDataFormValues: setSelectedDataFormValues
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        requestType: "rmc_ajax_media_cleaner"
+      }), isButtonDisabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
         children: "No Media Found!"
-      })]
+      }) : ""]
     });
   }
   var page = parseInt(filterPager) || 0;
   var itemsPerPage = 20;
-  var mediaId = getQueryParameter('media_id');
+  var mediaId = getQueryParameter("media_id");
   if (mediaId) {
     itemsPerPage = 2000;
   }
-  var output = getPaginatedData(filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollector, page, itemsPerPage);
+  var output = getPaginatedData(filterMode === "high" ? mediaCollectorHigh : filterMode === "low" ? mediaCollectorLow : mediaCollector, page, itemsPerPage);
   var mediaCollectorItems = output.map(function (collector) {
     var _document$querySelect;
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       className: "media-collector-table__tr",
-      "data-media-id": collector['id'],
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      "data-media-id": collector["id"],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           onClick: activateDelete,
-          "data-delete-media": collector['id'],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-            src: "/wp-content/plugins/".concat((_document$querySelect = document.querySelector(type === 'preserved' ? '#ronik-base_media_cleaner_preserved' : '#ronik-base_media_cleaner')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.getAttribute("data-plugin-name"), "/admin/media-cleaner/image/big-trash-can.svg"),
+          "data-delete-media": collector["id"],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: "/wp-content/plugins/".concat((_document$querySelect = document.querySelector(type === "preserved" ? "#ronik-base_media_cleaner_preserved" : "#ronik-base_media_cleaner")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.getAttribute("data-plugin-name"), "/admin/media-cleaner/image/big-trash-can.svg"),
             alt: "Delete"
           })
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-thumb",
-        children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb'])
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector["img-thumb"])
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td file-type",
-        children: collector['media_file_type']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["media_file_type"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td file-size",
-        children: collector['media_size']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["media_size"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td",
-        children: collector['id']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["id"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
           target: "_blank",
           rel: "noopener noreferrer",
-          href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
+          href: "/wp-admin/post.php?post=".concat(collector["id"], "&action=edit"),
           children: "Go to media"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           onClick: function onClick() {
-            return copyToClipboard(collector['media_file']);
+            return copyToClipboard(collector["media_file"]);
           },
-          "data-url": collector['media_file'],
+          "data-url": collector["media_file"],
           className: "copy-url-button",
           children: "Copy URL"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--preserve",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           onClick: activatePreserve,
-          "data-preserve-media": collector['id'],
+          "data-preserve-media": collector["id"],
           children: "Preserve File"
         })
       })]
-    }, collector['id']);
+    }, collector["id"]);
   });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
       children: "Filter by file type"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_3__["default"], {
       selectedFormValues: selectedFormValues,
       setFilterMode: setFilterMode,
       setSelectedFormValues: setSelectedFormValues,
       setSelectedDataFormValues: setSelectedDataFormValues
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNavData, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(FilterNavData, {
       mediaCollector: mediaCollector,
       filterMode: filterMode,
       filter_size: filter_size
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
-      pager: filterPager,
-      setFilterPager: setFilterPager,
-      mediaCollector: mediaCollector,
-      itemsPerPage: itemsPerPage
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("table", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      requestType: "rmc_ajax_media_cleaner"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("table", {
       className: "media-collector-table",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tbody", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tbody", {
         className: "media-collector-table__tbody",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
           className: "media-collector-table__tr",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "Permanently Delete"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-thumb",
             children: "Thumbnail Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Type"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("th", {
             className: "media-collector-table__th",
-            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(FilterNav, {
               mediaCollector: mediaCollector,
               filterMode: filterMode,
               filter_size: filter_size
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "Media Library Link"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-url",
             children: "File Path"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--preserve",
             children: "Preserve"
           })]
         }), mediaCollectorItems]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PagerNav, {
       pager: filterPager,
       setFilterPager: setFilterPager,
       mediaCollector: mediaCollector,
@@ -3384,132 +3390,134 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(_ref5) 
     mediaCollectorLow = _ref5.mediaCollectorLow,
     activateDelete = _ref5.activateDelete;
   if (!mediaCollectorPreserved) return null;
-  if (type !== 'preserved') {
+  if (type !== "preserved") {
     return;
   }
-  if (!mediaCollectorPreserved || mediaCollectorPreserved === 'no-images') {
+  if (!mediaCollectorPreserved || mediaCollectorPreserved === "no-images") {
     var f_wpwrap = document.querySelector("#wpwrap");
     var element = document.getElementsByClassName("centered-blob");
-    if (f_wpwrap) f_wpwrap.classList.remove('loader');
+    if (f_wpwrap) f_wpwrap.classList.remove("loader");
     if (element[0]) element[0].remove();
     if (element[1]) element[1].remove();
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_3__["default"], {
         selectedFormValues: selectedFormValues,
         setFilterMode: setFilterMode,
         setSelectedFormValues: setSelectedFormValues,
         setSelectedDataFormValues: setSelectedDataFormValues
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        requestType: "rmc_ajax_media_cleaner"
+      }), isButtonDisabled ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
         children: "No Media Found!"
-      })]
+      }) : ""]
     });
   }
   var page = parseInt(filterPager) || 0;
   // const itemsPerPage = 20;
   var itemsPerPage = 20;
-  var mediaId = getQueryParameter('media_id');
+  var mediaId = getQueryParameter("media_id");
   if (mediaId) {
     itemsPerPage = 2000;
   }
-  var output = getPaginatedData(filterMode === 'high' ? mediaCollectorHigh : filterMode === 'low' ? mediaCollectorLow : mediaCollectorPreserved, page, itemsPerPage);
+  var output = getPaginatedData(filterMode === "high" ? mediaCollectorHigh : filterMode === "low" ? mediaCollectorLow : mediaCollectorPreserved, page, itemsPerPage);
   var mediaCollectorItems = output.map(function (collector) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       className: "media-collector-table__tr",
-      "data-media-id": collector['id'],
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      "data-media-id": collector["id"],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-thumb",
-        children: collector['img-thumb'] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector['img-thumb']) : 'No Image Found'
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["img-thumb"] ? (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(collector["img-thumb"]) : "No Image Found"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td file-type",
-        children: collector['media_file_type']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["media_file_type"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td file-size",
-        children: collector['media_size']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["media_size"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td",
-        children: collector['id']
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+        children: collector["id"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
           target: "_blank",
           rel: "noopener noreferrer",
-          href: "/wp-admin/post.php?post=".concat(collector['id'], "&action=edit"),
+          href: "/wp-admin/post.php?post=".concat(collector["id"], "&action=edit"),
           children: "Go to media"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--img-url",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           onClick: function onClick() {
-            return copyToClipboard(collector['media_file']);
+            return copyToClipboard(collector["media_file"]);
           },
-          "data-url": collector['media_file'],
+          "data-url": collector["media_file"],
           className: "copy-url-button",
           children: "Copy URL"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("td", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         className: "media-collector-table__td media-collector-table__td--unpreserve ",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           onClick: activatePreserve,
-          "data-unpreserve-media": collector['id'],
+          "data-unpreserve-media": collector["id"],
           children: "Un-preserve file"
         })
       })]
-    }, collector['id']);
+    }, collector["id"]);
   });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
       children: "Preserved Files"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
       children: "Filter by file type"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_MediaFilter__WEBPACK_IMPORTED_MODULE_3__["default"], {
       selectedFormValues: selectedFormValues,
       setFilterMode: setFilterMode,
       setSelectedFormValues: setSelectedFormValues,
       setSelectedDataFormValues: setSelectedDataFormValues
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNavData, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(FilterNavData, {
       mediaCollector: mediaCollectorPreserved,
       filterMode: filterMode,
       filter_size: filter_size
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PagerNav, {
       pager: filterPager,
       setFilterPager: setFilterPager,
       mediaCollector: mediaCollectorPreserved,
       itemsPerPage: itemsPerPage
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("table", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("table", {
       className: "media-collector-table",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tbody", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tbody", {
         className: "media-collector-table__tbody",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
           className: "media-collector-table__tr",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-thumb",
             children: "Thumbnail Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File Type"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("th", {
             className: "media-collector-table__th",
-            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(FilterNav, {
+            children: ["File Size", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(FilterNav, {
               mediaCollector: mediaCollectorPreserved,
               filterMode: filterMode,
               filter_size: filter_size
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "File ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th",
             children: "Media Library Link"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--img-url",
             children: "File Path"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("th", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
             className: "media-collector-table__th media-collector-table__th--unpreserve",
             children: "Temporarily Preserve"
           })]
         }), mediaCollectorItems]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PagerNav, {
       pager: filterPager,
       setFilterPager: setFilterPager,
       mediaCollector: mediaCollectorPreserved,
@@ -3558,7 +3566,7 @@ var FetchAddon = function FetchAddon(_ref) {
     _ref$postOveride = _ref.postOveride,
     postOveride = _ref$postOveride === void 0 ? null : _ref$postOveride;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      'user-option': 'fetch-media'
+      "user-option": "fetch-media"
     }),
     _useState2 = _slicedToArray(_useState, 2),
     formValues = _useState2[0],
@@ -3567,7 +3575,7 @@ var FetchAddon = function FetchAddon(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     increment = _useState4[0],
     setIncrement = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState6 = _slicedToArray(_useState5, 2),
     dataSync = _useState6[0],
     setDataSync = _useState6[1];
@@ -3589,24 +3597,24 @@ var FetchAddon = function FetchAddon(_ref) {
     var f_wpwrap = document.querySelector("#wpwrap");
     var f_wpcontent = document.querySelector("#wpcontent");
     if (f_wpwrap) {
-      f_wpwrap.classList.add('loader');
-      f_wpcontent.insertAdjacentHTML('beforebegin', "\n                <div class=\"progress-bar\"></div>\n                <div class=\"centered-blob\">\n                    <div class=\"blob-1\"></div>\n                    <div class=\"blob-2\"></div>\n                </div>\n                <div class=\"page-counter\">Please do not refresh the page!</div>\n            ");
+      f_wpwrap.classList.add("loader");
+      f_wpcontent.insertAdjacentHTML("beforebegin", "\n                <div class=\"progress-bar\"></div>\n                <div class=\"centered-blob\">\n                    <div class=\"blob-1\"></div>\n                    <div class=\"blob-2\"></div>\n                </div>\n                <div class=\"page-counter\">Please do not refresh the page!</div>\n            ");
       // Pass the userOption directly to handlePostData
-      handlePostData(userOption, 'all', increment, 'inprogress');
+      handlePostData(userOption, "all", increment, "inprogress");
     }
   };
 
   // Handle form changes
   var handleChange = function handleChange(e) {
     setFormValues({
-      'user-option': e.target.value
+      "user-option": e.target.value
     });
   };
 
   // Handle form submission
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    console.log('clicked submit');
+    console.log("clicked submit");
     handleLoaderState(dataSync);
   };
 
@@ -3618,18 +3626,18 @@ var FetchAddon = function FetchAddon(_ref) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             data = new FormData();
-            data.append('action', requestType);
-            data.append('nonce', wpVars.nonce);
-            data.append('post_overide', postOveride);
-            data.append('user_option', userOptions);
-            data.append('mime_type', mimeType);
-            data.append('increment', increment);
-            data.append('sync', sync);
+            data.append("action", requestType);
+            data.append("nonce", wpVars.nonce);
+            data.append("post_overide", postOveride);
+            data.append("user_option", userOptions);
+            data.append("mime_type", mimeType);
+            data.append("increment", increment);
+            data.append("sync", sync);
             _context.prev = 8;
             _context.next = 11;
             return fetch(wpVars.ajaxURL, {
               method: "POST",
-              credentials: 'same-origin',
+              credentials: "same-origin",
               body: data
             });
           case 11:
@@ -3644,7 +3652,7 @@ var FetchAddon = function FetchAddon(_ref) {
           case 18:
             _context.prev = 18;
             _context.t0 = _context["catch"](8);
-            console.error('Error:', _context.t0);
+            console.error("Error:", _context.t0);
             // location.reload(); // Consider handling errors more gracefully
           case 21:
           case "end":
@@ -3659,18 +3667,18 @@ var FetchAddon = function FetchAddon(_ref) {
 
   // Handle the server response
   var handleResponse = function handleResponse(data) {
-    console.log('handleResponse');
+    console.log("handleResponse");
     console.log(data);
     if (!data || !data.data) return;
-    var response = data.data['response'];
+    var response = data.data["response"];
     switch (response) {
-      case 'Reload':
+      case "Reload":
         setTimeout(function () {
-          alert('Synchronization is complete! Page will auto reload.');
+          alert("Synchronization is complete! Page will auto reload.");
           location.reload();
         }, 50);
         break;
-      case 'Done':
+      case "Done":
         setTimeout(function () {
           location.reload();
           setIncrement(function (prev) {
@@ -3678,9 +3686,9 @@ var FetchAddon = function FetchAddon(_ref) {
           });
         }, 50);
         break;
-      case 'Cleaner-Done':
+      case "Cleaner-Done":
         setTimeout(function () {
-          alert('Media cleanup complete! Page will auto reload.');
+          alert("Media cleanup complete! Page will auto reload.");
           location.reload();
         }, 50);
         break;
@@ -3688,10 +3696,10 @@ var FetchAddon = function FetchAddon(_ref) {
         if (response.includes("Collector-Sync-inprogress")) {
           // setDataSyncProgress(data.data['sync']);
           setDataSync(response);
-        } else if (response === 'Collector-Sync-done') {
+        } else if (response === "Collector-Sync-done") {
           alert("Sync is completed! Please do not refresh the page!");
           setTimeout(function () {
-            return setDataSync('DONE');
+            return setDataSync("DONE");
           }, 500);
         }
     }
@@ -3719,15 +3727,15 @@ var FetchAddon = function FetchAddon(_ref) {
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
               className: "media-cleaner-item__actions",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: handleSubmitWithAction('fetch-media'),
-                className: isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn',
+                onClick: handleSubmitWithAction("fetch-media"),
+                className: isButtonDisabled ? "submit-btn submit-btn-disabled" : "submit-btn",
                 disabled: isButtonDisabled,
-                children: isButtonDisabled ? 'Scan is inprogress' : 'Initiate Scan'
+                children: isButtonDisabled ? "Sync in progress — please wait..." : "Initiate Sync"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: handleSubmitWithAction('delete-media'),
-                className: isButtonDisabled ? 'submit-btn submit-btn-disabled' : 'submit-btn delete-btn',
+                onClick: handleSubmitWithAction("delete-media"),
+                className: isButtonDisabled ? "submit-btn submit-btn-disabled delete-btn" : "submit-btn delete-btn",
                 disabled: isButtonDisabled,
-                children: "Delete Media"
+                children: isButtonDisabled ? "Sync in progress — delete unavailable" : "Delete Media"
               })]
             })
           })
@@ -50095,23 +50103,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ContentBlock.jsx */ "./admin/interface/components/ContentBlock.jsx");
-/* harmony import */ var _components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MediaCleaner/TriggerAjaxRequest.jsx */ "./admin/interface/components/MediaCleaner/TriggerAjaxRequest.jsx");
-/* harmony import */ var _components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/MediaCleaner/MediaCollector.jsx */ "./admin/interface/components/MediaCleaner/MediaCollector.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MediaCleaner/MediaCollector.jsx */ "./admin/interface/components/MediaCleaner/MediaCollector.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
-
+// import TriggerAjaxRequest from '../components/MediaCleaner/TriggerAjaxRequest.jsx';
 
 
 
 function Mediacleaner() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "mediacleaner-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Welcome to Media Harmony!",
       description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Use the toggle to initiate a scan of your media library or to permanently delete all unlinked, unpreserved files. Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TriggerAjaxRequest_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      requestType: "rmc_ajax_media_cleaner"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {})]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {})]
   });
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Mediacleaner);

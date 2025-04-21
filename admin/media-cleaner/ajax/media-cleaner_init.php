@@ -2,13 +2,10 @@
 /**
  * Init Unused Media Migration.
  */
-// require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
-$autoloadPath = dirname(__FILE__, 4) . '/vendor/autoload.php';
+
+ $autoloadPath = dirname(__FILE__, 4) . '/vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
-
-	error_log('❌Sucees media-cleaner_init: ' . $autoloadPath);
-
 } else {
     error_log('❌ Autoload not found at media-cleaner_init: ' . $autoloadPath);
     wp_die('Autoload file missing.');

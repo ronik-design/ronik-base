@@ -27,7 +27,8 @@
  * @subpackage Ronik_Base/includes
  * @author     Kevin Mancuso <kevin@ronikdesign.com>
  */
-class Ronik_Base {
+class Ronik_Base
+{
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -66,8 +67,9 @@ class Ronik_Base {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
-		if ( defined( 'RONIK_BASE_VERSION' ) ) {
+	public function __construct()
+	{
+		if (defined('RONIK_BASE_VERSION')) {
 			$this->version = RONIK_BASE_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -78,35 +80,36 @@ class Ronik_Base {
 		$this->set_locale();
 
 
-			/* Checks to see if "is_plugin_active" function exists and if not load the php file that includes that function */
-			if (!function_exists('is_plugin_active')) {
-				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			}
+		/* Checks to see if "is_plugin_active" function exists and if not load the php file that includes that function */
+		if (!function_exists('is_plugin_active')) {
+			include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+		}
 
-			function ronik_admin_notice__error() { ?>
-				<div class="notice notice-error ">
-					<p><?php _e( 'Warning: Advanced Custom Fields PRO needs to be installed and activated!', 'sample-text-domain' ); ?></p>
-				</div>
-			<?php }
+		function ronik_admin_notice__error()
+		{ ?>
+			<div class="notice notice-error ">
+				<p><?php _e('Warning: Advanced Custom Fields PRO needs to be installed and activated!', 'sample-text-domain'); ?></p>
+			</div>
+<?php }
 
-			//plugin is activated ACF,
-			// if (is_plugin_active('advanced-custom-fields-pro/acf.php')) {
-			// 	$this->define_admin_hooks();
-			// 	$this->define_public_hooks();
-			// } else {
+		//plugin is activated ACF,
+		// if (is_plugin_active('advanced-custom-fields-pro/acf.php')) {
+		// 	$this->define_admin_hooks();
+		// 	$this->define_public_hooks();
+		// } else {
 
-			// 	if(!empty(get_mu_plugins()['acf.php'])){
-			// 		$this->define_admin_hooks();
-			// 		$this->define_public_hooks();
-			// 	} else {
-			// 		deactivate_plugins( 'ronik-base/ronik-base.php' );
-			// 		add_action( 'admin_notices', 'ronik_admin_notice__error' );
-			// 	}
-			// }
+		// 	if(!empty(get_mu_plugins()['acf.php'])){
+		// 		$this->define_admin_hooks();
+		// 		$this->define_public_hooks();
+		// 	} else {
+		// 		deactivate_plugins( 'ronik-base/ronik-base.php' );
+		// 		add_action( 'admin_notices', 'ronik_admin_notice__error' );
+		// 	}
+		// }
 
 
-			$this->define_admin_hooks();
-			$this->define_public_hooks();
+		$this->define_admin_hooks();
+		$this->define_public_hooks();
 	}
 
 	/**
@@ -125,33 +128,33 @@ class Ronik_Base {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
+	private function load_dependencies()
+	{
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-ronik-base-loader.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-ronik-base-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-ronik-base-i18n.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-ronik-base-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-ronik-base-admin.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-ronik-base-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-ronik-base-public.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-ronik-base-public.php';
 
 		$this->loader = new Ronik_Base_Loader();
-
 	}
 
 	/**
@@ -163,12 +166,12 @@ class Ronik_Base {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	private function set_locale()
+	{
 
 		$plugin_i18n = new Ronik_Base_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
 	/**
@@ -178,8 +181,9 @@ class Ronik_Base {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
-		$plugin_admin = new Ronik_Base_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode() );
+	private function define_admin_hooks()
+	{
+		$plugin_admin = new Ronik_Base_Admin($this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode());
 
 		$this->loader->add_action('init', $plugin_admin, 'rbp_helper_functions_cookies', 1);
 		// $this->loader->add_action('acf/init', $plugin_admin, 'rbp_helper_functions', 1);
@@ -189,25 +193,19 @@ class Ronik_Base {
 		// Disable the ACF DEPENDENCY
 		// $this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
 
-		$this->loader->add_action( 'admin_notices', $plugin_admin, 'ronik_base_admin_notices' );
-
-		
-
-
-
+		$this->loader->add_action('admin_notices', $plugin_admin, 'ronik_base_admin_notices');
 		// Let us load the plugin interface.
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'rbp_plugin_interface' );
+		$this->loader->add_action('admin_menu', $plugin_admin, 'rbp_plugin_interface');
 		// Enque Scripts
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 		// Add Ajax
 		$this->loader->add_action('wp_ajax_nopriv_api_checkpoint', $plugin_admin, 'api_checkpoint');
 		$this->loader->add_action('wp_ajax_api_checkpoint', $plugin_admin, 'api_checkpoint');
 
-
 		// rmc_ajax_media_cleaner
-			// Let us run the get_media_cleaner_state that will determine if a valid key is present.
-		if( $this->get_media_cleaner_state() || $this->get_beta_mode() ){
+		// Let us run the get_media_cleaner_state that will determine if a valid key is present.
+		if ($this->get_media_cleaner_state() || $this->get_beta_mode()) {
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_classes', 30);
 			$this->loader->add_action('acf/init', $plugin_admin, 'rmc_functions', 30);
 			$this->loader->add_action('wp_ajax_nopriv_do_init_remove_unused_media', $plugin_admin, 'rmc_ajax_media_cleaner_remove');
@@ -223,11 +221,12 @@ class Ronik_Base {
 			$this->loader->add_action('wp_ajax_rmc_ajax_api_determinism', $plugin_admin, 'rmc_ajax_api_determinism');
 
 			// ronikdesigns_cron_auth
-			$this->loader->add_action( 'rmc_media_sync', $plugin_admin, 'rmc_media_sync' );
+			$this->loader->add_action('rmc_media_sync', $plugin_admin, 'rmc_media_sync');
 			if (!wp_next_scheduled('rmc_media_sync')) {
 				wp_schedule_event(strtotime('04:00:00'), 'daily', 'rmc_media_sync');
 			}
-			$this->loader->add_action( 'save_post', $plugin_admin, 'rmc_media_sync_save' );
+			$this->loader->add_action('save_post', $plugin_admin, 'rmc_media_sync_save');
+			$this->loader->add_action('add_attachment', $plugin_admin, 'rmc_media_sync_attachment');
 		}
 	}
 
@@ -238,10 +237,11 @@ class Ronik_Base {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
-		$plugin_public = new Ronik_Base_Public( $this->get_plugin_name(), $this->get_version() , $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode() );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+	private function define_public_hooks()
+	{
+		$plugin_public = new Ronik_Base_Public($this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode());
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
 		$this->loader->add_action('rest_api_init', $plugin_public, 'ronikdesignsbase_rest_api_init');
 	}
 
@@ -250,7 +250,8 @@ class Ronik_Base {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function run()
+	{
 		$this->loader->run();
 	}
 
@@ -261,7 +262,8 @@ class Ronik_Base {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name()
+	{
 		return $this->plugin_name;
 	}
 
@@ -271,7 +273,8 @@ class Ronik_Base {
 	 * @since     1.0.0
 	 * @return    Ronik_Base_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader()
+	{
 		return $this->loader;
 	}
 
@@ -281,7 +284,8 @@ class Ronik_Base {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version()
+	{
 		return $this->version;
 	}
 
@@ -291,16 +295,17 @@ class Ronik_Base {
 	 * @since     1.0.0
 	 * @return    string    .
 	 */
-	public function get_media_cleaner_state() {
-		if($this->get_beta_mode()){
+	public function get_media_cleaner_state()
+	{
+		if ($this->get_beta_mode()) {
 			return true;
 		} else {
-			update_option('rbp_media_cleaner_file_import','off');
+			update_option('rbp_media_cleaner_file_import', 'off');
 
 			// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
 			$rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
 			$rbp_media_cleaner_validation = get_option('rbp_media_cleaner_api_key_validation') ? get_option('rbp_media_cleaner_api_key_validation') : "invalid";
-			if($rbp_media_cleaner_api_key && ($rbp_media_cleaner_validation !== "invalid")){
+			if ($rbp_media_cleaner_api_key && ($rbp_media_cleaner_validation !== "invalid")) {
 				$media_cleaner_state = true;
 			} else {
 				$media_cleaner_state = false;
@@ -310,11 +315,12 @@ class Ronik_Base {
 		return $media_cleaner_state;
 	}
 
-	public function get_beta_mode() {
+	public function get_beta_mode()
+	{
 		// 150kb
 		// update_option('rbp_media_cleaner_file_size', 0.1);
 		// Backup
-		update_option('rbp_media_cleaner_file_import','off');
+		update_option('rbp_media_cleaner_file_import', 'off');
 		return true;
 	}
 
@@ -325,16 +331,16 @@ class Ronik_Base {
 	 * @since     1.0.0
 	 * @return    string    .
 	 */
-	public function get_optimization_state() {
+	public function get_optimization_state()
+	{
 		// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
 		$rbp_optimization_api_key = get_option('rbp_optimization_api_key') ? get_option('rbp_optimization_api_key') : "";
 		$rbp_optimization_validation = get_option('rbp_optimization_api_key_validation') ? get_option('rbp_optimization_api_key_validation') : "invalid";
-		if($rbp_optimization_api_key && ($rbp_optimization_validation !== "invalid")){
+		if ($rbp_optimization_api_key && ($rbp_optimization_validation !== "invalid")) {
 			$optimization_state = true;
-		} else{
+		} else {
 			$optimization_state = false;
 		}
 		return $optimization_state;
 	}
-
 }

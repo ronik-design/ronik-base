@@ -3,6 +3,9 @@
 * Init Remove individual Media .
 */
 
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RmcDataGathering;
+
 $rbpHelper = new RbpHelper;
 $RmcDataGathering = new RmcDataGathering;
 

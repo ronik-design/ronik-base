@@ -3,6 +3,8 @@
 * Init Remove row Media .
 */
 
+use Ronik\Base\RbpHelper;
+
 $rbpHelper = new RbpHelper;
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 7a, Init Remove row Media ', 'low', 'rbp_media_cleaner');
 

@@ -21,11 +21,11 @@
  * @author     Kevin Mancuso <kevin@ronikdesign.com>
  */
 
- use Ronik\Base\RbpHelper;
- use Ronik\Base\RmcDataGathering;
- use Ronik\Base\RonikBaseHelper;
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RmcDataGathering;
+use Ronik\Base\RonikBaseHelper;
 
- 
+
 
 class Ronik_Base_Admin
 {
@@ -154,7 +154,8 @@ class Ronik_Base_Admin
 		));
 	}
 
-	public function ronik_base_admin_notices(){
+	public function ronik_base_admin_notices()
+	{
 		if (get_option('permalink_structure') === '') {
 			echo '<div class="notice notice-error"><p>';
 			echo '🚨 <strong>Warning:</strong> The Media Harmony REST API requires <em>“pretty permalinks”</em> to be enabled in order for <code>/wp-json/</code> routes to function correctly.';
@@ -163,10 +164,10 @@ class Ronik_Base_Admin
 		}
 	}
 
-	
 
 
-	
+
+
 	/**
 	 * Deactive if the dependent plugin is not install & activated.
 	 *
@@ -174,7 +175,7 @@ class Ronik_Base_Admin
 	 */
 	public function rbp_plugin_dependencies()
 	{
-		
+
 		if (is_admin() && current_user_can('activate_plugins') && !class_exists('ACF')) {
 			add_action('admin_notices', 'child_plugin_notice');
 			// deactivate_plugins( 'ronik-media-cleaner/ronik-media-cleaner.php' );
@@ -287,6 +288,21 @@ class Ronik_Base_Admin
 				include dirname(__FILE__) . '/media-cleaner/ajax/media-cleaner-settings.php';
 			}
 
+			public function rmc_media_sync_attachment($post_ID){
+				$rbpHelper = new RbpHelper;
+				$attachment = get_post($post_ID);
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner Attachment Sync: Ref 1a, rmc_media_sync_attachment ', 'low', 'rbp_media_cleaner');
+				error_log(print_r( 'ronik_media_sync_attachment', true));
+				error_log(print_r( $attachment, true));
+
+				$f_sync = get_option('rbp_media_cleaner_sync-time');
+				if ($f_sync) {
+					$date = new DateTime(); // For today/now, don't pass an arg.
+					$date->modify("-1 day");
+					update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+				}
+			}
+
 			public function rmc_media_sync_save($post_id)
 			{
 				$rbpHelper = new RbpHelper;
@@ -371,7 +387,7 @@ class Ronik_Base_Admin
 					return false;
 				}
 
-				error_log( print_r(  'RONIK TEST Removal', true)) ;
+				error_log(print_r('RONIK rmc_media_sync', true));
 				$RmcDataGathering = new RmcDataGathering;
 				$RmcDataGathering->rmc_reset_alldata();
 
@@ -426,8 +442,12 @@ class Ronik_Base_Admin
 				// Gather all the image ids.
 				$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array');
 				if (! empty($transient_rmc_media_cleaner_media_data_collectors_image_id_array)) {
+					error_log(print_r( '$transient_rmc_media_cleaner_media_data_collectors_image_id_array NO' , true ));
+
 					$rmc_media_cleaner_media_data_collectors_image_id_array = $transient_rmc_media_cleaner_media_data_collectors_image_id_array;
 				} else {
+					error_log(print_r( '$transient_rmc_media_cleaner_media_data_collectors_image_id_array YES' , true ));
+
 					$rmc_media_cleaner_media_data_collectors_image_id_array = $RmcDataGathering->imageIDCollector($select_attachment_type, $select_numberposts, $targetFileSize, $maxIncrement);
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient('rmc_media_cleaner_media_data_collectors_image_id_array', $rmc_media_cleaner_media_data_collectors_image_id_array, DAY_IN_SECONDS);

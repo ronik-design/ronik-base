@@ -26,7 +26,7 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
 	die;
 }
 
@@ -44,14 +44,16 @@ use Ronik\Base\RonikBaseHelper;
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'RONIK_BASE_VERSION', '0.0.0.1' );
+define('RONIK_BASE_VERSION', '0.0.0.1');
 
 
 /**
  * The code that pushes for live updates via github push tag.
  */
 require 'plugin-update-checker/plugin-update-checker.php';
+
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
 $myUpdateChecker = PucFactory::buildUpdateChecker(
 	'https://github.com/ronik-design/ronik-base',
 	__FILE__,
@@ -66,8 +68,9 @@ $myUpdateChecker->setBranch('main');
  * The code that runs during plugin activation.
  * This action is documented in includes/class-ronik-base-activator.php
  */
-function activate_ronik_base() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ronik-base-activator.php';
+function activate_ronik_base()
+{
+	require_once plugin_dir_path(__FILE__) . 'includes/class-ronik-base-activator.php';
 	Ronik_Base_Activator::activate();
 }
 
@@ -75,19 +78,20 @@ function activate_ronik_base() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-ronik-base-deactivator.php
  */
-function deactivate_ronik_base() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ronik-base-deactivator.php';
+function deactivate_ronik_base()
+{
+	require_once plugin_dir_path(__FILE__) . 'includes/class-ronik-base-deactivator.php';
 	Ronik_Base_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_ronik_base' );
-register_deactivation_hook( __FILE__, 'deactivate_ronik_base' );
+register_activation_hook(__FILE__, 'activate_ronik_base');
+register_deactivation_hook(__FILE__, 'deactivate_ronik_base');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-ronik-base.php';
+require plugin_dir_path(__FILE__) . 'includes/class-ronik-base.php';
 
 /**
  * Begins execution of the plugin.
@@ -98,10 +102,10 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-ronik-base.php';
  *
  * @since    1.0.0
  */
-function run_ronik_base() {
+function run_ronik_base()
+{
 
 	$plugin = new Ronik_Base();
 	$plugin->run();
-
 }
 run_ronik_base();
