@@ -699,7 +699,12 @@ class RmcDataGathering
 
                     'wpesu-plugin-genesis-blocks',
                     'posts_per_page',
-                    'posts_per_rss'
+                    'posts_per_rss',
+
+                    'close_comments_days_old',
+                    'wpe-health-check-site-status-result',
+                    'rbp_media_cleaner_',
+                    'rmc_media_cleaner_'
                 ];
 
 
