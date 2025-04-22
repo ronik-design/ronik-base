@@ -13,12 +13,12 @@ const ClearIndicator = (props) => {
       {...restInnerProps}
       ref={ref}
       onClick={() => {
-        console.log('ClearIndicator clicked');
+        // console.log('ClearIndicator clicked');
         clearValue(); // Clear the select component's internal state
         props.setSelectedFormValues([]); // Clear all values in the state
         props.setSelectedDataFormValues([]); // Clear all data form values
         props.setManualClear(true); // Set manual clear flag
-        console.log('Cleared all selected values');
+        // console.log('Cleared all selected values');
       }}
       style={{ cursor: 'pointer' }}
     >
@@ -49,26 +49,26 @@ const FilterType = ({
 
   // Initialize all options as selected when the component first renders
   useEffect(() => {
-    console.log('useEffect triggered');
-    console.log('Selected Form Values:', selectedFormValues);
-    console.log('Manual Clear Flag:', manualClear);
+    // console.log('useEffect triggered');
+    // console.log('Selected Form Values:', selectedFormValues);
+    // console.log('Manual Clear Flag:', manualClear);
 
     if (!manualClear && (!selectedFormValues || selectedFormValues.length === 0)) {
-      console.log('Preselecting all options');
+      // console.log('Preselecting all options');
     //   setSelectedFormValues(options);
     //   setSelectedDataFormValues(options.map(option => option.value));
     }
     
     // Check if selectedFormValues exists and contains the 'all' option
     if (!manualClear && selectedFormValues && selectedFormValues.length > 0 && selectedFormValues[0]?.value === 'all') {
-      console.log('"All" option is selected, preselecting all options again');
+      // console.log('"All" option is selected, preselecting all options again');
       setSelectedFormValues(options);
       setSelectedDataFormValues(options.map(option => option.value));
     }
 
     // Reset the manualClear flag after handling
     if (manualClear) {
-      console.log('Resetting manual clear flag');
+      // console.log('Resetting manual clear flag');
       setManualClear(false);
     }
   }, [options, selectedFormValues, setSelectedFormValues, setSelectedDataFormValues, manualClear]);
@@ -101,8 +101,8 @@ const FilterType = ({
           }}
         menuIsOpen={menuIsOpen} // Control menu open/close state
         onChange={(selected) => {
-          console.log('Select onChange triggered');
-          console.log('Selected Values:', selected);
+          // console.log('Select onChange triggered');
+          // console.log('Selected Values:', selected);
           // setFilterMode('all'); // Set filter mode to 'all'
 
           setFilterMode('large'); // Set filter mode to 'all'
@@ -133,7 +133,7 @@ const FilterType = ({
         }}
         noOptionsMessage={() => "No media formats available"} // Customize the "No options" message
         onMenuClose={() => {
-          console.log('Menu closed');
+          // console.log('Menu closed');
           setMenuIsOpen(false);
         }} // Ensure menu closes when selection is made
       />

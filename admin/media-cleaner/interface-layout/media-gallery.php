@@ -77,12 +77,12 @@ function rmc_media_column_value( $column_name, $id ) {
                     .then((response) => response.json())
                     .then((data) => {
                         if (data) {
-                            console.log(data);
+                            // console.log(data);
                             if((data.data['pageCounter'] == '0') && (data.data['pageTotalCounter'] == 1)){
                                 alert('Synchronization is complete! Page will auto reload.');
                                 location.reload();
                             } else {
-                                console.log(data.data['response']);
+                                // console.log(data.data['response']);
 
                                 if(data.data['response'] == 'Reload'){
                                     setTimeout(function(){
@@ -107,7 +107,7 @@ function rmc_media_column_value( $column_name, $id ) {
                     });
                 }
                 let counter = 0;
-                console.log('Ajax request sent.');
+                // console.log('Ajax request sent.');
 
                 handlePostDataTest( jQuery('#media-swap__file-id').attr('value'),  jQuery(this).closest('#the-list').find('.author-self.status-inherit').find('.check-column input').val() )                                            
             });

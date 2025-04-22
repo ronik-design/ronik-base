@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MediaTable from "./MediaTable";
+import "./MediaCollectorLoader.css";
 
-const { FilterMedia, MediaCollectorTable, PreservedMediaCollectorTable } =
-  MediaTable;
+const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
+// const { FilterMedia, MediaCollectorTable, PreservedMediaCollectorTable } =
+//   MediaTable;
 
 const MediaCollector = ({ type }) => {
-  const [pageDetector, setPageDetector] = useState(
-    getQueryParam("page", "options-ronik-base_media_cleaner") ==
-      "options-ronik-base_media_cleaner"
-      ? "mediacollector"
-      : "mediacollectorpreserved"
-  );
+  //   const [pageDetector, setPageDetector] = useState(
+  //     getQueryParam("page", "options-ronik-base_media_cleaner") ==
+  //       "options-ronik-base_media_cleaner"
+  //       ? "mediacollector"
+  //       : "mediacollectorpreserved"
+  //   );
   let fileSize = "large";
   // if(pageDetector == 'mediacollectorpreserved'){
   //     fileSize = 'all';
@@ -48,13 +50,12 @@ const MediaCollector = ({ type }) => {
 
   // Lazy load images in aswell as image compression.
   function lazyLoader() {
-    const imageObserver = new IntersectionObserver((entries, imgObserver) => {
+    const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const lazyImage = entry.target;
           fetch(lazyImage.dataset.src)
-            .then((res) => res.blob()) // Gets the response and returns it as a blob
-            .then((blob) => {
+            .then(() => {
               var imageSelector = document.querySelector(
                 '[data-id="' + lazyImage.getAttribute("data-id") + '"]'
               );
@@ -72,7 +73,9 @@ const MediaCollector = ({ type }) => {
                   function (blob) {
                     // get content as JPEG blob
                     // here the image is a blob
-                    imageSelector.src = URL.createObjectURL(blob);
+                    if (imageSelector) {
+                      imageSelector.src = URL.createObjectURL(blob);
+                    }
                   },
                   lazyImage.getAttribute("data-type"),
                   0.5
@@ -153,7 +156,7 @@ const MediaCollector = ({ type }) => {
           setTimeout(() => {
             setHasLoaded(true); // Simulate delay
             removeLoader();
-          }, 1000);
+          }, 0);
         }
       })
       .catch((error) => {
@@ -316,10 +319,10 @@ const MediaCollector = ({ type }) => {
     const target = e.target;
     const mediaId = target.getAttribute("data-preserve-media");
     if (mediaId) {
-      alert("Media is preserved!");
+      //   alert("Media is preserved!");
       setPreserveImageId([mediaId]);
     } else {
-      alert("Media is unpreserved!");
+      //   alert("Media is unpreserved!");
       setUnPreserveImageId([target.getAttribute("data-unpreserve-media")]);
     }
     // Find the closest <tr> element
@@ -345,9 +348,42 @@ const MediaCollector = ({ type }) => {
     }
   };
 
+  // Loader overlay component
+  const LoaderOverlay = () => {
+    React.useEffect(() => {
+      document.body.classList.add("media-cleaner-loader-active");
+      // Inject loader after #wpwrap (as first child)
+      const wpwrap = document.getElementById("wpwrap");
+      let loaderDiv = null;
+      if (wpwrap) {
+        loaderDiv = document.createElement("div");
+        loaderDiv.className = "media-cleaner-loader-overlay-portal";
+        loaderDiv.innerHTML = `
+          <div class="media-cleaner-loader-overlay">
+            <div class="media-cleaner-loader-inner">
+              <div class="media-cleaner-loader-spinner">
+                <div class="blob-1"></div>
+                <div class="blob-2"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        wpwrap.insertBefore(loaderDiv, wpwrap.firstChild);
+      }
+      return () => {
+        document.body.classList.remove("media-cleaner-loader-active");
+        if (loaderDiv && loaderDiv.parentNode) {
+          loaderDiv.parentNode.removeChild(loaderDiv);
+        }
+      };
+    }, []);
+    // Render nothing in React tree, loader is injected into DOM
+    return null;
+  };
+
   // Render component
   if (!hasLoaded) {
-    return "Loading...";
+    return <LoaderOverlay />;
   }
 
   // Function to get the value of a query parameter from the URL

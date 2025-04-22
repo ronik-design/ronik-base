@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const FetchAddon = ({ requestType, postOveride = null }) => {
-  const [formValues, setFormValues] = useState({
-    "user-option": "fetch-media",
-  });
+//   const [formValues, setFormValues] = useState({
+//     "user-option": "fetch-media",
+//   });
   const [increment, setIncrement] = useState(0);
   const [dataSync, setDataSync] = useState("");
   // const [dataSyncProgress, setDataSyncProgress] = useState('');
@@ -42,18 +42,18 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
     }
   };
 
-  // Handle form changes
-  const handleChange = (e) => {
-    setFormValues({ "user-option": e.target.value });
-  };
+//   // Handle form changes
+//   const handleChange = (e) => {
+//     setFormValues({ "user-option": e.target.value });
+//   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("clicked submit");
+//   // Handle form submission
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     console.log("clicked submit");
 
-    handleLoaderState(dataSync);
-  };
+//     handleLoaderState(dataSync);
+//   };
 
   // Perform the POST request
   const handlePostData = async (userOptions, mimeType, increment, sync) => {
@@ -82,8 +82,8 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
 
   // Handle the server response
   const handleResponse = (data) => {
-    console.log("handleResponse");
-    console.log(data);
+    // console.log("handleResponse");
+    // console.log(data);
 
     if (!data || !data.data) return;
 
@@ -120,9 +120,15 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
 
   const handleSubmitWithAction = (action) => (e) => {
     e.preventDefault();
-    const userOption = action; // Simplify this - use the action directly
+    const userOption = action;
 
-    handleLoaderState(userOption); // Pass the userOption to handleLoaderState
+    if (userOption === "delete-media") {
+      if (!window.confirm("Are you sure you want to bulk delete media?")) {
+        return;
+      }
+    }
+
+    handleLoaderState(userOption);
   };
 
   return (

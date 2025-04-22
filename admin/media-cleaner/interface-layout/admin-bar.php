@@ -149,12 +149,12 @@ function mc_sync_action_js()
                     .then((response) => response.json())
                     .then((data) => {
                         if (data) {
-                            console.log(data);
+                            // console.log(data);
                             if ((data.data['pageCounter'] == '0') && (data.data['pageTotalCounter'] == 1)) {
                                 alert('Synchronization is complete! Page will auto reload.');
                                 location.reload();
                             } else {
-                                console.log(data.data['response']);
+                                // console.log(data.data['response']);
                                 if (data.data['response'] == 'Reload') {
                                     setTimeout(function() {
                                         alert('Synchronization is complete! Page will auto reload.');
@@ -184,7 +184,7 @@ function mc_sync_action_js()
                     });
             }
             let counter = 0;
-            console.log('Ajax request sent.');
+            // console.log('Ajax request sent.');
             handlePostDataTest('fetch-media', 'all', 0)
         });
     </script>

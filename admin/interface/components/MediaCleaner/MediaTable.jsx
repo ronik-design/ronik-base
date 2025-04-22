@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import Select from "react-select";
+import React from "react";
+// import Select from "react-select";
 import parse from "html-react-parser"; // Importing HTML parser
 import TriggerAjaxRequest from "../MediaCleaner/TriggerAjaxRequest.jsx"; // Importing TriggerAjaxRequest component
 
@@ -63,18 +63,10 @@ const getPaginatedData = (data, page, itemsPerPage) => {
 
 // FilterNav component
 const FilterNav = ({ mediaCollector, filterMode, filter_size }) => {
-  const totalSize = mediaCollector.reduce((acc, item) => {
-    let size = parseFloat(item["media_size"]);
-    if (item["media_size"].includes("KB")) size /= 1024;
-    if (item["media_size"].includes("GB")) size *= 1000;
-    if (item["media_size"].includes("bytes")) size *= 1e-6;
-    return acc + (isNaN(size) ? 0 : size);
-  }, 0);
-
   return (
     <>
       <div className="filter-nav">
-        {/* <button
+        {/* <butt`on
           type="button"
           title="Filter All"
           onClick={filter_size}
@@ -255,18 +247,23 @@ const MediaCollectorTable = ({
       <td className="media-collector-table__td media-collector-table__td--img-thumb">
         {parse(collector["img-thumb"])}
       </td>
-      <td className="media-collector-table__td file-type">
+      <td className="media-collector-table__td  media-collector-table__td--file-type">
         {collector["media_file_type"]}
       </td>
-      <td className="media-collector-table__td file-size">
+      <td className="media-collector-table__td  media-collector-table__td--file-size">
         {collector["media_size"]}
       </td>
       <td className="media-collector-table__td">{collector["id"]}</td>
       <td className="media-collector-table__td">
-        <a
+        {/* <a
           target="_blank"
           rel="noopener noreferrer"
           href={`/wp-admin/post.php?post=${collector["id"]}&action=edit`}
+        > */}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/wp-admin/upload.php?item=${collector["id"]}&mode=grid`}
         >
           Go to media
         </a>
@@ -321,8 +318,8 @@ const MediaCollectorTable = ({
             <th className="media-collector-table__th media-collector-table__th--img-thumb">
               Thumbnail Image
             </th>
-            <th className="media-collector-table__th">File Type</th>
-            <th className="media-collector-table__th">
+            <th className="media-collector-table__th media-collector-table__th--file-type">File Type</th>
+            <th className="media-collector-table__th media-collector-table__th--file-size">
               File Size
               <FilterNav
                 mediaCollector={mediaCollector}
@@ -367,7 +364,6 @@ const PreservedMediaCollectorTable = ({
   filterPager,
   mediaCollectorHigh,
   mediaCollectorLow,
-  activateDelete,
 }) => {
   if (!mediaCollectorPreserved) return null;
 
@@ -375,6 +371,7 @@ const PreservedMediaCollectorTable = ({
     return;
   }
 
+  
   if (!mediaCollectorPreserved || mediaCollectorPreserved === "no-images") {
     const f_wpwrap = document.querySelector("#wpwrap");
     const element = document.getElementsByClassName("centered-blob");
@@ -424,10 +421,10 @@ const PreservedMediaCollectorTable = ({
           ? parse(collector["img-thumb"])
           : "No Image Found"}
       </td>
-      <td className="media-collector-table__td file-type">
+      <td className="media-collector-table__td media-collector-table__td--file-type">
         {collector["media_file_type"]}
       </td>
-      <td className="media-collector-table__td file-size">
+      <td className="media-collector-table__td media-collector-table__td--file-size">
         {collector["media_size"]}
       </td>
       <td className="media-collector-table__td">{collector["id"]}</td>
@@ -454,7 +451,8 @@ const PreservedMediaCollectorTable = ({
           onClick={activatePreserve}
           data-unpreserve-media={collector["id"]}
         >
-          Un-preserve file
+          {/* Un-preserve file */}
+          Remove
         </button>
       </td>
     </tr>
@@ -488,8 +486,8 @@ const PreservedMediaCollectorTable = ({
             <th className="media-collector-table__th media-collector-table__th--img-thumb">
               Thumbnail Image
             </th>
-            <th className="media-collector-table__th">File Type</th>
-            <th className="media-collector-table__th">
+            <th className="media-collector-table__th media-collector-table__td--file-type">File Type</th>
+            <th className="media-collector-table__th media-collector-table__td--file-size">
               File Size
               <FilterNav
                 mediaCollector={mediaCollectorPreserved}

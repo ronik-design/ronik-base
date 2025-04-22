@@ -26,7 +26,7 @@
         }
 
         // Depending on the progress, we want to clear the console to free memory up. If end user console log large amount of data.
-        console.log("initRonikMediaProgress count:", progressCounter);
+        // console.log("initRonikMediaProgress count:", progressCounter);
         if (timeAdjust(progressCounter) > 60 * clearOut) {
             // Clear the console
             console.clear();
@@ -51,17 +51,9 @@
             dataType: 'json',
             success: function (data) {
                 const loaderElement = document.querySelector('.progress-bar');
-
-                console.log(loaderElement);
-
-
                 if (loaderElement) {
-                    console.log('loaderElement');
-                    console.log(data);
-
                     if (data.data === 'COMPLETED') {
                         setTimeout(() => {
-                            console.log(data);
                             // alert('RONIK TEST 2 COMPLETED');
                             window.location.reload(true);
                         }, 500);
@@ -98,11 +90,7 @@
                         }
                     }
                 } else {
-
-                    console.log(data);
-
                     if (!data.data) {
-
                     } else {
                         if (data.data === 'COMPLETED' || data.data === 'SEMI_SUCCESS') {
                             // Update admin bar to show Done only if element is strictly active (not nonactive)
@@ -118,7 +106,7 @@
                                 setTimeout(() => window.location.reload(true), 500);
                             }
                         } else if (data.data !== 'NOT_RUNNING') {
-                            console.log('.progress-bar not present');
+                            // console.log('.progress-bar not present');
 
                             if (destination !== 'media-cleaner') {
                                 var element = document.getElementById("wp-admin-bar-rmc");
@@ -163,7 +151,7 @@
     // Function to determine API key validity
     async function initApiKeyDeterminism(pluginSlug, key) {
         if (wpVars.betaMode) {
-            console.log('initApiKeyDeterminism Beta Mode Enabled');
+            // console.log('initApiKeyDeterminism Beta Mode Enabled');
             return;
         }
 
@@ -174,10 +162,10 @@
             const response = await fetch(`${endpoint}/wp-json/apikey/v1/data/apikey?pluginSlug=${pluginSlug}&key=${key}&websiteID=${websiteID}`);
             const data = await response.json();
             if (data === 'Success') {
-                console.log('Correct API Key');
+                // console.log('Correct API Key');
             } else {
                 setTimeout(() => {
-                    console.log("Delayed");
+                    // console.log("Delayed");
                     initRonikDeterminism(pluginSlug, 'invalidate');
                 }, intervalTime * 2);
             }
@@ -205,7 +193,7 @@
                     alert('Yikes, looks like this license key is invalid and may be expired.');
                     setTimeout(() => window.location.reload(true), 500);
                 } else if (data.data !== 'noreload') {
-                    console.log('Success:', data);
+                    // console.log('Success:', data);
                     initApiKeyDeterminism(pluginSlug, data.data);
                 }
             },
@@ -217,7 +205,7 @@
 
     // Function to start validation and progress checking
     function ronikbasePingValidator() {
-        console.log('Ping validator started');
+        // console.log('Ping validator started');
         if (!wpVars.betaMode) {
             function pingValidator() {
                 setTimeout(() => {
@@ -226,7 +214,7 @@
             }
             setInterval(pingValidator, intervalTime);
         } else {
-            console.log('Beta Mode Enabled');
+            // console.log('Beta Mode Enabled');
         }
 
         function pingMediaProgressValidator(destination) {
