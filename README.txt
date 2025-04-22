@@ -126,7 +126,7 @@ One of the key benefits to using Media Harmony is that it improves site performa
 = Contact our team: = 
 
 Need more help? Drop us a line at dev@ronikdesign.com!
-Want to report an issue? Send us a note describing your issue here: [Google Form link]
+Want to report an issue? Send us a note describing your issue here: https://forms.gle/qhBq6qi22BWE7cRA8
 
 
 == Changelog ==

@@ -30,7 +30,7 @@ function Support() {
 			<br></br>
 			<ContentBlock
 				title= "Contact our team:"
-				description= "Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue here: [Google Form link]"
+				description= "Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue <a target='_blank' href='https://forms.gle/qhBq6qi22BWE7cRA8'>here</a> We'd love your feedback! Share your thoughts <a target='_blank' href='https://forms.gle/DiRgBfXqtvCkr8tX6'>here</a>"
 			/>
 		</div>
 	);
