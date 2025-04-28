@@ -61,7 +61,7 @@ const FilterType = ({
     
     // Check if selectedFormValues exists and contains the 'all' option
     if (!manualClear && selectedFormValues && selectedFormValues.length > 0 && selectedFormValues[0]?.value === 'all') {
-      // console.log('"All" option is selected, preselecting all options again');
+      console.log('"All" option is selected, preselecting all options again');
       setSelectedFormValues(options);
       setSelectedDataFormValues(options.map(option => option.value));
     }

@@ -4,7 +4,7 @@ $capability = current_user_can('manage_media_cleaner') ? 'manage_media_cleaner' 
 
 add_menu_page(
     'General - Ronik Base', // page <title>Title</title>
-    'Media Harmony', // link text
+    'Information', // link text
     $capability, // user capabilities
     'options-ronik-base-mediacleaner', // page slug
     'ronikbase_support_general', // this function prints the page content
@@ -38,6 +38,30 @@ if($this->media_cleaner_state){
             1 // menu position
         );
     }
+
+        // Add Media Cleaner page.
+        add_submenu_page(
+            'options-ronik-base-mediacleaner', // parent page slug
+            'Media Harmony Dashboard',
+            'Dashboard',
+            $capability,
+            'options-ronik-base_media_cleaner', //
+            'ronikbase_media_cleaner_callback',
+            4 // menu position
+        );
+        // Add Media Cleaner page.
+        add_submenu_page(
+            'options-ronik-base-mediacleaner', // parent page slug
+            'Preserved Media',
+            'Preserved Media',
+            $capability,
+            'options-ronik-base_preserved', //
+            'ronikbase_media_cleaner_preserved_callback',
+            4 // menu position
+        );
+
+
+
     // Add Support page.
     add_submenu_page(
         'options-ronik-base-mediacleaner', // parent page slug
@@ -48,26 +72,7 @@ if($this->media_cleaner_state){
         'ronikbase_support_callback_media_cleaner',
         3 // menu position
     );
-    // Add Media Cleaner page.
-    add_submenu_page(
-        'options-ronik-base-mediacleaner', // parent page slug
-        'Media Harmony Dashboard',
-        'Media Harmony Dashboard',
-        $capability,
-        'options-ronik-base_media_cleaner', //
-        'ronikbase_media_cleaner_callback',
-        4 // menu position
-    );
-    // Add Media Cleaner page.
-    add_submenu_page(
-        'options-ronik-base-mediacleaner', // parent page slug
-        'Preserved Media',
-        'Preserved Media',
-        $capability,
-        'options-ronik-base_preserved', //
-        'ronikbase_media_cleaner_preserved_callback',
-        4 // menu position
-    );
+
 }
 
 function ronikbase_media_cleaner_callback(){ 

@@ -506,7 +506,11 @@ html {
 .ronik-base_page_options-ronik-base_media_cleaner,
 .ronik-media-cleaner_page_options-ronik-base_media_cleaner,
 .media-harmony_page_options-ronik-base_media_cleaner,
-.media-harmony_page_options-ronik-base_preserved {
+.media-harmony_page_options-ronik-base_preserved,
+.media-harmony-info_page_options-ronik-base_media_cleaner,
+.media-harmony-info_page_options-ronik-base_preserved,
+.information_page_options-ronik-base_media_cleaner,
+.information_page_options-ronik-base_preserved {
   background: #1e2937;
   border-radius: 15px;
 
@@ -762,7 +766,8 @@ html {
           width: 20px;
         }
         a {
-          color: #6700ff;
+          color: #fff;
+          text-decoration: underline;
         }
       }
       .media-collector-table__th {
