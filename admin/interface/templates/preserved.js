@@ -7,12 +7,16 @@ function Mediacleaner() {
 	return (
 		<div className='mediacleaner-container'>
 			<ContentBlock
-				title= "Welcome to the Preserved Library!"
-				description= "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
+				title="Preserved Media Library"
+				description={`
+					Unlinked files selected for preservation in the Dashboard will be exempted from bulk deletion and appear in the Preserved Media Library instead of the Dashboard. 
+					<br><br>Remove a file from the Preserved Media Library to add it to the Dashboard, where it can be deleted. 
+					<br><br>If no files appear below, no unlinked files have been added to the Preserved Media Library. 
+					`}
 			/>
 			<br></br>
 
-            <MediaCollector type="preserved" />
+			<MediaCollector type="preserved" />
 		</div>
 	);
 }

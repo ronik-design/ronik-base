@@ -50323,7 +50323,7 @@ function General() {
     className: "general-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Plugin Info",
-      description: "Thanks for using the Ronik Plugin!"
+      description: "Thanks for using the Media Harmony !"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "container",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
@@ -50495,20 +50495,20 @@ function Integrations() {
     className: "integrations-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Integrations Message",
-      description: "Ronik Base can integrate with other products, to help you further improve your website. You can enable or disable these integrations below."
+      description: "Media Harmony can integrate with other products, to help you further improve your website. You can enable or disable these integrations below."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "tile-block",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "tile-block__inner",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          pluginName: "Ronik Media Cleaner",
+          pluginName: "Media Harmony Cleaner",
           pluginSlug: "ronik_media_cleaner",
           title: "Speed Up your website",
           description: "Media Cleaner is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present. <br> <br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.\t\t\t\t\t\t",
           linkName: "details & pricing",
           linkHref: "https://together.nbcudev.local"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          pluginName: "Ronik Optimization",
+          pluginName: "Media Harmony Optimization",
           pluginSlug: "ronik_optimization",
           title: "Speed Up your website",
           description: "Optimization is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present. <br> <br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.\t\t\t\t\t\t",
@@ -50546,8 +50546,8 @@ function Mediacleaner() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Welcome to Media Harmony!",
-      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
+      title: "Welcome to Media Harmony",
+      description: "\n\t\t\t\t\tMedia Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. \n\t\t\t\t\t<br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion.\n\t\t\t\t\t<br><br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. \n\t\t\t\t\t<br><br> Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present.\n\t\t\t\t"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {})]
   });
 }
@@ -50764,7 +50764,7 @@ function Support() {
     className: "support-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Frequently asked questions",
-      description: "Here, you'll find answers to commonly asked questions about using Ronik Plugin. If you don't see your question listed, you can have a look at the section below."
+      description: "Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_Faq_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       items: faqItems
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
@@ -50801,8 +50801,8 @@ function Mediacleaner() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
     className: "mediacleaner-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Welcome to the Preserved Library!",
-      description: "Media Harmony will scan your media library for all unlinked JPG, PNG, and GIF files. <br>The total size of your library will determine the time required to scan. <br><br> Change your file size threshold for the scan in the Settings tab. Use the search bar to filter for title keywords and sort files by size below.  <br><br>Review scanned files and individually delete files or preserve files to exclude them from bulk deletion. Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. <br>Use the Bulk Delete Media button to delete all unlinked media listed below that you have not selected for preservation. Please note: Media Harmony automatically scans your database every 24 hours to present files for review; if no files are presented below, there may be no unlinked files present."
+      title: "Preserved Media Library",
+      description: "\n\t\t\t\t\tUnlinked files selected for preservation in the Dashboard will be exempted from bulk deletion and appear in the Preserved Media Library instead of the Dashboard. \n\t\t\t\t\t<br><br>Remove a file from the Preserved Media Library to add it to the Dashboard, where it can be deleted. \n\t\t\t\t\t<br><br>If no files appear below, no unlinked files have been added to the Preserved Media Library. \n\t\t\t\t\t"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
       type: "preserved"
     })]
@@ -50863,7 +50863,7 @@ function Support() {
       description: "If you have any questions, need a hand with a technical issue, or just want to say hi, we've got you covered. Get in touch with us and we'll be happy to assist you!"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "Frequently asked questions",
-      description: "Here, you'll find answers to commonly asked questions about using Ronik Plugin. If you don't see your question listed, you can have a look at the section below."
+      description: "Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_Faq_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       items: faqItems
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {

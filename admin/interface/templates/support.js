@@ -18,7 +18,7 @@ function Support() {
 			<br></br>
 			<ContentBlock
 				title= "Frequently asked questions"
-				description= "Here, you'll find answers to commonly asked questions about using Ronik Plugin. If you don't see your question listed, you can have a look at the section below."
+				description= "Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
 			/>
 			<FAQ
 				items= {faqItems}

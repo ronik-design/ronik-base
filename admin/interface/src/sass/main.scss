@@ -26,10 +26,31 @@ html {
 //   }
 // }
 
+.general-container{
+  max-width: 750px;
+
+  h1{
+    font-size: 3rem;
+    padding-top: 1em;
+  }
+  h2{
+    font-size: 2rem;
+    padding-top: 1em;
+  }
+  h3{
+    font-size: 1.5rem;
+  }
+}
+
+.support-container{
+  max-width: 650px;
+  width: 100%;
+}
 .accordion {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 650px;
 
   .accordion-item {
     display: flex;
@@ -149,11 +170,21 @@ html {
               background-color: #00c666;
               color: #fff;
               margin-right: 10px;
+              transition: all .4s;
               // pointer-events: none;
+
+              &:hover{
+                background-color: #00994d;
+              }
             }
             .delete-btn{
               background-color: #c6003f;
               color: #fff;
+              transition: all .4s;
+
+              &:hover{
+                background-color: #990033;
+              }
             }
             .submit-btn-disabled {
               cursor: progress;
@@ -172,12 +203,27 @@ html {
 
 .rmc-sync__outdated-low a {
   color: #00c666 !important;
+  transition: all .4s;
+
+  &:hover{
+    color: #00994d !important;
+  }
 }
 .rmc-sync__outdated-medium a {
   color: rgb(255, 98, 0) !important;
+  transition: all .4s;
+
+  &:hover{
+    color: #996600 !important;
+  }
 }
 .rmc-sync__outdated-max a {
   color: red !important;
+  transition: all .4s;
+
+  &:hover{
+    color: #990000 !important;
+  }
 }
 
 #wpwrap.loader {
@@ -462,6 +508,7 @@ html {
   border-radius: 4px;
   margin-right: 10px;
   padding-right: 5px;
+  max-width: 600px;
 
   & > div {
     width: 100%;
@@ -669,7 +716,7 @@ html {
       height: 0;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
-      border-bottom: 10px solid #6700ff; /* Color for small */
+      border-bottom: 10px solid #ffffff; /* Color for small */
       position: absolute; /* Adjust positioning if needed */
       left: 50%;
       top: 50%;
@@ -686,7 +733,7 @@ html {
       height: 0;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
-      border-top: 10px solid #6700ff; /* Color for small */
+      border-top: 10px solid #c2c2c2; /* Color for small */
       position: absolute; /* Adjust positioning if needed */
       left: 50%;
       top: 50%;
@@ -761,13 +808,31 @@ html {
         button {
           background-color: #6700ff;
           color: #fff;
+          transition: all .4s;
+
+          &:hover{
+            background-color: #fff;
+            color: #6700ff;
+          }
         }
         button[data-delete-media] img {
           width: 20px;
+          background-color: transparent;
+
+        }
+        button[data-delete-media]{
+          transition: all .4s;
+          &:hover{
+            background-color: #4500b3;
+          }
         }
         a {
           color: #fff;
           text-decoration: underline;
+
+          &:hover{
+            color: #eeff00;
+          }
         }
       }
       .media-collector-table__th {

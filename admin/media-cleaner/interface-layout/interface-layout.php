@@ -4,7 +4,7 @@ $capability = current_user_can('manage_media_cleaner') ? 'manage_media_cleaner' 
 
 add_menu_page(
     'General - Ronik Base', // page <title>Title</title>
-    'Information', // link text
+    'Media Harmony', // link text
     $capability, // user capabilities
     'options-ronik-base-mediacleaner', // page slug
     'ronikbase_support_general', // this function prints the page content

@@ -7,7 +7,7 @@ function General() {
 		<div className='general-container'>
 			<ContentBlock
 				title= "Plugin Info"
-				description= "Thanks for using the Ronik Plugin!"
+				description= "Thanks for using the Media Harmony !"
 			/>
 			<br></br>
 
