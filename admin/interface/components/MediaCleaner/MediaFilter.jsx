@@ -41,6 +41,7 @@ const FilterType = ({
     { value: 'png', label: 'PNG' },
     { value: 'video', label: 'Video' },
     { value: 'misc', label: 'Misc' },
+    { value: 'audio', label: 'Audio' },
   ], []);
 
   // State to control the open/close of the select dropdown

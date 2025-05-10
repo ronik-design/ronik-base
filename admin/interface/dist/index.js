@@ -2943,6 +2943,9 @@ var FilterType = function FilterType(_ref) {
     }, {
       value: 'misc',
       label: 'Misc'
+    }, {
+      value: 'audio',
+      label: 'Audio'
     }];
   }, []);
 

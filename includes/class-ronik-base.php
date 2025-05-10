@@ -183,6 +183,7 @@ class Ronik_Base
 	 */
 	private function define_admin_hooks()
 	{
+		
 		$plugin_admin = new Ronik_Base_Admin($this->get_plugin_name(), $this->get_version(), $this->get_media_cleaner_state(), $this->get_optimization_state(), $this->get_beta_mode());
 
 		$this->loader->add_action('init', $plugin_admin, 'rbp_helper_functions_cookies', 1);
@@ -216,7 +217,6 @@ class Ronik_Base
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner', $plugin_admin, 'rmc_ajax_media_cleaner');
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_media_cleaner_settings', $plugin_admin, 'rmc_ajax_media_cleaner_settings');
 			$this->loader->add_action('wp_ajax_rmc_ajax_media_cleaner_settings', $plugin_admin, 'rmc_ajax_media_cleaner_settings');
-
 			$this->loader->add_action('wp_ajax_nopriv_rmc_ajax_api_determinism', $plugin_admin, 'rmc_ajax_api_determinism');
 			$this->loader->add_action('wp_ajax_rmc_ajax_api_determinism', $plugin_admin, 'rmc_ajax_api_determinism');
 

@@ -224,40 +224,13 @@ class RmcDataGathering
                             // $all_image_ids[] = $imageID;
                             // This is responsible for only getting the large images rather then the tiny ones.
                             if (filesize(get_attached_file($imageID)) >= $file_size) {
-                                // error_log(print_r( 'ssss', true));
                                 $all_image_ids[] = $imageID;
                             }
+                        } else {
+                            // error_log(print_r('FIX', true));
+                            $all_image_ids[] = $imageID;                            
                         }
                     }
-
-
-                    // if (isset($data['rbp_media_cleaner_isdetached']) && $data['rbp_media_cleaner_isdetached'] !== 'rbp_media_cleaner_isdetached_temp-saved') {
-
-                    //     $data['rbp_media_cleaner_isdetached'] = 'rbp_media_cleaner_isdetached_false';
-                    //     wp_update_attachment_metadata($imageID, $data);  // save it back to the db
-
-                    //     if (file_exists(get_attached_file($imageID))) {
-                    //         // finds the total file / image size
-                    //         $filesize = filesize(get_attached_file($imageID));
-                    //         // converts bits to mega bytes
-                    //         $filesize_convert = $filesize / 1024 / 1024;
-                    //         // converts number to format based on locale
-                    //         $filesize  = number_format_i18n($filesize_convert, 3);
-                    //         // creates new meta field with file size of an image
-                    //         update_post_meta($imageID, '_wp_attachment_image_filesize', $filesize);
-
-                    //         // $all_image_ids[] = $imageID;
-                    //         // This is responsible for only getting the large images rather then the tiny ones.
-                    //         if (filesize(get_attached_file($imageID)) >= $file_size) {
-                    //             // error_log(print_r( 'ssss', true));
-                    //             $all_image_ids[] = $imageID;
-                    //         }
-                    //     }
-                    // }
-
-
-
-
                 }
                 return $all_image_ids;
             }

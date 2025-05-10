@@ -8,7 +8,8 @@
         "admin/classes/",
         "admin/helper/",
         "admin/media-cleaner/classes/",
-        "admin/media-cleaner/functions/"
+        "admin/media-cleaner/functions/",
+        "admin/tracker/classes/"
       ]
     }
   },

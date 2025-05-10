@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Ronik\\Base\\' => array($baseDir . '/admin/classes', $baseDir . '/admin/helper', $baseDir . '/admin/media-cleaner/classes', $baseDir . '/admin/media-cleaner/functions'),
+    'Ronik\\Base\\' => array($baseDir . '/admin/classes', $baseDir . '/admin/helper', $baseDir . '/admin/media-cleaner/classes', $baseDir . '/admin/media-cleaner/functions', $baseDir . '/admin/tracker/classes'),
 );

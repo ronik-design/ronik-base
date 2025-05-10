@@ -20,6 +20,7 @@ class ComposerStaticInite78624dc21f8ab96641b8f0f69088389
             1 => __DIR__ . '/../..' . '/admin/helper',
             2 => __DIR__ . '/../..' . '/admin/media-cleaner/classes',
             3 => __DIR__ . '/../..' . '/admin/media-cleaner/functions',
+            4 => __DIR__ . '/../..' . '/admin/tracker/classes',
         ),
     );
 

@@ -120,7 +120,31 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
                 );
                 // $f_img_mod = preg_replace(array('/width="[^"]*"/', '/height="[^"]*"/'), '', $f_img);
                 if(!$f_img){
-                    $f_img = '<img src="data:image/svg+xml,%3Csvg xmlns=&#039;http://www.w3.org/2000/svg&#039; viewBox=&#039;0 0 100 100&#039;%3E%3C/svg%3E" class=" lzy_img reveal-disabled"  decoding="async" data-src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/not_found.jpg" data-id="'.$image_id.'" data-class="image-target" data-width="1" data-height ="1" data-type="" />';
+
+                    $attachment_metadata = wp_get_attachment_metadata( $image_id);
+                    $custom_file_type = 'thumb-misc-file.jpg';
+                    
+                    if(isset($attachment_metadata['mime_type']) && $attachment_metadata['mime_type']){
+                        error_log(  print_r( $attachment_metadata['mime_type'], true));
+                        error_log(  print_r( $f_image_path, true));
+                        if(str_contains($attachment_metadata['mime_type'], 'video/')){
+                            $custom_file_type = 'thumb-video-file.jpg';
+                        }
+                        if(str_contains($attachment_metadata['mime_type'], 'audio/')){
+                            $custom_file_type = 'thumb-audio-file.jpg';
+                        }
+                    } else{
+                        $custom_file_type = 'thumb-misc-file.jpg';
+                    }
+
+
+
+
+                    $f_img = '<img src="data:image/svg+xml,%3Csvg xmlns=&#039;http://www.w3.org/2000/svg&#039; viewBox=&#039;0 0 100 100&#039;%3E%3C/svg%3E" 
+                    class=" lzy_img reveal-disabled"  
+                    decoding="async" 
+                    data-src="/wp-content/plugins/ronik-base/admin/media-cleaner/image/'.$custom_file_type .'" 
+                    data-id="'.$image_id.'" data-class="image-target" data-width="1" data-height ="1" data-type="" />';
                 }
                 $f_img_mod2 = preg_replace(array('/srcset="[^"]*"/'), '', $f_img);
                 $f_img_mod3 = preg_replace(array('/sizes="[^"]*"/'), '', $f_img_mod2);
@@ -247,7 +271,7 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
     $filters = $data->get_param( 'filter' );
 
     if((str_contains($filters, 'all') || empty($filters)) && $data['slug'] == 'large' || $data['slug'] == 'small'){    
-        if( !str_contains($filters, 'gif') && !str_contains($filters, 'jpg') && !str_contains($filters, 'png') && !str_contains($filters, 'video')  && !str_contains($filters, 'misc') ){
+        if( !str_contains($filters, 'audio') && !str_contains($filters, 'gif') && !str_contains($filters, 'jpg') && !str_contains($filters, 'png') && !str_contains($filters, 'video')  && !str_contains($filters, 'misc') ){
             if($data['slug'] == 'large' || $data['slug'] == 'small'){
                 if($rbp_media_cleaner_media_data){
                     return mediaDataSizeFormatter($rbp_media_cleaner_media_data, $data['slug'], $referer);
@@ -322,6 +346,12 @@ function ronikdesignsbase_mediacleaner_data( $data ) {
         $select_attachment_type['gif'] = "image/gif";
         $select_attachment_type['png'] = "image/png";
         $select_attachment_type['pdf'] = "application/pdf";
+        $select_attachment_type['mp3|m4a|m4b'] = "audio/mpeg";
+        $select_attachment_type['wav'] = "audio/wav";
+        $select_attachment_type['ogg'] = "audio/ogg";
+        $select_attachment_type['wma'] = "audio/x-ms-wma";
+        $select_attachment_type['aac'] = "audio/aac";
+        $select_attachment_type['flac'] = "audio/flac";
         $select_attachment_type['asf|asx'] = "video/x-ms-asf";
         $select_attachment_type['wmv'] = "video/x-ms-wmv";
         $select_attachment_type['wmx'] = "video/x-ms-wmx";

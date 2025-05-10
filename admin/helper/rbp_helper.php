@@ -26,6 +26,26 @@ function formatSizeUnits($bytes)
 	return $bytes;
 }
 
+// POST CLEANING
+function cleanInputPOST() {
+	function cleanInput($input){
+		$search = array(
+		  '@<script[^>]*?>.*?</script>@si',
+		  '@<[\/\!]*?[^<>]*?>@si',
+		  '@<style[^>]*?>.*?</style>@siU',
+		  '@<![\s\S]*?--[ \t\n\r]*>@'
+		);
+		$output = preg_replace($search, '', $input);
+		$additional_output = sanitize_text_field( $output );
+		return $additional_output;
+	}
+	// Next lets santize the post data.
+	foreach ($_POST as $key => $value) {
+		$_POST[$key] = cleanInput($value);
+	}
+}
+
+
 function rmc_getLineWithString_ronikdesigns($fileName, $id)
 {
 	$f_attached_file = get_attached_file($id);
@@ -87,6 +107,13 @@ function cleaner_post_mime_type($mime_type)
 				$select_attachment_type['png'] = "image/png";
 			} else if ($type == 'pdf') {
 				$select_attachment_type['pdf'] = "application/pdf";
+			} else if ($type == 'audio') {
+				$select_attachment_type['mp3|m4a|m4b'] = "audio/mpeg";
+				$select_attachment_type['wav'] = "audio/wav";
+				$select_attachment_type['ogg'] = "audio/ogg";
+				$select_attachment_type['wma'] = "audio/x-ms-wma";
+				$select_attachment_type['aac'] = "audio/aac";
+				$select_attachment_type['flac'] = "audio/flac";
 			} else if ($type == 'video') {
 				$select_attachment_type['asf|asx'] = "video/x-ms-asf";
 				$select_attachment_type['wmv'] = "video/x-ms-wmv";
@@ -120,6 +147,12 @@ function cleaner_post_mime_type($mime_type)
 				$select_attachment_type['gif'] = "image/gif";
 				$select_attachment_type['png'] = "image/png";
 				$select_attachment_type['pdf'] = "application/pdf";
+				$select_attachment_type['mp3|m4a|m4b'] = "audio/mpeg";
+				$select_attachment_type['wav'] = "audio/wav";
+				$select_attachment_type['ogg'] = "audio/ogg";
+				$select_attachment_type['wma'] = "audio/x-ms-wma";
+				$select_attachment_type['aac'] = "audio/aac";
+				$select_attachment_type['flac'] = "audio/flac";
 				$select_attachment_type['asf|asx'] = "video/x-ms-asf";
 				$select_attachment_type['wmv'] = "video/x-ms-wmv";
 				$select_attachment_type['wmx'] = "video/x-ms-wmx";
