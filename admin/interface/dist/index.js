@@ -2354,57 +2354,61 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState2 = _slicedToArray(_useState, 2),
     hasLoaded = _useState2[0],
     setHasLoaded = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
-    mediaCollector = _useState4[0],
-    setMediaCollector = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam("page_number", 0))),
+    showLoader = _useState4[0],
+    setShowLoader = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState6 = _slicedToArray(_useState5, 2),
-    filterPager = _useState6[0],
-    setFilterPager = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_size", fileSize)),
+    mediaCollector = _useState6[0],
+    setMediaCollector = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(getQueryParam("page_number", 0))),
     _useState8 = _slicedToArray(_useState7, 2),
-    filterMode = _useState8[0],
-    setFilterMode = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_type", "all")),
+    filterPager = _useState8[0],
+    setFilterPager = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_size", fileSize)),
     _useState10 = _slicedToArray(_useState9, 2),
-    filterType = _useState10[0],
-    setFilterType = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    filterMode = _useState10[0],
+    setFilterMode = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(getQueryParam("filter_type", "all")),
     _useState12 = _slicedToArray(_useState11, 2),
-    mediaCollectorLow = _useState12[0],
-    setMediaCollectorLow = _useState12[1];
+    filterType = _useState12[0],
+    setFilterType = _useState12[1];
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState14 = _slicedToArray(_useState13, 2),
-    mediaCollectorHigh = _useState14[0],
-    setMediaCollectorHigh = _useState14[1];
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    mediaCollectorLow = _useState14[0],
+    setMediaCollectorLow = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState16 = _slicedToArray(_useState15, 2),
-    unPreserveImageId = _useState16[0],
-    setUnPreserveImageId = _useState16[1];
+    mediaCollectorHigh = _useState16[0],
+    setMediaCollectorHigh = _useState16[1];
   var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState18 = _slicedToArray(_useState17, 2),
-    preserveImageId = _useState18[0],
-    setPreserveImageId = _useState18[1];
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    unPreserveImageId = _useState18[0],
+    setUnPreserveImageId = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState20 = _slicedToArray(_useState19, 2),
-    deleteImageId = _useState20[0],
-    setDeleteImageId = _useState20[1];
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["all"]),
+    preserveImageId = _useState20[0],
+    setPreserveImageId = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState22 = _slicedToArray(_useState21, 2),
-    selectedDataFormValues = _useState22[0],
-    setSelectedDataFormValues = _useState22[1];
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
+    deleteImageId = _useState22[0],
+    setDeleteImageId = _useState22[1];
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["all"]),
+    _useState24 = _slicedToArray(_useState23, 2),
+    selectedDataFormValues = _useState24[0],
+    setSelectedDataFormValues = _useState24[1];
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
       value: "all",
       label: "All"
     }]),
-    _useState24 = _slicedToArray(_useState23, 2),
-    selectedFormValues = _useState24[0],
-    setSelectedFormValues = _useState24[1];
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState26 = _slicedToArray(_useState25, 2),
-    mediaCollectorPreserved = _useState26[0],
-    setMediaCollectorPreserved = _useState26[1];
+    selectedFormValues = _useState26[0],
+    setSelectedFormValues = _useState26[1];
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState28 = _slicedToArray(_useState27, 2),
+    mediaCollectorPreserved = _useState28[0],
+    setMediaCollectorPreserved = _useState28[1];
   // const { lazyLoader } = useLazyLoader();
 
   // Utility function to get query parameters
@@ -2766,8 +2770,25 @@ var MediaCollector = function MediaCollector(_ref) {
     return null;
   };
 
+  // Effect to handle delayed loader
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var timer;
+    if (!hasLoaded) {
+      timer = setTimeout(function () {
+        setShowLoader(true);
+      }, 1000); // 1 second delay
+    } else {
+      setShowLoader(false);
+    }
+    return function () {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [hasLoaded]);
+
   // Render component
-  if (!hasLoaded) {
+  if (!hasLoaded && showLoader) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(LoaderOverlay, {});
   }
 
@@ -2959,6 +2980,20 @@ var FilterType = function FilterType(_ref) {
     manualClear = _useState4[0],
     setManualClear = _useState4[1];
 
+  // Function to handle selecting all options
+  var handleSelectAll = function handleSelectAll() {
+    setSelectedFormValues(options);
+    setSelectedDataFormValues(options.map(function (option) {
+      return option.value;
+    }));
+    setFilterMode('large');
+  };
+
+  // Check if all options are selected
+  var areAllOptionsSelected = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    return (selectedFormValues === null || selectedFormValues === void 0 ? void 0 : selectedFormValues.length) === options.length;
+  }, [selectedFormValues, options]);
+
   // Initialize all options as selected when the component first renders
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var _selectedFormValues$;
@@ -3053,6 +3088,10 @@ var FilterType = function FilterType(_ref) {
           return null;
         },
         // Disable caret by setting DropdownIndicator to null
+        IndicatorSeparator: function IndicatorSeparator() {
+          return null;
+        },
+        // Remove the separator line
         ClearIndicator: function ClearIndicator(props) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ClearIndicator, _objectSpread(_objectSpread({}, props), {}, {
             setSelectedFormValues: setSelectedFormValues,
@@ -3070,10 +3109,23 @@ var FilterType = function FilterType(_ref) {
         // console.log('Menu closed');
         setMenuIsOpen(false);
       } // Ensure menu closes when selection is made
+    }), !areAllOptionsSelected && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+      className: "all-button",
+      onClick: handleSelectAll,
+      style: {
+        marginTop: '0',
+        marginLeft: '8px',
+        padding: '4px 8px',
+        backgroundColor: '#f0f0f0',
+        border: '1px solid #ddd',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontSize: '12px'
+      },
+      children: "Select All"
     })]
   });
 };
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilterType);
 
 /***/ }),

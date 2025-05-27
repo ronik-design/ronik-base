@@ -19,6 +19,7 @@ const MediaCollector = ({ type }) => {
   // }
 
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const [mediaCollector, setMediaCollector] = useState(null);
   const [filterPager, setFilterPager] = useState(
     parseInt(getQueryParam("page_number", 0))
@@ -381,8 +382,26 @@ const MediaCollector = ({ type }) => {
     return null;
   };
 
+  // Effect to handle delayed loader
+  useEffect(() => {
+    let timer;
+    if (!hasLoaded) {
+      timer = setTimeout(() => {
+        setShowLoader(true);
+      }, 1000); // 1 second delay
+    } else {
+      setShowLoader(false);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [hasLoaded]);
+
   // Render component
-  if (!hasLoaded) {
+  if (!hasLoaded && showLoader) {
     return <LoaderOverlay />;
   }
 

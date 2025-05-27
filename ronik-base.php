@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://www.ronikdesign.com/
- * @since             0.0.0.9
+ * @since             0.0.0.10
  * @package           Ronik_Base
  *
  * @wordpress-plugin
  * Plugin Name:       Ronik Tools: Media Harmony
  * Plugin URI:        https://www.ronikdesign.com/
  * Description:       Clean out unused media -- your website will thank you! This plugin uses Advanced Custom Fields to run
- * Version:           0.0.0.9
+ * Version:           0.0.0.10
  * Author:            Ronik
  * Author URI:        https://www.ronikdesign.com/
  * License:           GPL-2.0+
@@ -44,7 +44,7 @@ use Ronik\Base\RonikBaseHelper;
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('RONIK_BASE_VERSION', '0.0.0.9');
+define('RONIK_BASE_VERSION', '0.0.0.10');
 
 
 /**

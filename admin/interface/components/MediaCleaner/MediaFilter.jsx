@@ -48,6 +48,18 @@ const FilterType = ({
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [manualClear, setManualClear] = useState(false);
 
+  // Function to handle selecting all options
+  const handleSelectAll = () => {
+    setSelectedFormValues(options);
+    setSelectedDataFormValues(options.map(option => option.value));
+    setFilterMode('large');
+  };
+
+  // Check if all options are selected
+  const areAllOptionsSelected = useMemo(() => {
+    return selectedFormValues?.length === options.length;
+  }, [selectedFormValues, options]);
+
   // Initialize all options as selected when the component first renders
   useEffect(() => {
     // console.log('useEffect triggered');
@@ -123,6 +135,7 @@ const FilterType = ({
         }}
         components={{
           DropdownIndicator: () => null, // Disable caret by setting DropdownIndicator to null
+          IndicatorSeparator: () => null, // Remove the separator line
           ClearIndicator: (props) => (
             <ClearIndicator
               {...props}
@@ -138,6 +151,24 @@ const FilterType = ({
           setMenuIsOpen(false);
         }} // Ensure menu closes when selection is made
       />
+      {!areAllOptionsSelected && (
+        <button 
+          className="all-button" 
+          onClick={handleSelectAll}
+          style={{
+            marginTop: '0',
+            marginLeft: '8px',
+            padding: '4px 8px',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '12px'
+          }}
+        >
+          Select All
+        </button>
+      )}
     </div>
   );
 };

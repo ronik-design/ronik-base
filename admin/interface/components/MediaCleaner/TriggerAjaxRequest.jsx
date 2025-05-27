@@ -128,7 +128,7 @@ const FetchAddon = ({ requestType, postOveride = null }) => {
       }
     }
 
-    handleLoaderState(userOption);
+    handleLoaderState(userOption);    
   };
 
   return (

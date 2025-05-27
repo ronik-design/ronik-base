@@ -122,21 +122,23 @@
                                     }
                                 }, 100000);
                             } else {
-                                var element = document.getElementById("wpwrap");
-                                element.classList.add("active-loader");
-                                const f_wpwrap = document.querySelector("#wpwrap");
-                                const f_wpcontent = document.querySelector("#wpcontent");
-                                if (f_wpwrap) {
-                                    f_wpwrap.classList.add('loader');
-                                    f_wpcontent.insertAdjacentHTML('beforebegin', `
-                                        <div class="progress-bar"></div>
-                                        <div class="centered-blob">
-                                            <div class="blob-1"></div>
-                                            <div class="blob-2"></div>
-                                        </div>
-                                        <div class="page-counter">Please do not refresh the page!</div>
-                                    `);
-                                }
+                                    var element = document.getElementById("wpwrap");
+                                    element.classList.add("active-loader");
+                                    const f_wpwrap = document.querySelector("#wpwrap");
+                                    const f_wpcontent = document.querySelector("#wpcontent");
+                                    if (f_wpwrap) {
+                                        f_wpwrap.classList.add('loader');
+                                        f_wpcontent.insertAdjacentHTML('beforebegin', `
+                                            <div class="progress-bar"></div>
+                                            <div class="centered-blob">
+                                                <div class="blob-1"></div>
+                                                <div class="blob-2"></div>
+                                            </div>
+                                            <div class="page-counter">Please do not refresh the page!</div>
+                                        `);
+                                    }
+
+
                             }
                         }
                     }
