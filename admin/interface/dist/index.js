@@ -2776,7 +2776,7 @@ var MediaCollector = function MediaCollector(_ref) {
     if (!hasLoaded) {
       timer = setTimeout(function () {
         setShowLoader(true);
-      }, 1000); // 1 second delay
+      }, 5000); // 1 second delay
     } else {
       setShowLoader(false);
     }
