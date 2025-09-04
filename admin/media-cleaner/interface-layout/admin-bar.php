@@ -10,22 +10,36 @@ function add_item($admin_bar)
 
     $f_detector = get_option('rbp_media_cleaner_counter');
     $f_sync = get_option('rbp_media_cleaner_sync-time');
+    $f_sync_reason = get_option('rbp_media_cleaner_sync-reason');
+
+
     // Default status low
     $f_outdated = 'rmc-sync__outdated-low';
     $f_message = '';
+    $f_message_reason = '';
+
+
+
+    if($f_sync_reason){
+        if( $f_sync_reason == 'media-uploaded-attachment' ){
+            $f_message_reason .= 'Media out of sync. Due to media attachment.';
+        } else if( $f_sync_reason == 'media-uploaded-saved' ){
+            $f_message_reason .= 'Media out of sync. Due to post save.';        
+        }
+    }
 
     if ($f_detector && $f_detector > 0) {
         $f_message = 'Last Sync: ' . $f_sync;
         $f_outdated = 'rmc-sync__outdated-low';
     }
     if (strtotime('-1 day') > strtotime($f_sync)) {
-        $f_message = 'Outdated synchronization.';
+        $f_message .= 'Last Sync: ' . date('m/d/Y h:ia', strtotime(str_replace('Z05', '', $f_sync))) . ' | Outdated synchronization.';        
         $f_outdated = 'rmc-sync__outdated-max';
     } elseif (strtotime('-1 hours') > strtotime($f_sync)) {
-        $f_message = 'Outdated synchronization.';
+        $f_message .= 'Last Sync: ' . date('m/d/Y h:ia', strtotime(str_replace('Z05', '', $f_sync))) . ' | Outdated synchronization.';        
         $f_outdated = 'rmc-sync__outdated-medium';
     } else {
-        $f_message = 'Last Sync: ' . $f_sync;
+        $f_message = 'Last Sync: ' . date('m/d/Y h:ia', strtotime(str_replace('Z05', '', $f_sync)));
         $f_outdated = 'rmc-sync__outdated-low';
     }
 
@@ -57,8 +71,40 @@ function add_item($admin_bar)
             )
         )
     );
-    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __($f_message), 'id' => 'rmc-drafts',  'href' => '', 'meta' => array('target' => '_blank')));
-    $admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Initiate Scan'), 'id' => 'rmc-sync', 'href' => '/', 'meta' => array('target' => '_blank')));
+
+    $admin_bar->add_menu(
+        array(
+            'parent' => $menu_id, 
+            'title' => __($f_message_reason), 
+            'id' => 'rmc-reason',  
+            'href' => '', 
+            'meta' => array(
+                'target' => '_blank'
+            )
+        )
+    );
+    $admin_bar->add_menu(
+        array(
+            'parent' => $menu_id, 
+            'title' => __($f_message), 
+            'id' => 'rmc-drafts',  
+            'href' => '', 
+            'meta' => array(
+                'target' => '_blank'
+            )
+        )
+    );
+    $admin_bar->add_menu(
+        array(
+            'parent' => $menu_id, 
+            'title' => __('Initiate Scan'), 
+            'id' => 'rmc-sync', 
+            'href' => '/', 
+            'meta' => array(
+                'target' => '_blank'
+            )
+        )
+    );
 }
 
 /* Here you trigger the ajax handler function using jQuery */

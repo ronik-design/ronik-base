@@ -1,25 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MediaTable from "./MediaTable";
-import "./MediaCollectorLoader.css";
+import useMediaCleanerStore from "./stores/mediaCleanerStore";
 
 const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
-// const { FilterMedia, MediaCollectorTable, PreservedMediaCollectorTable } =
-//   MediaTable;
 
 const MediaCollector = ({ type }) => {
-  //   const [pageDetector, setPageDetector] = useState(
-  //     getQueryParam("page", "options-ronik-base_media_cleaner") ==
-  //       "options-ronik-base_media_cleaner"
-  //       ? "mediacollector"
-  //       : "mediacollectorpreserved"
-  //   );
-  let fileSize = "large";
-  // if(pageDetector == 'mediacollectorpreserved'){
-  //     fileSize = 'all';
-  // }
-
+  const fileSize = "large";
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [showLoader, setShowLoader] = useState(false);
   const [mediaCollector, setMediaCollector] = useState(null);
   const [filterPager, setFilterPager] = useState(
     parseInt(getQueryParam("page_number", 0))
@@ -27,21 +14,18 @@ const MediaCollector = ({ type }) => {
   const [filterMode, setFilterMode] = useState(
     getQueryParam("filter_size", fileSize)
   );
-
-  const [filterType, setFilterType] = useState(
-    getQueryParam("filter_type", "all")
-  );
   const [mediaCollectorLow, setMediaCollectorLow] = useState(null);
   const [mediaCollectorHigh, setMediaCollectorHigh] = useState(null);
   const [unPreserveImageId, setUnPreserveImageId] = useState([]);
   const [preserveImageId, setPreserveImageId] = useState([]);
   const [deleteImageId, setDeleteImageId] = useState(null);
-  const [selectedDataFormValues, setSelectedDataFormValues] = useState(["all"]);
-  const [selectedFormValues, setSelectedFormValues] = useState([
-    { value: "all", label: "All" },
-  ]);
   const [mediaCollectorPreserved, setMediaCollectorPreserved] = useState(null);
-  // const { lazyLoader } = useLazyLoader();
+  
+  // Use Zustand store for filters
+  const { selectedFilters } = useMediaCleanerStore();
+  
+  // Convert store filters to the format expected by the component
+  const selectedDataFormValues = selectedFilters.length > 0 ? selectedFilters : ["all"];
 
   // Utility function to get query parameters
   function getQueryParam(param, defaultValue) {
@@ -49,51 +33,52 @@ const MediaCollector = ({ type }) => {
     return params.get(param) || defaultValue;
   }
 
-  // Lazy load images in aswell as image compression.
+  // Lazy load images as well as image compression
   function lazyLoader() {
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const lazyImage = entry.target;
-          fetch(lazyImage.dataset.src)
-            .then(() => {
-              var imageSelector = document.querySelector(
-                '[data-id="' + lazyImage.getAttribute("data-id") + '"]'
+          fetch(lazyImage.dataset.src).then(() => {
+            const imageSelector = document.querySelector(
+              `[data-id="${lazyImage.getAttribute("data-id")}"]`
+            );
+            lazyImage.className = "lzy_img reveal-enabled";
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            img.crossOrigin = "";
+            img.src = lazyImage.getAttribute("data-src");
+            img.onload = function () {
+              canvas.width = this.naturalWidth;
+              canvas.height = this.naturalHeight;
+              ctx.drawImage(this, 0, 0);
+              canvas.toBlob(
+                function (blob) {
+                  if (imageSelector) {
+                    imageSelector.src = URL.createObjectURL(blob);
+                  }
+                },
+                lazyImage.getAttribute("data-type"),
+                0.5
               );
-              lazyImage.className = " reveal-enabled";
-              var c = document.createElement("canvas");
-              var ctx = c.getContext("2d");
-              var img = new Image();
-              img.crossOrigin = ""; // if from different origin
-              img.src = lazyImage.getAttribute("data-src");
-              img.onload = function () {
-                c.width = this.naturalWidth; // update canvas size to match image
-                c.height = this.naturalHeight;
-                ctx.drawImage(this, 0, 0); // draw in image
-                c.toBlob(
-                  function (blob) {
-                    // get content as JPEG blob
-                    // here the image is a blob
-                    if (imageSelector) {
-                      imageSelector.src = URL.createObjectURL(blob);
-                    }
-                  },
-                  lazyImage.getAttribute("data-type"),
-                  0.5
-                );
-              };
-            });
+            };
+          });
         }
       });
     });
-    const arr = document.querySelectorAll("img.lzy_img");
-    arr.forEach((v) => {
-      imageObserver.observe(v);
-    });
+    
+    const images = document.querySelectorAll("img.lzy_img");
+    images.forEach((img) => imageObserver.observe(img));
   }
-  setTimeout(() => {
-    lazyLoader();
-  }, 50);
+
+  // Run lazyLoader when component has loaded and data is available
+  useEffect(() => {
+    if (hasLoaded) {
+      const timer = setTimeout(lazyLoader, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [hasLoaded , filterPager]);
 
   // Effect to handle image deletion
   useEffect(() => {
@@ -115,7 +100,6 @@ const MediaCollector = ({ type }) => {
       handlePostDataPreserve("invalid", unPreserveImageId);
     }
     fetchPreservedMedia();
-    lazyLoader();
   }, [unPreserveImageId]);
 
   // Fetch preserved media and update the loading state
@@ -127,7 +111,6 @@ const MediaCollector = ({ type }) => {
         if (data.length) {
           setMediaCollectorPreserved(data);
         }
-        // Ensure loader is removed after data is fetched
         setHasLoaded(true);
         removeLoader();
       })
@@ -147,7 +130,7 @@ const MediaCollector = ({ type }) => {
     const endpoint = filterMode
       ? `${filterMode}?filter=${route}`
       : `all?filter=${route}`;
-    // alert(pageDetector);
+
     fetch(`/wp-json/mediacleaner/v1/mediacollector/${endpoint}`)
       .then((response) => response.json())
       .then((data) => {
@@ -155,7 +138,7 @@ const MediaCollector = ({ type }) => {
           setMediaCollectorPreserved(data);
           setMediaCollector(data);
           setTimeout(() => {
-            setHasLoaded(true); // Simulate delay
+            setHasLoaded(true);
             removeLoader();
           }, 0);
         }
@@ -165,7 +148,7 @@ const MediaCollector = ({ type }) => {
         setHasLoaded(true);
         removeLoader();
       });
-  }, [selectedDataFormValues, filterMode]);
+  }, [selectedFilters, filterMode]);
 
   // Effect to update URL based on filter mode
   useEffect(() => {
@@ -195,16 +178,16 @@ const MediaCollector = ({ type }) => {
       const filter = e.target.getAttribute("data-filter");
       if (filter) {
         setFilterMode(filter);
-        const route = filter === "high" ? "large" : "small";
-        const endpoint = `/wp-json/mediacleaner/v1/mediacollector/${route}?filter=${selectedDataFormValues.join(
-          "?"
-        )}`;
+        const route = filter === "large" ? "large" : "small";
+        const endpoint = `/wp-json/mediacleaner/v1/mediacollector/${route}?filter=${selectedFilters.join("?")}`;
+
+        alert(endpoint);
 
         fetch(endpoint)
           .then((response) => response.json())
           .then((data) => {
             if (data.length) {
-              filter === "high"
+              filter === "large"
                 ? setMediaCollectorHigh(data)
                 : setMediaCollectorLow(data);
             }
@@ -218,7 +201,7 @@ const MediaCollector = ({ type }) => {
           });
       }
     },
-    [selectedDataFormValues]
+    [selectedFilters]
   );
 
   // Function to handle post data deletion
@@ -261,34 +244,22 @@ const MediaCollector = ({ type }) => {
       });
       const result = await response.json();
       if (result?.data === "Reload") {
-        // alert('preserveImageId' + preserveImageId);
-        // alert('unPreserveImageId' + unPreserveImageId);
-        let $res_message, $res_url;
+        let resMessage, resUrl;
 
         if (preserveImageId !== "invalid") {
-          $res_message =
-            "Media is preserved. Would you like to view the preserved content?";
-          $res_url =
-            "/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=" +
-            preserveImageId;
+          resMessage = "Media is preserved. Would you like to view the preserved content?";
+          resUrl = `/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=${preserveImageId}`;
         }
         if (unPreserveImageId !== "invalid") {
-          $res_message =
-            "Media is unpreserved. Would you like to view the unpreserved content?";
-          $res_url =
-            "/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=" +
-            unPreserveImageId;
+          resMessage = "Media is unpreserved. Would you like to view the unpreserved content?";
+          resUrl = `/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=${unPreserveImageId}`;
         }
 
-        if (confirm($res_message)) {
-          // User clicked OK
-          // Redirect to the specified URL
+        if (confirm(resMessage)) {
           setTimeout(() => {
-            window.location.href = $res_url;
-          }, 50); // Add a slight delay (100ms)
+            window.location.href = resUrl;
+          }, 50);
         } else {
-          // User clicked Cancel
-          // Do nothing or perform an alternative action
           setTimeout(() => location.reload(), 50);
         }
       }
@@ -302,35 +273,28 @@ const MediaCollector = ({ type }) => {
     const wpwrap = document.querySelector("#wpwrap");
     const centeredBlob = document.querySelector(".centered-blob");
 
-    // For ping validator we need to add a class to the wpwrap to ensure user cant click call.
-    if (!wpwrap.classList.contains("active-loader")) {
-      if (wpwrap) {
-        wpwrap.classList.remove("loader");
-      }
-      if (centeredBlob) {
-        centeredBlob.remove();
-      }
+    // For ping validator we need to add a class to the wpwrap to ensure user can't click call.
+    if (!wpwrap?.classList.contains("active-loader")) {
+      wpwrap?.classList.remove("loader");
+      centeredBlob?.remove();
     }
   };
 
   // Define activation functions
   const activatePreserve = (e) => {
-    e.stopPropagation(); // Prevents event bubbling, if necessary
+    e.stopPropagation();
 
     const target = e.target;
     const mediaId = target.getAttribute("data-preserve-media");
     if (mediaId) {
-      //   alert("Media is preserved!");
       setPreserveImageId([mediaId]);
     } else {
-      //   alert("Media is unpreserved!");
       setUnPreserveImageId([target.getAttribute("data-unpreserve-media")]);
     }
-    // Find the closest <tr> element
-    const row = target.closest("tr");
 
+    // Find the closest <tr> element and remove it
+    const row = target.closest("tr");
     if (row) {
-      // Remove the row if found
       row.remove();
     } else {
       console.error("No <tr> ancestor found.");
@@ -342,68 +306,10 @@ const MediaCollector = ({ type }) => {
     const mediaId =
       target.getAttribute("data-delete-media") ||
       target.closest("tr").getAttribute("data-media-id");
-    if (mediaId) {
-      if (confirm("Are you sure you want to continue?")) {
-        setDeleteImageId(mediaId);
-      }
+    if (mediaId && confirm("Are you sure you want to continue?")) {
+      setDeleteImageId(mediaId);
     }
   };
-
-  // Loader overlay component
-  const LoaderOverlay = () => {
-    React.useEffect(() => {
-      document.body.classList.add("media-cleaner-loader-active");
-      // Inject loader after #wpwrap (as first child)
-      const wpwrap = document.getElementById("wpwrap");
-      let loaderDiv = null;
-      if (wpwrap) {
-        loaderDiv = document.createElement("div");
-        loaderDiv.className = "media-cleaner-loader-overlay-portal";
-        loaderDiv.innerHTML = `
-          <div class="media-cleaner-loader-overlay">
-            <div class="media-cleaner-loader-inner">
-              <div class="media-cleaner-loader-spinner">
-                <div class="blob-1"></div>
-                <div class="blob-2"></div>
-              </div>
-            </div>
-          </div>
-        `;
-        wpwrap.insertBefore(loaderDiv, wpwrap.firstChild);
-      }
-      return () => {
-        document.body.classList.remove("media-cleaner-loader-active");
-        if (loaderDiv && loaderDiv.parentNode) {
-          loaderDiv.parentNode.removeChild(loaderDiv);
-        }
-      };
-    }, []);
-    // Render nothing in React tree, loader is injected into DOM
-    return null;
-  };
-
-  // Effect to handle delayed loader
-  useEffect(() => {
-    let timer;
-    if (!hasLoaded) {
-      timer = setTimeout(() => {
-        setShowLoader(true);
-      }, 5000); // 1 second delay
-    } else {
-      setShowLoader(false);
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [hasLoaded]);
-
-  // Render component
-  if (!hasLoaded && showLoader) {
-    return <LoaderOverlay />;
-  }
 
   // Function to get the value of a query parameter from the URL
   function getQueryParameter(name) {
@@ -413,20 +319,15 @@ const MediaCollector = ({ type }) => {
 
   // Function to scroll to the element with matching data-media-id
   function scrollToMediaItem(mediaId, offset = 0) {
-    if (!mediaId) return; // Exit if no mediaId is provided
+    if (!mediaId) return;
 
-    // Find the element with the matching data-media-id attribute
     const element = document.querySelector(`tr[data-media-id="${mediaId}"]`);
-
     if (element) {
-      element.classList.add("highlighted"); // Replace 'highlighted' with your desired class name
+      element.classList.add("highlighted");
 
-      // Calculate the position to scroll to, accounting for the offset
-      const elementPosition =
-        element.getBoundingClientRect().top + window.scrollY;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const scrollToPosition = elementPosition - offset;
 
-      // Smoothly scroll to the calculated position
       window.scrollTo({
         top: scrollToPosition,
         behavior: "smooth",
@@ -435,64 +336,50 @@ const MediaCollector = ({ type }) => {
       console.log(`Element with data-media-id="${mediaId}" not found.`);
     }
   }
-  // Specify an offset value (e.g., 100 pixels)
-  const offsetValue = 100;
-  // Get the 'media_id' parameter value from the URL
-  const mediaId = getQueryParameter("media_id");
 
-  // Set a delay (e.g., 500 milliseconds) before calling the scrollToMediaItem function
-  setTimeout(() => {
-    scrollToMediaItem(mediaId, offsetValue);
-  }, 500);
+  // Scroll to media item if media_id is in URL
+  useEffect(() => {
+    const mediaId = getQueryParameter("media_id");
+    const offsetValue = 100;
+
+    if (mediaId) {
+      const timer = setTimeout(() => {
+        scrollToMediaItem(mediaId, offsetValue);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Common props for both table components
+  const commonTableProps = {
+    type,
+    filterMode,
+    setFilterPager,
+    filter_size,
+    filterPager,
+    mediaCollectorHigh,
+    mediaCollectorLow,
+    activateDelete,
+    activatePreserve,
+  };
+
+  if(mediaCollector === "no-images"){
+    return <p>No Media Found!</p>;
+  }
 
   return (
     <>
-      <div className="message"> </div>
-      {/* <FilterMedia
-            selectedFormValues={selectedFormValues}
-            setFilterMode={setFilterMode}
-            setSelectedFormValues={setSelectedFormValues}
-            setSelectedDataFormValues={setSelectedDataFormValues}
-        /> */}
       <MediaCollectorTable
-        type={type}
+        {...commonTableProps}
         mediaCollector={mediaCollector}
-        selectedFormValues={selectedFormValues}
-        filterMode={filterMode}
-        setFilterMode={setFilterMode}
-        setSelectedFormValues={setSelectedFormValues}
-        setSelectedDataFormValues={setSelectedDataFormValues}
-        setFilterPager={setFilterPager}
-        setFilterType={setFilterType}
-        filter_size={filter_size}
-        filterPager={filterPager}
-        filter={filterMode}
-        filterType={filterType}
-        mediaCollectorHigh={mediaCollectorHigh}
-        mediaCollectorLow={mediaCollectorLow}
-        activateDelete={activateDelete}
-        activatePreserve={activatePreserve}
       />
       <PreservedMediaCollectorTable
-        type={type}
-        mediaCollectorPreserved={mediaCollectorPreserved}
-        activatePreserve={activatePreserve}
-        setFilterMode={setFilterMode}
-        selectedFormValues={selectedFormValues}
-        filterMode={filterMode}
-        setSelectedFormValues={setSelectedFormValues}
-        setSelectedDataFormValues={setSelectedDataFormValues}
-        setFilterPager={setFilterPager}
-        setFilterType={setFilterType}
-        filter_size={filter_size}
-        filterPager={filterPager}
-        filter={filterMode}
-        filterType={filterType}
-        mediaCollectorHigh={mediaCollectorHigh}
-        mediaCollectorLow={mediaCollectorLow}
-        activateDelete={activateDelete}
+        {...commonTableProps}
+        mediaCollector={mediaCollectorPreserved}
       />
     </>
   );
 };
+
 export default MediaCollector;

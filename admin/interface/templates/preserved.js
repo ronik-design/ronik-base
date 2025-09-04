@@ -1,20 +1,27 @@
 import ContentBlock from '../components/ContentBlock.jsx';
-import TriggerAjaxRequest from '../components/MediaCleaner/TriggerAjaxRequest.jsx';
 import MediaCollector from '../components/MediaCleaner/MediaCollector.jsx';
+import TopNav from '../components/MediaCleaner/TopNav.jsx';
+import StatsContainer from '../components/MediaCleaner/StatsContainer.jsx';
+import MediaFilter from '../components/MediaCleaner/MediaFilter.jsx';
+import SyncStatus from '../components/MediaCleaner/SyncStatus.jsx';
 
 function Mediacleaner() {
 
 	return (
 		<div className='mediacleaner-container'>
+			{/* SyncStatus manages global state independently */}
+			<SyncStatus />
+			
+			<TopNav />
+			<StatsContainer />
+
 			<ContentBlock
-				title="Preserved Media Library"
-				description={`
-					Unlinked files selected for preservation in the Dashboard will be exempted from bulk deletion and appear in the Preserved Media Library instead of the Dashboard. 
-					<br><br>Remove a file from the Preserved Media Library to add it to the Dashboard, where it can be deleted. 
-					<br><br>If no files appear below, no unlinked files have been added to the Preserved Media Library. 
-					`}
+				title="All Preserved Files"
+				description={``}
 			/>
-			<br></br>
+
+			<MediaFilter  type="preserved"  />
+
 
 			<MediaCollector type="preserved" />
 		</div>

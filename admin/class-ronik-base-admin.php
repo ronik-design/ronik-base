@@ -91,6 +91,60 @@ class Ronik_Base_Admin
 		$this->optimization_state = $optimization_state;
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		
+		// Initialize CLI commands if WP_CLI is available
+		$this->init_cli();
+	}
+
+	/**
+	 * Initialize CLI commands if WP_CLI is available
+	 *
+	 * @since    1.0.0
+	 */
+	private function init_cli()
+	{
+		if (defined('WP_CLI') && WP_CLI) {
+			require_once plugin_dir_path(__FILE__) . 'cli/class-ronik-base-cli.php';
+			new Ronik_Base_CLI();
+		}
+	}
+
+	/**
+	 * Add custom HTML class for media cleaner page
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_media_cleaner_html_class($classes)
+	{
+		// Check if we're on the admin page and it's the media cleaner page
+		if (is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved')) {
+			$classes .= ' media-cleaner-page';
+		}
+		return $classes;
+	}
+
+	/**
+	 * Add custom HTML class using wp_head action
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_media_cleaner_html_class_head()
+	{
+		// Check if we're on the admin page and it's the media cleaner page
+		if ( is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved')) {
+			echo '<script>document.documentElement.classList.add("media-cleaner-page");</script>';
+		}
+	}
+
+	/**
+	 * Add Google Fonts preconnect links to admin head
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_google_fonts_preconnect()
+	{
+		echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 	}
 
 	/**
@@ -113,6 +167,12 @@ class Ronik_Base_Admin
 		 * class.
 		 */
 
+		// Add Google Fonts preconnect links
+		wp_enqueue_style('google-fonts-inter', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap', array(), null, 'all');
+		
+		// Add preconnect links to head
+		add_action('admin_head', array($this, 'add_google_fonts_preconnect'));
+		
 		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'interface/dist/main.css', array(), $this->version, 'all');
 	}
 
@@ -289,18 +349,25 @@ class Ronik_Base_Admin
 				include dirname(__FILE__) . '/media-cleaner/ajax/media-cleaner-settings.php';
 			}
 
-			public function rmc_media_sync_attachment($post_ID){
+			public function rmc_media_sync_attachment($post_ID)
+			{
 				$rbpHelper = new RbpHelper;
 				$attachment = get_post($post_ID);
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner Attachment Sync: Ref 1a, rmc_media_sync_attachment ', 'low', 'rbp_media_cleaner');
-				error_log(print_r( 'ronik_media_sync_attachment', true));
-				error_log(print_r( $attachment, true));
+				error_log(print_r('ronik_media_sync_attachment', true));
+				error_log(print_r($attachment, true));
 
 				$f_sync = get_option('rbp_media_cleaner_sync-time');
 				if ($f_sync) {
-					$date = new DateTime(); // For today/now, don't pass an arg.
-					$date->modify("-1 day");
-					update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+					// $date = new DateTime(); // For today/now, don't pass an arg.
+					// $date->modify("-1 day");
+					// update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+
+					// Get yesterday's timestamp and format it
+					$yesterday_timestamp = strtotime('-1 day');
+					update_option('rbp_media_cleaner_sync-time', current_time("m/d/Y h:ia", $yesterday_timestamp));
+
+					update_option('rbp_media_cleaner_sync-reason', 'media-uploaded-attachment');
 				}
 			}
 
@@ -328,9 +395,14 @@ class Ronik_Base_Admin
 				$RmcDataGathering = new RmcDataGathering;
 				$f_sync = get_option('rbp_media_cleaner_sync-time');
 				if ($f_sync) {
-					$date = new DateTime(); // For today/now, don't pass an arg.
-					$date->modify("-1 day");
-					update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+					// $date = new DateTime(); // For today/now, don't pass an arg.
+					// $date->modify("-1 day");
+					// update_option('rbp_media_cleaner_sync-time', date($date->format("m/d/Y h:ia")));
+					// Get yesterday's timestamp and format it
+					$yesterday_timestamp = strtotime('-1 day');
+					update_option('rbp_media_cleaner_sync-time', current_time("m/d/Y h:ia", $yesterday_timestamp));
+
+					update_option('rbp_media_cleaner_sync-reason', 'media-uploaded-saved');
 				}
 
 				$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor($post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized);
@@ -443,11 +515,11 @@ class Ronik_Base_Admin
 				// Gather all the image ids.
 				$transient_rmc_media_cleaner_media_data_collectors_image_id_array = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array');
 				if (! empty($transient_rmc_media_cleaner_media_data_collectors_image_id_array)) {
-					error_log(print_r( '$transient_rmc_media_cleaner_media_data_collectors_image_id_array NO' , true ));
+					error_log(print_r('$transient_rmc_media_cleaner_media_data_collectors_image_id_array NO', true));
 
 					$rmc_media_cleaner_media_data_collectors_image_id_array = $transient_rmc_media_cleaner_media_data_collectors_image_id_array;
 				} else {
-					error_log(print_r( '$transient_rmc_media_cleaner_media_data_collectors_image_id_array YES' , true ));
+					error_log(print_r('$transient_rmc_media_cleaner_media_data_collectors_image_id_array YES', true));
 
 					$rmc_media_cleaner_media_data_collectors_image_id_array = $RmcDataGathering->imageIDCollector($select_attachment_type, $select_numberposts, $targetFileSize, $maxIncrement);
 					// Save the response so we don't have to call again until tomorrow.
@@ -575,6 +647,10 @@ class Ronik_Base_Admin
 				// Update the sync status
 				update_option('rbp_media_cleaner_sync_running', 'not-running');
 				update_option('rbp_media_cleaner_cron_last-ran', date('Y-m-d'));
-				update_option('rbp_media_cleaner_sync-time',  date("m/d/Y h:ia"));
+				// update_option('rbp_media_cleaner_sync-time',  date("m/d/Y h:ia"));
+				update_option('rbp_media_cleaner_sync-time', current_time("m/d/Y h:ia"));
+
+
+				error_log(print_r('rbp_media_cleaner_sync-time: ' . get_option('rbp_media_cleaner_sync-time'), true));
 			}
 		}

@@ -148,7 +148,8 @@ if (isset($_POST['increment'])) {
     // Process and update the options for the remaining image IDs.
     update_option('rbp_media_cleaner_counter', count($filteredImageIds));
     foreach ($filteredImageIds as $key => $imageId) {
-        update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
+        // update_option('rbp_media_cleaner_sync-time', date("m/d/Y h:ia"));
+        update_option('rbp_media_cleaner_sync-time', current_time("m/d/Y h:ia"));
         update_option('rbp_media_cleaner_media_data', $filteredImageIds);
 
         // If the current image ID is the last in the array, send a completion response.

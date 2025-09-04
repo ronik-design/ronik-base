@@ -102,6 +102,12 @@ class Ronik_Base_Public {
 		 * class.
 		 */
 
+		// Add Google Fonts preconnect links
+		wp_enqueue_style('google-fonts-inter', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap', array(), null, 'all');
+		
+		// Add preconnect links to head
+		add_action('wp_head', array($this, 'add_google_fonts_preconnect'));
+		
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/dist/main.css', array(), $this->version, 'all' );
 	}
 
@@ -154,5 +160,16 @@ class Ronik_Base_Public {
 			}
 		}
 
+	}
+
+	/**
+	 * Add Google Fonts preconnect links to public head
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_google_fonts_preconnect()
+	{
+		echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 	}
 }

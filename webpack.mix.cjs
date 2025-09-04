@@ -6,6 +6,20 @@ mix.webpackConfig({
     // stats: {
     //         children: true
     // }
+    output: {
+        publicPath: '/wp-content/plugins/ronik-base/admin/interface/dist/'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.svg$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'images/[name][ext]'
+                }
+            }
+        ]
+    }
 });
 mix
     // Register watch files.

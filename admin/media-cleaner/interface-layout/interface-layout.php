@@ -75,7 +75,7 @@ if($this->media_cleaner_state){
 
 }
 
-function ronikbase_media_cleaner_callback(){ 
+function ronikbase_media_cleaner_callback(){
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
     $rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
 
@@ -83,22 +83,25 @@ function ronikbase_media_cleaner_callback(){
         $is_running = 'invalid';
     } else {
         // Use ternary operator to check $progress and assign the appropriate message
-        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE') 
-            ? 'invalid' 
+        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE')
+            ? 'invalid'
             : 'valid';
     }
     if($rbp_media_cleaner_sync_running === 'not-running'){
         $is_running = 'invalid';
     }
 ?>
-    <!-- The main container  --> 
+    <!-- The main container  -->
     <div id="ronik-base_media_cleaner" data-sync="<?= $is_running; ?>" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
     <canvas></canvas>
+
+
+
     <?php
 }
 
 
-function ronikbase_media_cleaner_preserved_callback(){ 
+function ronikbase_media_cleaner_preserved_callback(){
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
     $rbp_media_cleaner_sync_running = get_option('rbp_media_cleaner_sync_running', '');
 
@@ -106,8 +109,8 @@ function ronikbase_media_cleaner_preserved_callback(){
         $is_running = 'invalid';
     } else {
         // Use ternary operator to check $progress and assign the appropriate message
-        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE') 
-            ? 'invalid' 
+        $is_running = ($progress === 'COMPLETED' || $progress === 'SEMI_SUCCESS' || $progress === 'NOT_RUNNING' || $progress === 'DONE')
+            ? 'invalid'
             : 'valid';
     }
     if($rbp_media_cleaner_sync_running === 'not-running'){
@@ -115,7 +118,7 @@ function ronikbase_media_cleaner_preserved_callback(){
     }
 ?>
 
-    <!-- The main container  --> 
+    <!-- The main container  -->
     <div id="ronik-base_media_cleaner_preserved" data-sync="<?= $is_running; ?>" data-plugin-name="<?= plugin_basename( plugin_dir_path(  dirname( __FILE__ , 3 ) )  ); ?>">Media Cleaner</div>
     <canvas></canvas>
     <?php
@@ -130,7 +133,7 @@ function ronikbase_support_settings_media_cleaner(){
         return preg_match('/^-?\d+(\.\d+)?[eE][-+]?\d+$/', $value);
     }
     $rbp_media_cleaner_file_size = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size')/1048576 : 0;
-    $f_file_import = get_option( 'rbp_media_cleaner_file_import' ) ? get_option( 'rbp_media_cleaner_file_import' ) : 'off'; 
+    $f_file_import = get_option( 'rbp_media_cleaner_file_import' ) ? get_option( 'rbp_media_cleaner_file_import' ) : 'off';
     echo '<div id="ronik-base_settings"></div>';
     if($_POST['media_cleaner_state'] == 'valid'){
         echo '

@@ -228,7 +228,7 @@ class RmcDataGathering
                             }
                         } else {
                             // error_log(print_r('FIX', true));
-                            $all_image_ids[] = $imageID;                            
+                            $all_image_ids[] = $imageID;
                         }
                     }
                 }
@@ -545,6 +545,8 @@ class RmcDataGathering
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1a imagOptionAuditor Started ', 'low', 'rbp_media_cleaner');
 
+        error_log(print_r($allimagesid, true));
+
         // Define the function before using it
         function search_value_in_option($option_value, $search_term, $depth = 0)
         {
@@ -608,6 +610,8 @@ class RmcDataGathering
 
                 // Skip certain options based on their name
                 $skipped_patterns = [
+                    'user_count',
+                    'relevanssi_excerpt_length',
                     'start_of_week',
                     'use_smilies',
                     'use_balanceTags',
@@ -904,7 +908,9 @@ class RmcDataGathering
         }
 
 
-        if ($rbp_media_cleaner_media_data) {
+        if ($rbp_media_cleaner_media_data && $f_file_import == 'on') {
+            error_log(print_r('KEVIN FIX THIS! This should never trigger!', true));
+
             foreach ($rbp_media_cleaner_media_data as $rbp_data_id) {
                 $time_stamp = time();
                 // First lets copy the full image to the ronikdetached folder.

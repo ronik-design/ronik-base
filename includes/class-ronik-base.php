@@ -195,6 +195,9 @@ class Ronik_Base
 		// $this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
 
 		$this->loader->add_action('admin_notices', $plugin_admin, 'ronik_base_admin_notices');
+		// Add custom HTML class for media cleaner page
+		$this->loader->add_filter('admin_body_class', $plugin_admin, 'add_media_cleaner_html_class');
+		$this->loader->add_action('admin_head', $plugin_admin, 'add_media_cleaner_html_class_head');
 		// Let us load the plugin interface.
 		$this->loader->add_action('admin_menu', $plugin_admin, 'rbp_plugin_interface');
 		// Enque Scripts

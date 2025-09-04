@@ -61,8 +61,6 @@ function databaseScannerMedia__cleaner()
 	}
 }
 
-error_log(print_r($_POST, true));
-
 
 
 if ($_POST['post_overide'] == 'media-preserve') {
@@ -70,6 +68,11 @@ if ($_POST['post_overide'] == 'media-preserve') {
 
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-preserve ', 'low', 'rbp_media_cleaner');
 	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
+		include $file;
+	}
+} else if ($_POST['post_overide'] == 'media-unpreserve') {
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-unpreserve ', 'low', 'rbp_media_cleaner');
+	foreach (glob(dirname(__FILE__) . '/media-cleaner_unpreserve.php') as $file) {
 		include $file;
 	}
 } else if ($_POST['post_overide'] == 'media-delete-indiv') {
