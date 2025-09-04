@@ -1,0 +1,244 @@
+@use "../partials/variables";
+
+// Media Filter Styles
+.media-filter-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 2.3rem;
+
+  .media-filter-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    &__inner {
+      display: flex;
+      gap: 1rem;
+
+      button {
+        background-color: transparent;
+        border: none;
+        border-radius: 5rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        padding-left: 1.6rem;
+        padding-right: 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        line-height: 1;
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: #fff;
+        text-transform: capitalize;
+        cursor: pointer;
+        font-family: variables.$primaryFont;
+
+        &.submit-btn-disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+          padding-right: 0.8rem;
+        }
+      }
+      .submit-btn {
+        border: 1px solid #635bff;
+        color: #7b84ff;
+
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+          padding-right: 0.8rem;
+        }
+      }
+
+      .delete-btn {
+        border: 1px solid #ff4f63;
+        color: #ff4f63;
+
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+          padding-right: 0.8rem;
+        }
+      }
+    }
+  }
+
+  .media-filter-button {
+    background-color: #313164;
+    border: 2px solid #8993ff;
+    border-radius: 25px;
+    color: white;
+    padding-left: 1.4rem;
+    padding-right: 1.4rem;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    font-size: 1.6rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    .media-filter-icon {
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .media-filter-text {
+      white-space: nowrap;
+    }
+  }
+
+  .media-filter-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 2.3rem;
+    margin-top: 1.9rem;
+    background: #3c404e8f;
+    border-radius: 8px;
+    min-width: 280px;
+    z-index: 1000;
+    border: 2px solid #777689;
+    backdrop-filter: blur(10px);
+
+    .media-filter-header {
+      padding: 16px 20px 12px;
+      color: #ffff;
+      font-size: 1.6rem;
+      font-weight: 500;
+    }
+
+    .media-filter-options {
+      padding: 8px 0;
+
+      .media-filter-option {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+        position: relative;
+        color: #ffffff;
+
+        &:hover {
+          &:before {
+            content: "";
+            width: calc(100% - 3rem);
+            height: 100%;
+            background: #ffffff15;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            border-radius: 6px;
+          }
+          input[type="checkbox"] {
+            border-color: #fff;
+          }
+          .media-filter-option-label {
+            color: #ffffff;
+          }
+        }
+
+        input[type="checkbox"] {
+          margin-right: 12px;
+          width: 18px;
+          height: 18px;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          border: 2px solid #8c80e0;
+          border-radius: 6px;
+          background-color: transparent;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &:checked {
+            background-color: #3a3452;
+            border-color: #8c80e0;
+
+            &:before {
+              display: none !important;
+            }
+            &::after {
+              content: "";
+              position: absolute;
+              left: 1px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 1.2rem;
+              height: 0.9rem;
+              background-size: contain;
+              background-image: url("/wp-content/plugins/ronik-base/assets/images/checkmark.svg");
+            }
+          }
+
+          &:hover {
+            border-color: #ffffff;
+            transform: scale(1.05);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(140, 128, 224, 0.2);
+          }
+        }
+
+        .media-filter-option-label {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .media-filter-actions {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px;
+      border-top: 1px solid #e2e8f0;
+
+      .media-filter-action-btn {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: white;
+        color: #4a5568;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: #f7fafc;
+          border-color: #cbd5e0;
+        }
+
+        &.media-filter-select-all {
+          background: #6b46c1;
+          color: white;
+          border-color: #6b46c1;
+
+          &:hover {
+            background: #553c9a;
+          }
+        }
+      }
+    }
+  }
+}

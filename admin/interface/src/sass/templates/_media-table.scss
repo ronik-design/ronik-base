@@ -1,0 +1,381 @@
+table,
+th,
+td {
+  border: 0px solid transparent; /* Default table borders */
+  border-collapse: collapse; /* Collapse borders for a cleaner look */
+}
+
+.media-collector-table {
+  width: calc(100% - 2.5rem);
+
+  .media-collector-table__tbody {
+    .media-collector-table__tr {
+      background: #28324c;
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #202330;
+
+      &--header {
+        background: #252d3f;
+        padding-top: 16px;
+        padding-bottom: 17px;
+      }
+      .media-collector-table__th {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        width: 16.667%;
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        input[type="checkbox"] {
+          margin-right: 12px;
+          width: 18px;
+          height: 18px;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          border: 2px solid #8e8e8e;
+          border-radius: 6px;
+          background-color: transparent;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &:checked {
+            background-color: #3a3452;
+            border-color: #8c80e0;
+
+            &:before {
+              display: none !important;
+            }
+            &::after {
+              content: "";
+              position: absolute;
+              left: 1px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 1.2rem;
+              height: 0.9rem;
+              background-size: contain;
+              background-image: url("/wp-content/plugins/ronik-base/assets/images/checkmark.svg");
+            }
+          }
+
+          &:hover {
+            border-color: #ffffff;
+            transform: scale(1.05);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(140, 128, 224, 0.2);
+          }
+        }
+
+        &--select {
+          max-width: 60px;
+          justify-content: center;
+        }
+        &--img-thumb {
+          max-width: 95px;
+          padding-right: 20px;
+        }
+        &--file-type {
+          max-width: 100px;
+          padding-right: 40px;
+        }
+        &--file-size {
+          max-width: 100px;
+          padding-right: 50px;
+          .filter-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            &__button {
+              font-size: 0;
+              line-height: 0;
+            }
+          }
+        }
+        &--img-url {
+          width: 100%;
+          padding-right: 40px;
+        }
+        &--id {
+          max-width: 50px;
+          padding-right: 40px;
+        }
+        &--media-link {
+          max-width: 100px;
+          padding-right: 40px;
+        }
+      }
+      .media-collector-table__td {
+        width: 16.667%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        &--select {
+          max-width: 60px;
+          justify-content: center;
+
+          input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            border: 2px solid #8e8e8e;
+            border-radius: 6px;
+            background-color: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+
+            &:checked {
+              background-color: #3a3452;
+              border-color: #8c80e0;
+
+              &:before {
+                display: none !important;
+              }
+              &::after {
+                content: "";
+                position: absolute;
+                left: 1px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 1.2rem;
+                height: 0.9rem;
+                background-size: contain;
+                background-image: url("/wp-content/plugins/ronik-base/assets/images/checkmark.svg");
+              }
+            }
+
+            &:hover {
+              border-color: #ffffff;
+              transform: scale(1.05);
+            }
+
+            &:focus {
+              outline: none;
+              box-shadow: 0 0 0 3px rgba(140, 128, 224, 0.2);
+            }
+          }
+        }
+
+        &--img-thumb {
+          max-width: 94px;
+          padding-top: 14px;
+          padding-bottom: 16px;
+          padding-right: 20px;
+          position: relative;
+          overflow: hidden;
+          img {
+            max-width: 94px;
+            max-height: 94px;
+            object-fit: cover;
+            border-radius: 5px;
+            z-index: 10000;
+          }
+        }
+        &--file-type {
+          max-width: 100px;
+          padding-right: 40px;
+
+          .media-collector-table__td--file-type-pill {
+            background-color: #666c79;
+            color: #fff;
+            // width: 100px;
+            // height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 25px;
+            font-size: 16px;
+            padding-left: 10px;
+            padding-right: 10px;
+            height: 28px;
+          }
+        }
+        &--file-size {
+          max-width: 100px;
+          padding-right: 50px;
+          .media-collector-table__td--file-size-pill {
+            background-color: #666c79;
+            color: #fff;
+            width: 100px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 25px;
+            font-size: 16px;
+          }
+        }
+        &--id {
+          max-width: 50px;
+          padding-right: 40px;
+          color: #fff;
+          font-size: 16px;
+        }
+        &--img-url {
+          color: #fff;
+          font-size: 16px;
+          width: 100%;
+          padding-right: 40px;
+        }
+        &--media-link {
+          max-width: 100px;
+          padding-right: 40px;
+          a {
+            color: #8993ff;
+            text-decoration: underline;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Lightbox styles
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.354);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: pointer;
+
+  .lightbox-content {
+    position: relative;
+    max-width: 65%;
+    width: 100%;
+    cursor: default;
+  
+    padding-left: 4.8rem;
+    padding-right: 4.8rem;
+    padding-bottom: 6.6rem;
+    background: black;
+  
+    
+    .lightbox-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 3.95rem;
+      padding-bottom: 4.1rem;
+    
+      .lightbox-content-header-left{
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;        
+        h1 {
+          font-size: 24px;
+          font-weight: 700;
+          color: #fff;
+          flex: 0 1 auto;
+          padding-right: 2rem;
+        }
+        a {
+          font-size: 16px;
+          font-weight: 700;
+          color: #fff;
+          text-decoration: underline;
+        }
+        a:hover {
+          color: #ddd;
+        }
+        
+      }
+      .lightbox-content-header-right{
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; 
+
+        .lightbox-close {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 30px;
+          cursor: pointer;
+        
+          &:hover {
+            color: #ddd;
+          }
+        }
+      }
+    }
+    
+    .lightbox-content-lightbox-image{
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      
+      &:after{
+        content: "";
+        position: relative;
+        padding-top: 50%;
+        display: block;
+      }
+    }
+    .lightbox-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+
+
+// Thumbnail clickable area
+.thumbnail-clickable {
+  transition: transform 0.2s ease;
+
+  cursor: pointer;
+  &:after {
+    content: "";
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: 2.5rem;
+    right: 2.8rem;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 100000;
+    background-image: url("/wp-content/plugins/ronik-base/assets/images/enlarge.svg");
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateY(10px) translateX(10px);
+  }
+  &:hover {
+    &:after {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) translateX(0);
+    }
+  }
+}
