@@ -355,30 +355,30 @@ class RmcDataGathering
         $throttle_detector_attachement = count($allimagesid);
         $maxIncrement_attachement = ceil($throttle_detector_attachement / $select_numberposts);
 
-        function imageAttachement($allimagesid)
-        {
-            $all_image_attachement_ids = array();
-            if ($allimagesid) {
-                foreach ($allimagesid as $image_id) {
-                    if (wp_get_post_parent_id($image_id)) {
-                        // $all_image_attachement_ids[] = $all_image_attachement_ids[] = $image_id;
-                        $all_image_attachement_ids[] = $image_id;
-                    }
-                }
-            }
-            return $all_image_attachement_ids;
-        }
-        // We throttle the number of images so it doesnt kill the server.
-        $all_image_attachement_ids_array = array();
-        $numbers_attachement = range(0, $maxIncrement_attachement);
-        foreach ($numbers_attachement as $number) {
-            $increment = $number;
-            $offsetValue = $increment * $select_numberposts;
-            $allimagesid_array = array_slice($allimagesid, $offsetValue, $select_numberposts, true);
-            $all_image_attachement_ids_array[] = imageAttachement($allimagesid_array);
-        }
-        $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_image_attachement_ids_array))));
-        $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1b imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
+        // function imageAttachement($allimagesid)
+        // {
+        //     $all_image_attachement_ids = array();
+        //     if ($allimagesid) {
+        //         foreach ($allimagesid as $image_id) {
+        //             if (wp_get_post_parent_id($image_id)) {
+        //                 // $all_image_attachement_ids[] = $all_image_attachement_ids[] = $image_id;
+        //                 $all_image_attachement_ids[] = $image_id;
+        //             }
+        //         }
+        //     }
+        //     return $all_image_attachement_ids;
+        // }
+        // // We throttle the number of images so it doesnt kill the server.
+        // $all_image_attachement_ids_array = array();
+        // $numbers_attachement = range(0, $maxIncrement_attachement);
+        // foreach ($numbers_attachement as $number) {
+        //     $increment = $number;
+        //     $offsetValue = $increment * $select_numberposts;
+        //     $allimagesid_array = array_slice($allimagesid, $offsetValue, $select_numberposts, true);
+        //     $all_image_attachement_ids_array[] = imageAttachement($allimagesid_array);
+        // }
+        // $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_image_attachement_ids_array))));
+        // $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1b imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
 
 
         // We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
@@ -406,7 +406,9 @@ class RmcDataGathering
             $all_post_thumbnail_ids_array[] = postThumbnail($get_all_post_pages_array);
         }
 
-        $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter(array_merge(...$all_post_thumbnail_ids_array))));
+        // $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter(array_merge(...$all_post_thumbnail_ids_array))));
+        $arr_checkpoint_1b = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_post_thumbnail_ids_array))));
+
         $rbpHelper->ronikdesigns_write_log_devmode('imageThumbnailAuditor: Ref 1c imageThumbnailAuditor DONE ', 'low', 'rbp_media_cleaner');
 
         return $arr_checkpoint_1b;
@@ -506,8 +508,54 @@ class RmcDataGathering
             }
         }
 
-        $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($wp_postsmeta_id_audit_array)));
-        $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imagePostAuditor DONE ', 'low', 'rbp_media_cleaner');
+        // Additional search in post_content field using regex patterns
+        $wp_postcontent_id_audit_array = array();
+        if ($allimagesid && $all_post_pages) {
+            foreach ($allimagesid as $j => $image_id) {
+                $image_file_path = get_attached_file($image_id);
+                $image_basename = basename($image_file_path);
+                
+                // Create regex patterns for post_content search
+                $patterns = array(
+                    // Image ID patterns
+                    '/(?:^|\W)' . preg_quote($image_id, '/') . '(?:$|\W)/',  // Standalone image ID
+                    '/i:' . preg_quote($image_id, '/') . ';/',               // Serialized image ID
+                    '/"id":\s*' . preg_quote($image_id, '/') . '/',          // JSON format with ID
+                    '/wp-image-' . preg_quote($image_id, '/') . '/',         // WordPress image class
+                    
+                    // File path patterns
+                    '/' . preg_quote($image_file_path, '/') . '/',           // Full file path
+                    '/' . preg_quote($image_basename, '/') . '/',            // File basename
+                    
+                    // URL patterns (if file is in uploads directory)
+                    '/\/uploads\/[^"\'>\s]*' . preg_quote($image_basename, '/') . '/',  // URL with uploads path
+                    
+                    // Gutenberg/Block patterns
+                    '/"mediaId":\s*' . preg_quote($image_id, '/') . '/',     // Gutenberg mediaId
+                    '/"id":\s*' . preg_quote($image_id, '/') . '/',          // Generic ID in JSON
+                );
+
+                foreach ($all_post_pages as $post_id) {
+                    $post_content = get_post_field('post_content', $post_id);
+                    
+                    if ($post_content) {
+                        foreach ($patterns as $pattern) {
+                            if (preg_match($pattern, $post_content)) {
+                                $wp_postcontent_id_audit_array[] = $image_id;
+                                $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Found image ID ' . $image_id . ' in post content of post ID ' . $post_id, 'low', 'rbp_media_cleaner');
+                                break; // Found a match, no need to check other patterns for this image
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Combine both meta and content audit arrays
+        $combined_audit_array = array_unique(array_merge($wp_postsmeta_id_audit_array, $wp_postcontent_id_audit_array));
+
+        $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter($combined_audit_array)));
+        $rbpHelper->ronikdesigns_write_log_devmode('imagePostAuditor: Ref 1b imagePostAuditor DONE - Found ' . count($combined_audit_array) . ' images in use', 'low', 'rbp_media_cleaner');
 
         return $arr_checkpoint_1a;
     }
