@@ -189,6 +189,19 @@ class RmcDataGathering
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Ref 1a imageIDCollector Started ', 'low', 'rbp_media_cleaner');
 
+        // Add memory safety limits
+        $max_images_to_process = get_option('rbp_media_cleaner_max_images', 10000); // Default limit of 10000 images
+        $memory_limit_mb = get_option('rbp_media_cleaner_memory_limit', 512); // Default 512MB limit
+        $current_memory_mb = memory_get_usage(true) / 1024 / 1024;
+        
+        if ($current_memory_mb > $memory_limit_mb) {
+            $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Memory limit reached, stopping collection', 'high', 'rbp_media_cleaner');
+            return array();
+        }
+
+        // Limit the maximum increment to prevent excessive processing
+        $maxIncrement = min($maxIncrement, ceil($max_images_to_process / $select_numberposts));
+
         // Get all Image IDs.
         function imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size)
         {
@@ -238,10 +251,37 @@ class RmcDataGathering
         // We throttle the number of images so it doesnt kill the server.
         $rmc_data_collectors_ids_array = array();
         $numbers = range(0, $maxIncrement);
+        $processed_count = 0;
+        
         foreach ($numbers as $number) {
+            // Check memory usage periodically
+            if ($number % 10 == 0) {
+                $current_memory_mb = memory_get_usage(true) / 1024 / 1024;
+                if ($current_memory_mb > $memory_limit_mb) {
+                    $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Memory limit reached during processing, stopping at increment ' . $number, 'high', 'rbp_media_cleaner');
+                    break;
+                }
+            }
+            
             $increment = $number;
             $offsetValue = $increment * $select_numberposts;
-            $rmc_data_collectors_ids_array[$number] = imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size);
+            $batch_result = imgIDCollector($select_attachment_type, $offsetValue, $select_numberposts, $file_size);
+            
+            if ($batch_result) {
+                $rmc_data_collectors_ids_array[$number] = $batch_result;
+                $processed_count += count($batch_result);
+                
+                // Stop if we've processed enough images
+                if ($processed_count >= $max_images_to_process) {
+                    $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Reached maximum image limit of ' . $max_images_to_process, 'medium', 'rbp_media_cleaner');
+                    break;
+                }
+            }
+            
+            // Force garbage collection periodically
+            if ($number % 50 == 0) {
+                gc_collect_cycles();
+            }
         }
 
         $rbpHelper->ronikdesigns_write_log_devmode('imageIDCollector: Ref 1b imageIDCollector Done ', 'low', 'rbp_media_cleaner');
@@ -514,6 +554,17 @@ class RmcDataGathering
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Ref 1a imagePostContentAuditor Started ', 'low', 'rbp_media_cleaner');
 
+        // Add safety limits to prevent memory exhaustion
+        // Posts are not memory intensive, so no limit needed
+        $max_images_to_check = get_option('rbp_media_cleaner_max_images', 10000); // Default limit of 10000 images
+        $memory_limit_mb = get_option('rbp_media_cleaner_memory_limit', 512); // Default 512MB limit
+        
+        // Limit only the images array to prevent excessive processing
+        if (count($allimagesid) > $max_images_to_check) {
+            $allimagesid = array_slice($allimagesid, 0, $max_images_to_check);
+            $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Limited images to ' . $max_images_to_check, 'medium', 'rbp_media_cleaner');
+        }
+
         $helper = new RonikBaseHelper;
 
         // This searches the posts content
@@ -521,6 +572,16 @@ class RmcDataGathering
         $wp_postsmeta_wp_content_id_audit_array = array();
         if ($all_post_pages) {
             foreach ($all_post_pages as $i => $post_id) {
+                // Check memory usage every 50 posts
+                if ($i % 50 == 0) {
+                    $current_memory_mb = memory_get_usage(true) / 1024 / 1024;
+                    if ($current_memory_mb > $memory_limit_mb) {
+                        $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Memory limit reached at post ' . $i, 'high', 'rbp_media_cleaner');
+                        break;
+                    }
+                    $rbpHelper->ronikdesigns_write_log_devmode('imagePostContentAuditor: Processing post ' . $i . ', Memory: ' . round($current_memory_mb, 2) . 'MB', 'low', 'rbp_media_cleaner');
+                }
+                
                 if ($allimagesid) {
                     foreach ($allimagesid as $k => $image_id) {
                         //  We do a loose comparison if the meta value has any keyword of en.
@@ -528,6 +589,11 @@ class RmcDataGathering
                             $wp_postsmeta_wp_content_id_audit_array[] = $image_id;
                         }
                     }
+                }
+                
+                // Force garbage collection every 100 posts
+                if ($i % 100 == 0) {
+                    gc_collect_cycles();
                 }
             }
         }
@@ -571,15 +637,29 @@ class RmcDataGathering
         // Your main code
         $wp_option_id_audit_array = array();
         global $wpdb;
-        $all_options = $wpdb->get_results("SELECT option_name, option_value FROM $wpdb->options");
+        
+        // Add safety limits for options processing
+        $max_options_to_process = get_option('rbp_media_cleaner_max_options', 10000); // Default limit of 1000 options
+        $memory_limit_mb = get_option('rbp_media_cleaner_memory_limit', 512); // Default 512MB limit
+        
+        // Use LIMIT in SQL query to prevent loading too many options at once
+        $all_options = $wpdb->get_results($wpdb->prepare("SELECT option_name, option_value FROM $wpdb->options LIMIT %d", $max_options_to_process));
+        
         // Number of options to process in each chunk to avoid overwhelming the server
-        $chunk_size = 35; // Adjust this number to throttle processing
+        $chunk_size = 25; // Reduced chunk size for better memory management
         $total_options = count($all_options);
-        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1c Total options count: ' . $total_options, 'low', 'rbp_media_cleaner');
+        $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1c Total options count (limited): ' . $total_options, 'low', 'rbp_media_cleaner');
 
         // Process the chunks of all options directly
         foreach (array_chunk($all_options, $chunk_size) as $chunk_index => $option_chunk) {
-            $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1d Processing chunk: ' . ($chunk_index + 1), 'low', 'rbp_media_cleaner');
+            // Check memory usage before processing each chunk
+            $current_memory_mb = memory_get_usage(true) / 1024 / 1024;
+            if ($current_memory_mb > $memory_limit_mb) {
+                $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Memory limit reached, stopping at chunk ' . ($chunk_index + 1), 'high', 'rbp_media_cleaner');
+                break;
+            }
+            
+            $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1d Processing chunk: ' . ($chunk_index + 1) . ' Memory usage: ' . round($current_memory_mb, 2) . 'MB', 'low', 'rbp_media_cleaner');
             foreach ($option_chunk as $i => $option) {
                 $option_name = $option->option_name;
                 // Additional logging to catch unserialization issues
@@ -759,6 +839,11 @@ class RmcDataGathering
                 $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1n Processed option index:' . $i . ' in chunk:' . ($chunk_index + 1), 'low', 'rbp_media_cleaner');
             }
             $rbpHelper->ronikdesigns_write_log_devmode('imagOptionAuditor: Ref 1o Finished processing chunk ' . ($chunk_index + 1), 'low', 'rbp_media_cleaner');
+            
+            // Force garbage collection and unset variables to free memory
+            unset($option_chunk);
+            gc_collect_cycles();
+            
             // Throttle by introducing a short sleep time between chunks (e.g., 1 second)
             sleep(1); // Adjust the sleep time as necessary for your server load
         }

@@ -1,18 +1,37 @@
 .top-nav {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
-  padding: 10px;
-  padding-bottom: 4.5rem;
+  align-items: flex-end;
+  padding: 0 0 0 0;
+  box-shadow: 17px 7px 17px -15px rgb(66, 68, 90);
+  height: 80px;
+  margin-bottom: 4.5rem;
+}
+.top-nav--dark .top-nav-right a {
+  color: #565758;
 }
 .top-nav-left {
   padding-right: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 .top-nav-right {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
-  width: 100%;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+}
+.top-nav-right:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  width: calc(100% - 2rem);
+  height: 4px;
+  background-color: #d9d9d9;
 }
 .top-nav-right a {
   padding-left: 3rem;
@@ -960,6 +979,50 @@ td {
 }
 .filter-pagination .pagination .filter-pagination__button--active {
   background: rgba(209, 209, 209, 0.24);
+}
+
+.support-container .content-block {
+  max-width: 500px;
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: 3rem;
+}
+.support-container .content-block .content-block__inner .content-block__content {
+  color: #3C434A;
+}
+.support-container .content-block .content-block__inner .content-block__content h1 {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: #3C434A;
+  font-family: "Inter", sans-serif;
+  line-height: 1.2;
+  margin: 0;
+  padding-bottom: 1.8rem;
+}
+.support-container .content-block .content-block__inner .content-block__content p {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #3C434A;
+  font-family: "Inter", sans-serif;
+  line-height: 1.4;
+  padding: 0;
+  margin: 0;
+}
+
+.accordion .accordion-item {
+  max-width: 69rem;
+  padding: 2.4rem 2.4rem 2.4rem 2rem;
+  background: #f4f4f4;
+  margin-bottom: 2rem;
+}
+.accordion .accordion-item .accordion-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.accordion .accordion-item .accordion-title h3 {
+  font-size: 1.6rem;
+  font-weight: 500;
 }
 
 .lzy_img {

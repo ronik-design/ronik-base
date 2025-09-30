@@ -15,6 +15,8 @@
 @use "../sass/templates/_filter";
 @use "../sass/templates/_media-table";
 @use "../sass/templates/_pagination";
+@use "../sass/templates/_support";
+@use "../sass/templates/_accordion";
 
 .lzy_img {
   transition: all 0.3s ease;

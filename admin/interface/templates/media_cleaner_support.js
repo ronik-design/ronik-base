@@ -1,6 +1,6 @@
-import ContentBlock from '../components/ContentBlock.jsx';
 import FAQ from '../components/Faq.jsx';
-
+import ContentBlock from '../components/ContentBlock.jsx';
+import TopNav from '../components/MediaCleaner/TopNav.jsx';
 
 function Support() {
 	let faqItems = [
@@ -15,22 +15,22 @@ function Support() {
 
 	return (
 		<div className='support-container'>
-			{/* <ContentBlock
-				title= "Support Message"
-				description= "If you have any questions, need a hand with a technical issue, or just want to say hi, we've got you covered. Get in touch with us and we'll be happy to assist you!"
-			/>
-			<br></br> */}
+
+
+			<TopNav mode="dark" />
+
+
 			<ContentBlock
-				title= "Frequently asked questions"
-				description= "Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
+				title="Frequently asked questions"
+				description="Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
 			/>
 			<FAQ
-				items= {faqItems}
+				items={faqItems}
 			/>
 			<br></br>
 			<ContentBlock
-				title= "Contact our team:"
-				description= "Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue <a target='_blank' href='https://forms.gle/qhBq6qi22BWE7cRA8'>here</a> We'd love your feedback! Share your thoughts <a target='_blank' href='https://forms.gle/DiRgBfXqtvCkr8tX6'>here</a>"
+				title="Contact our team:"
+				description="Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue <a target='_blank' href='https://forms.gle/qhBq6qi22BWE7cRA8'>here</a> We'd love your feedback! Share your thoughts <a target='_blank' href='https://forms.gle/DiRgBfXqtvCkr8tX6'>here</a>"
 			/>
 		</div>
 	);

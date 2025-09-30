@@ -1,6 +1,6 @@
 import React from "react";
 
-function TopNav() {
+function TopNav({ mode = 'light' }) {
   // Function to check if current page is active based on query parameter
   const isActive = (href) => {
     if (typeof window !== 'undefined') {
@@ -37,9 +37,13 @@ function TopNav() {
 
   return (
     <>
-      <div className="top-nav">
+      <div className={`top-nav ${mode === 'dark' ? 'top-nav--dark' : ''}`}>
         <div className="top-nav-left">
-          <img src="/wp-content/plugins/ronik-base/assets/images/logo.svg" alt="Ronik Base Logo" />
+          {mode === 'dark' ? (
+            <img src="/wp-content/plugins/ronik-base/assets/images/logo-dark.svg" alt="Ronik Base Logo" />
+          ) : (
+            <img src="/wp-content/plugins/ronik-base/assets/images/logo.svg" alt="Ronik Base Logo" />
+          )}
         </div>
         <div className="top-nav-right">
           {navItems.map((item, index) => (

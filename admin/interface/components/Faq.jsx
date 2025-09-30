@@ -18,7 +18,7 @@ const FAQ = ({ items }) => {
                         className="accordion-title"
                         onClick={() => faqActivator(index)}
                         >
-                        <div>{parse(item[0])}</div>
+                        <h2>{parse(item[0])}</h2>
                         <div>{isActive == index ? '-' : '+'}</div>
                     </div>
                     {isActive == index && <div className="accordion-content">{parse(item[1])}</div>}

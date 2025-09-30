@@ -27,7 +27,7 @@ function formatSizeUnits($bytes)
 }
 
 // POST CLEANING
-function cleanInputPOST() {
+function rmc_cleanInputPOST() {
 	function cleanInput($input){
 		$search = array(
 		  '@<script[^>]*?>.*?</script>@si',

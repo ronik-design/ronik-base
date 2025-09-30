@@ -85,13 +85,68 @@ const FilterNav = React.memo(({ mediaCollector, filterMode, filter_size }) => {
 // Memoized PagerNav component
 const PagerNav = React.memo(
   ({ pager, setFilterPager, mediaCollector = [], itemsPerPage }) => {
-    const { totalItems, totalPages, pageNumbers } = useMemo(() => {
+    const { totalItems, totalPages, visiblePages } = useMemo(() => {
       const totalItems = mediaCollector.length || 0;
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-      const pageNumbers = Array.from({ length: totalPages }, (_, i) => i);
+      
+      // Smart pagination logic
+      const getVisiblePages = (currentPage, totalPages) => {
+        if (totalPages <= 10) {
+          // Show all pages if 10 or fewer
+          return Array.from({ length: totalPages }, (_, i) => i);
+        }
+        
+        const pages = [];
+        const current = currentPage;
+        
+        // Always show first page
+        pages.push(0);
+        
+        // Determine the range around current page
+        let startRange = Math.max(1, current - 2);
+        let endRange = Math.min(totalPages - 2, current + 2);
+        
+        // Adjust range if we're near the beginning
+        if (current <= 3) {
+          startRange = 1;
+          endRange = Math.min(5, totalPages - 2);
+        }
+        
+        // Adjust range if we're near the end
+        if (current >= totalPages - 4) {
+          startRange = Math.max(1, totalPages - 6);
+          endRange = totalPages - 2;
+        }
+        
+        // Add ellipsis before middle section if needed
+        if (startRange > 1) {
+          pages.push('ellipsis-start');
+        }
+        
+        // Add middle section pages
+        for (let i = startRange; i <= endRange; i++) {
+          if (i !== 0 && i !== totalPages - 1) {
+            pages.push(i);
+          }
+        }
+        
+        // Add ellipsis after middle section if needed
+        if (endRange < totalPages - 2) {
+          pages.push('ellipsis-end');
+        }
+        
+        // Always show last page (if more than 1 page)
+        if (totalPages > 1) {
+          pages.push(totalPages - 1);
+        }
+        
+        return pages;
+      };
+      
+      const visiblePages = getVisiblePages(pager, totalPages);
 
-      return { totalItems, totalPages, pageNumbers };
-    }, [mediaCollector.length, itemsPerPage]);
+      return { totalItems, totalPages, visiblePages };
+    }, [mediaCollector.length, itemsPerPage, pager]);
 
     const handlePageClick = useCallback(
       (pageNumber) => {
@@ -143,17 +198,33 @@ const PagerNav = React.memo(
             </svg>{" "}
           </button>
 
-          {pageNumbers.map((pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`filter-pagination__button ${
-                pageNumber === pager ? "filter-pagination__button--active" : ""
-              }`}
-              onClick={() => handlePageClick(pageNumber)}
-            >
-              {pageNumber + 1}
-            </button>
-          ))}
+          {visiblePages.map((pageNumber, index) => {
+            // Handle ellipsis
+            if (typeof pageNumber === 'string' && pageNumber.startsWith('ellipsis')) {
+              return (
+                <span 
+                  key={pageNumber}
+                  className="filter-pagination__ellipsis"
+                  aria-label="More pages"
+                >
+                  ...
+                </span>
+              );
+            }
+            
+            // Handle regular page numbers
+            return (
+              <button
+                key={pageNumber}
+                className={`filter-pagination__button ${
+                  pageNumber === pager ? "filter-pagination__button--active" : ""
+                }`}
+                onClick={() => handlePageClick(pageNumber)}
+              >
+                {pageNumber + 1}
+              </button>
+            );
+          })}
 
           <button
             className={`filter-pagination__button filter-pagination__button--arrow filter-pagination__button--arrow-next ${

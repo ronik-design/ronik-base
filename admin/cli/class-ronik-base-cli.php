@@ -56,23 +56,23 @@ class Ronik_Base_CLI
      */
     public function __invoke($args, $assoc_args)
     {
-        if (empty($args)) {
+        		if (empty($args)) {
             $this->show_help($assoc_args);
             return;
-        }
+		}
 
         $subcommand = $args[0];
 
-        switch ($subcommand) {
-            case 'help':
-                $this->show_help($assoc_args);
-                break;
+        		switch ($subcommand) {
+			case 'help':
+				$this->show_help($assoc_args);
+				break;
             case 'list':
                 $this->list_media($assoc_args);
-                break;
+				break;
             case 'list-preserved':
                 $this->list_preserved_media($assoc_args);
-                break;
+				break;
             case 'scan':
                 $this->scan_media($assoc_args);
                 break;
@@ -87,6 +87,9 @@ class Ronik_Base_CLI
                 break;
             case 'unpreserve':
                 $this->unpreserve_media($args, $assoc_args);
+                break;
+            case 'limits':
+                $this->manage_limits($args, $assoc_args);
                 break;
             default:
                 WP_CLI::error("Unknown subcommand: {$subcommand}. Use 'wp media-harmony help' for available commands.");
@@ -117,6 +120,15 @@ class Ronik_Base_CLI
         WP_CLI::log('  wp media-harmony stats              Show media statistics');
         WP_CLI::log('  wp media-harmony preserve <id>      Preserve a media file from deletion');
         WP_CLI::log('  wp media-harmony unpreserve <id>    Remove preservation from a media file');
+        WP_CLI::log('  wp media-harmony limits <action>    Manage memory and processing limits');
+        WP_CLI::log('');
+        
+        WP_CLI::log('Limits Actions:');
+        WP_CLI::log('');
+        
+        WP_CLI::log('  wp media-harmony limits show        Show current limits');
+        WP_CLI::log('  wp media-harmony limits set         Set new limits');
+        WP_CLI::log('  wp media-harmony limits reset       Reset to default limits');
         WP_CLI::log('');
         
         WP_CLI::log('Command Options:');
@@ -178,6 +190,13 @@ class Ronik_Base_CLI
         
         WP_CLI::log('  # Remove preservation from a media file');
         WP_CLI::log('  wp media-harmony unpreserve 123');
+        WP_CLI::log('');
+        
+        WP_CLI::log('  # Manage processing limits');
+        WP_CLI::log('  wp media-harmony limits show');
+        WP_CLI::log('  wp media-harmony limits set --max-images=5000 --memory-limit=256');
+        WP_CLI::log('  wp media-harmony limits set --max-options=500 --memory-limit=1024');
+        WP_CLI::log('  wp media-harmony limits reset');
         WP_CLI::log('');
         
         WP_CLI::log('Requirements:');
@@ -689,5 +708,147 @@ class Ronik_Base_CLI
         } catch (Exception $e) {
             WP_CLI::error('Error unpreserving media: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Manage memory and processing limits for sync operations
+     *
+     * @param array $args       Command arguments
+     * @param array $assoc_args Command options
+     * @since 1.0.0
+     */
+    private function manage_limits($args, $assoc_args)
+    {
+        if (empty($args[1])) {
+            WP_CLI::error('Please specify a limits action: show, set, or reset.');
+        }
+
+        $action = $args[1];
+
+        switch ($action) {
+            case 'show':
+                $this->show_limits();
+                break;
+            case 'set':
+                $this->set_limits($assoc_args);
+                break;
+            case 'reset':
+                $this->reset_limits();
+                break;
+            default:
+                WP_CLI::error("Unknown limits action: {$action}. Use 'show', 'set', or 'reset'.");
+        }
+    }
+
+    /**
+     * Show current processing limits
+     *
+     * @since 1.0.0
+     */
+    private function show_limits()
+    {
+        WP_CLI::log('Current Media Harmony Processing Limits:');
+        WP_CLI::log('=======================================');
+        WP_CLI::log('');
+        
+        $max_images = get_option('rbp_media_cleaner_max_images', 100000);
+        $max_options = get_option('rbp_media_cleaner_max_options', 10000);
+        $memory_limit = get_option('rbp_media_cleaner_memory_limit', 512);
+        
+        WP_CLI::log(sprintf('Max Images to Process: %d', $max_images));
+        WP_CLI::log(sprintf('Max Options to Process: %d', $max_options));
+        WP_CLI::log(sprintf('Memory Limit (MB): %d', $memory_limit));
+        WP_CLI::log('');
+        WP_CLI::log('Note: Posts processing is unlimited as posts are not memory intensive.');
+        WP_CLI::log('');
+        
+        // Show current memory usage
+        $current_memory_mb = memory_get_usage(true) / 1024 / 1024;
+        $peak_memory_mb = memory_get_peak_usage(true) / 1024 / 1024;
+        
+        WP_CLI::log('Current Memory Status:');
+        WP_CLI::log(sprintf('Current Usage: %.2f MB', $current_memory_mb));
+        WP_CLI::log(sprintf('Peak Usage: %.2f MB', $peak_memory_mb));
+        WP_CLI::log('');
+        
+        WP_CLI::log('Use "wp media-harmony limits set" to modify these limits.');
+    }
+
+    /**
+     * Set new processing limits
+     *
+     * @param array $assoc_args Command options
+     * @since 1.0.0
+     */
+    private function set_limits($assoc_args)
+    {
+        $updated = false;
+        
+        if (isset($assoc_args['max-images'])) {
+            $max_images = intval($assoc_args['max-images']);
+            if ($max_images > 0) {
+                update_option('rbp_media_cleaner_max_images', $max_images);
+                WP_CLI::success(sprintf('Max images limit set to: %d', $max_images));
+                $updated = true;
+            } else {
+                WP_CLI::error('Max images must be a positive number.');
+            }
+        }
+        
+        
+        if (isset($assoc_args['max-options'])) {
+            $max_options = intval($assoc_args['max-options']);
+            if ($max_options > 0) {
+                update_option('rbp_media_cleaner_max_options', $max_options);
+                WP_CLI::success(sprintf('Max options limit set to: %d', $max_options));
+                $updated = true;
+            } else {
+                WP_CLI::error('Max options must be a positive number.');
+            }
+        }
+        
+        if (isset($assoc_args['memory-limit'])) {
+            $memory_limit = intval($assoc_args['memory-limit']);
+            if ($memory_limit > 0) {
+                update_option('rbp_media_cleaner_memory_limit', $memory_limit);
+                WP_CLI::success(sprintf('Memory limit set to: %d MB', $memory_limit));
+                $updated = true;
+            } else {
+                WP_CLI::error('Memory limit must be a positive number.');
+            }
+        }
+        
+        if (!$updated) {
+            WP_CLI::error('No valid limits provided. Use --max-images, --max-options, or --memory-limit.');
+        } else {
+            WP_CLI::log('');
+            WP_CLI::log('Updated limits:');
+            $this->show_limits();
+        }
+    }
+
+    /**
+     * Reset limits to default values
+     *
+     * @since 1.0.0
+     */
+    private function reset_limits()
+    {
+        $defaults = array(
+            'rbp_media_cleaner_max_images' => 10000,
+            'rbp_media_cleaner_max_options' => 10000,
+            'rbp_media_cleaner_memory_limit' => 512
+        );
+        
+        // Remove the old max_posts option since it's no longer used
+        delete_option('rbp_media_cleaner_max_posts');
+        
+        foreach ($defaults as $option => $value) {
+            update_option($option, $value);
+        }
+        
+        WP_CLI::success('All limits have been reset to default values.');
+        WP_CLI::log('');
+        $this->show_limits();
     }
 }

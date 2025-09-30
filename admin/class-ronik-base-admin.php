@@ -117,7 +117,7 @@ class Ronik_Base_Admin
 	public function add_media_cleaner_html_class($classes)
 	{
 		// Check if we're on the admin page and it's the media cleaner page
-		if (is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved')) {
+		if (is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner')) {
 			$classes .= ' media-cleaner-page';
 		}
 		return $classes;
@@ -131,7 +131,7 @@ class Ronik_Base_Admin
 	public function add_media_cleaner_html_class_head()
 	{
 		// Check if we're on the admin page and it's the media cleaner page
-		if ( is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved')) {
+		if ( is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner')) {
 			echo '<script>document.documentElement.classList.add("media-cleaner-page");</script>';
 		}
 	}

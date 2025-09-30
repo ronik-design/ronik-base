@@ -39,16 +39,28 @@ const MediaCollector = ({ type }) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const lazyImage = entry.target;
+          
+          // Skip if already processed
+          if (lazyImage.classList.contains('reveal-enabled')) {
+            return;
+          }
+          
+          console.log('Processing lazy image:', lazyImage.dataset.src);
+          
           fetch(lazyImage.dataset.src).then(() => {
             const imageSelector = document.querySelector(
               `[data-id="${lazyImage.getAttribute("data-id")}"]`
             );
-            lazyImage.className = "lzy_img reveal-enabled";
+            
+            // Update class to indicate it's been processed
+            lazyImage.className = lazyImage.className.replace('reveal-disabled', 'reveal-enabled');
+            
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
             const img = new Image();
             img.crossOrigin = "";
             img.src = lazyImage.getAttribute("data-src");
+            
             img.onload = function () {
               canvas.width = this.naturalWidth;
               canvas.height = this.naturalHeight;
@@ -57,28 +69,88 @@ const MediaCollector = ({ type }) => {
                 function (blob) {
                   if (imageSelector) {
                     imageSelector.src = URL.createObjectURL(blob);
+                    console.log('✅ Lazy loaded image:', lazyImage.dataset.src);
                   }
                 },
                 lazyImage.getAttribute("data-type"),
                 0.5
               );
             };
+            
+            img.onerror = function() {
+              console.warn('❌ Failed to load lazy image:', lazyImage.dataset.src);
+            };
+          }).catch((error) => {
+            console.warn('❌ Fetch failed for lazy image:', error);
           });
         }
       });
     });
     
-    const images = document.querySelectorAll("img.lzy_img");
+    // Look for images with lzy_img class, including those with reveal-disabled
+    const images = document.querySelectorAll("img.lzy_img:not(.reveal-enabled)");
+    console.log(`🔍 Found ${images.length} lazy images to observe`);
+    
+    // Debug: Let's see what images are actually in the DOM
+    const allImages = document.querySelectorAll("img");
+    const lzyImages = document.querySelectorAll("img.lzy_img");
+    const revealDisabled = document.querySelectorAll("img.reveal-disabled");
+    const revealEnabled = document.querySelectorAll("img.reveal-enabled");
+    
+    console.log(`📊 Image Debug:
+    - Total images in DOM: ${allImages.length}
+    - Images with .lzy_img: ${lzyImages.length}
+    - Images with .reveal-disabled: ${revealDisabled.length}
+    - Images with .reveal-enabled: ${revealEnabled.length}`);
+    
+    // Show the first few images for debugging
+    if (allImages.length > 0) {
+      console.log('First 3 images in DOM:', Array.from(allImages).slice(0, 3).map(img => ({
+        src: img.src,
+        dataSrc: img.dataset.src,
+        className: img.className,
+        id: img.dataset.id
+      })));
+    }
+    
     images.forEach((img) => imageObserver.observe(img));
   }
 
-  // Run lazyLoader when component has loaded and data is available
-  useEffect(() => {
-    if (hasLoaded) {
-      const timer = setTimeout(lazyLoader, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [hasLoaded , filterPager]);
+     // Run lazyLoader when component has loaded and data is available
+   useEffect(() => {
+     console.log("hasLoaded changed to:", hasLoaded);
+     if (hasLoaded) {
+       console.log("✅ Running lazy loader - hasLoaded is true");
+       
+       // Multiple attempts with increasing delays to catch images that load later
+       const timer1 = setTimeout(() => {
+         console.log("🔄 Lazy loader executing (attempt 1 - 100ms)...");
+         lazyLoader();
+       }, 100);
+       
+       const timer2 = setTimeout(() => {
+         console.log("🔄 Lazy loader executing (attempt 2 - 500ms)...");
+         lazyLoader();
+       }, 500);
+       
+       const timer3 = setTimeout(() => {
+         console.log("🔄 Lazy loader executing (attempt 3 - 1000ms)...");
+         lazyLoader();
+       }, 1000);
+       
+       const timer4 = setTimeout(() => {
+         console.log("🔄 Lazy loader executing (attempt 4 - 2000ms)...");
+         lazyLoader();
+       }, 2000);
+       
+       return () => {
+         clearTimeout(timer1);
+         clearTimeout(timer2);
+         clearTimeout(timer3);
+         clearTimeout(timer4);
+       };
+     }
+   }, [hasLoaded, filterPager]);
 
   // Effect to handle image deletion
   useEffect(() => {
@@ -108,9 +180,11 @@ const MediaCollector = ({ type }) => {
     fetch("/wp-json/mediacleaner/v1/mediacollector/tempsaved")
       .then((response) => response.json())
       .then((data) => {
+        // Set data only if there is data
         if (data.length) {
           setMediaCollectorPreserved(data);
         }
+        // ALWAYS set hasLoaded to true after fetch completes
         setHasLoaded(true);
         removeLoader();
       })
@@ -134,14 +208,20 @@ const MediaCollector = ({ type }) => {
     fetch(`/wp-json/mediacleaner/v1/mediacollector/${endpoint}`)
       .then((response) => response.json())
       .then((data) => {
+        // Set data only if there is data, but always set hasLoaded
         if (data.length) {
           setMediaCollectorPreserved(data);
           setMediaCollector(data);
-          setTimeout(() => {
-            setHasLoaded(true);
-            removeLoader();
-          }, 0);
+        } else {
+          // Set empty state to indicate no data found
+          setMediaCollector("no-images");
         }
+        
+        // ALWAYS set hasLoaded to true after fetch completes
+        setTimeout(() => {
+          setHasLoaded(true);
+          removeLoader();
+        }, 0);
       })
       .catch((error) => {
         console.error("Error fetching media collector data:", error);
@@ -186,16 +266,19 @@ const MediaCollector = ({ type }) => {
         fetch(endpoint)
           .then((response) => response.json())
           .then((data) => {
+            // Set data only if there is data
             if (data.length) {
               filter === "large"
                 ? setMediaCollectorHigh(data)
                 : setMediaCollectorLow(data);
             }
+            // Note: hasLoaded is set in .finally() so it always triggers
           })
           .catch((error) =>
             console.error(`Error fetching ${filter} media:`, error)
           )
           .finally(() => {
+            // ALWAYS set hasLoaded to true after fetch completes
             setHasLoaded(true);
             removeLoader();
           });

@@ -1,0 +1,34 @@
+@use "../partials/variables";
+
+.support-container{
+    .content-block {
+        max-width: 500px;
+        width: 100%;
+        padding-top: 0;
+        padding-bottom: 3rem;
+
+        .content-block__inner{
+            .content-block__content{
+                color: #3C434A;
+                h1{
+                    font-size: 2.4rem;
+                    font-weight: 600;
+                    color: #3C434A;
+                    font-family: variables.$primaryFont;
+                    line-height: 1.2;
+                    margin: 0;
+                    padding-bottom: 1.8rem;
+                }
+                p{
+                    font-size: 1.4rem;
+                    font-weight: 400;
+                    color: #3C434A;
+                    font-family: variables.$secondaryFont;
+                    line-height: 1.4;
+                    padding: 0;
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
