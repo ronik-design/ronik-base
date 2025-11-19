@@ -78,6 +78,9 @@ var FAQ = function FAQ(_ref) {
     _useState2 = _slicedToArray(_useState, 2),
     isActive = _useState2[0],
     setIsActive = _useState2[1];
+
+  // Get pluginName from wpVars (localized by WordPress)
+  var pluginName = typeof window !== 'undefined' && window.wpVars ? window.wpVars.pluginName || 'ronik-base' : 'ronik-base';
   var faqActivator = function faqActivator(index) {
     if (isActive !== index) {
       setIsActive(index);
@@ -100,7 +103,7 @@ var FAQ = function FAQ(_ref) {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             className: "accordion-icon ".concat(isActive == index ? 'active' : ''),
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-              src: "/wp-content/plugins/ronik-base/assets/images/accordion-carrot.svg",
+              src: "/wp-content/plugins/".concat(pluginName, "/assets/images/accordion-carrot.svg"),
               alt: ""
             })
           })]
@@ -150,6 +153,9 @@ var ActionButtons = function ActionButtons(_ref) {
     setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType,
     deleteInitiated = _useMediaCleanerStore.deleteInitiated,
     setDeleteInitiated = _useMediaCleanerStore.setDeleteInitiated;
+
+  // Get pluginName from wpVars (localized by WordPress)
+  var pluginName = typeof window !== 'undefined' && window.wpVars ? window.wpVars.pluginName || 'ronik-base' : 'ronik-base';
 
   // Perform the POST request
   var handlePostData = /*#__PURE__*/function () {
@@ -252,7 +258,7 @@ var ActionButtons = function ActionButtons(_ref) {
         className: isScanning || userSelection.length === 0 ? "submit-btn submit-btn-disabled delete-btn" : "submit-btn delete-btn",
         disabled: isScanning || userSelection.length === 0,
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-          src: "/wp-content/plugins/ronik-base/assets/images/delete.svg",
+          src: "/wp-content/plugins/".concat(pluginName, "/assets/images/delete.svg"),
           alt: "Ronik Base Logo"
         }), userSelection.length === 0 ? "No media selected" : isScanning || userSelection.length === 0 ? "Sync in progress — delete unavailable" : "Delete Media"]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("button", {
@@ -260,7 +266,7 @@ var ActionButtons = function ActionButtons(_ref) {
         className: isScanning || userSelection.length === 0 ? "submit-btn submit-btn-disabled" : "submit-btn",
         disabled: isScanning || userSelection.length === 0,
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-          src: "/wp-content/plugins/ronik-base/assets/images/preserve.svg",
+          src: "/wp-content/plugins/".concat(pluginName, "/assets/images/preserve.svg"),
           alt: "Ronik Base Logo"
         }), type === "preserved" ? userSelection.length === 0 ? "No media selected" : isScanning || userSelection.length === 0 ? "Unpreserve in progress — unpreserve unavailable" : "Unpreserve Media" : userSelection.length === 0 ? "No media selected" : isScanning || userSelection.length === 0 ? "Preserve in progress — preserve unavailable" : userSelection.length === 0 ? "No media selected" : isScanning || userSelection.length === 0 ? "Preserve in progress — preserve unavailable" : "Preserve Media"]
       })]
@@ -999,6 +1005,9 @@ var MediaFilter = function MediaFilter(_ref) {
     isInitialized = _useState4[0],
     setIsInitialized = _useState4[1];
 
+  // Get pluginName from wpVars (localized by WordPress)
+  var pluginName = typeof window !== 'undefined' && window.wpVars ? window.wpVars.pluginName || 'ronik-base' : 'ronik-base';
+
   // Initialize filters from URL on component mount
   // This will automatically trigger the data fetch in MediaCollector component
   // because its useEffect depends on selectedFilters
@@ -1069,7 +1078,7 @@ var MediaFilter = function MediaFilter(_ref) {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
         className: "media-filter-icon",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-          src: "/wp-content/plugins/ronik-base/assets/images/filter.svg",
+          src: "/wp-content/plugins/".concat(pluginName, "/assets/images/filter.svg"),
           alt: "Ronik Base Logo"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
@@ -1833,6 +1842,9 @@ function StatsContainer() {
     localScanInitiated = _useState10[0],
     setLocalScanInitiated = _useState10[1];
 
+  // Get pluginName from wpVars (localized by WordPress)
+  var pluginName = typeof window !== 'undefined' && window.wpVars ? window.wpVars.pluginName || 'ronik-base' : 'ronik-base';
+
   // Use both global scanInitiated and local scanInitiated for immediate feedback
   var showLoading = isScanning || scanInitiated || localScanInitiated;
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -2097,7 +2109,7 @@ function StatsContainer() {
             onClick: handleSubmitWithAction("scan-media"),
             disabled: showLoading,
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-              src: "/wp-content/plugins/ronik-base/assets/images/scan.svg",
+              src: "/wp-content/plugins/".concat(pluginName, "/assets/images/scan.svg"),
               alt: "Ronik Base Logo"
             }), "Scan Media Library"]
           })
@@ -2106,7 +2118,7 @@ function StatsContainer() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "stats-container-info-sync-status-label",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-              src: "/wp-content/plugins/ronik-base/assets/images/reload.svg",
+              src: "/wp-content/plugins/".concat(pluginName, "/assets/images/reload.svg"),
               alt: "Ronik Base Logo"
             }), "Last Updated \xA0", formatLastUpdate(lastUpdateTime)]
           })
@@ -2347,8 +2359,10 @@ __webpack_require__.r(__webpack_exports__);
 function TopNav(_ref) {
   var _ref$mode = _ref.mode,
     mode = _ref$mode === void 0 ? 'light' : _ref$mode;
-  // Get betaMode from wpVars (localized by WordPress)
-  var betaMode = typeof window !== 'undefined' && window.wpVars ? window.wpVars.betaMode : false;
+  // Get wpVars from WordPress localization
+  var wpVars = typeof window !== 'undefined' && window.wpVars ? window.wpVars : {};
+  var betaMode = wpVars.betaMode || false;
+  var pluginName = wpVars.pluginName || 'ronik-base';
 
   // Function to check if current page is active based on query parameter
   var isActive = function isActive(href) {
@@ -2389,10 +2403,10 @@ function TopNav(_ref) {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
         className: "top-nav-left",
         children: mode === 'dark' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-          src: "/wp-content/plugins/ronik-base/assets/images/logo-dark.svg",
+          src: "/wp-content/plugins/".concat(pluginName, "/assets/images/logo-dark.svg"),
           alt: "Ronik Base Logo"
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-          src: "/wp-content/plugins/ronik-base/assets/images/logo.svg",
+          src: "/wp-content/plugins/".concat(pluginName, "/assets/images/logo.svg"),
           alt: "Ronik Base Logo"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {

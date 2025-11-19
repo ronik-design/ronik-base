@@ -9,6 +9,9 @@ function StatsContainer() {
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const [localScanInitiated, setLocalScanInitiated] = useState(false);
 
+  // Get pluginName from wpVars (localized by WordPress)
+  const pluginName = typeof window !== 'undefined' && window.wpVars ? (window.wpVars.pluginName || 'ronik-base') : 'ronik-base';
+
   // Use both global scanInitiated and local scanInitiated for immediate feedback
   const showLoading = isScanning || scanInitiated || localScanInitiated;
 
@@ -285,7 +288,7 @@ function StatsContainer() {
                 disabled={showLoading}
               >
                 <img
-                  src="/wp-content/plugins/ronik-base/assets/images/scan.svg"
+                  src={`/wp-content/plugins/${pluginName}/assets/images/scan.svg`}
                   alt="Ronik Base Logo"
                 />
                 Scan Media Library
@@ -294,7 +297,7 @@ function StatsContainer() {
             <div className="stats-container-info-sync-status">
               <div className="stats-container-info-sync-status-label">
                 <img
-                  src="/wp-content/plugins/ronik-base/assets/images/reload.svg"
+                  src={`/wp-content/plugins/${pluginName}/assets/images/reload.svg`}
                   alt="Ronik Base Logo"
                 />
                 Last Updated &nbsp;{formatLastUpdate(lastUpdateTime)}

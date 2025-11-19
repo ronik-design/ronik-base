@@ -5,6 +5,9 @@ const ActionButtons = ({ type }) => {
   const { isScanning, syncStatus, setScanInitiated, userSelection, scanInitiatedType, setScanInitiatedType , deleteInitiated , setDeleteInitiated} =
     useMediaCleanerStore();
 
+  // Get pluginName from wpVars (localized by WordPress)
+  const pluginName = typeof window !== 'undefined' && window.wpVars ? (window.wpVars.pluginName || 'ronik-base') : 'ronik-base';
+
   // Perform the POST request
   const handlePostData = async (action, preserveType = null) => {
     const data = new FormData();
@@ -88,7 +91,7 @@ const ActionButtons = ({ type }) => {
           disabled={isScanning || userSelection.length === 0}
         >
           <img
-            src="/wp-content/plugins/ronik-base/assets/images/delete.svg"
+            src={`/wp-content/plugins/${pluginName}/assets/images/delete.svg`}
             alt="Ronik Base Logo"
           />
 
@@ -109,7 +112,7 @@ const ActionButtons = ({ type }) => {
           disabled={isScanning || userSelection.length === 0}
         >
           <img
-            src="/wp-content/plugins/ronik-base/assets/images/preserve.svg"
+            src={`/wp-content/plugins/${pluginName}/assets/images/preserve.svg`}
             alt="Ronik Base Logo"
           />
 

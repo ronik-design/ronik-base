@@ -3,6 +3,10 @@ import parse from 'html-react-parser';
 
 const FAQ = ({ items }) => {
     const [isActive, setIsActive] = useState(-1);
+    
+    // Get pluginName from wpVars (localized by WordPress)
+    const pluginName = typeof window !== 'undefined' && window.wpVars ? (window.wpVars.pluginName || 'ronik-base') : 'ronik-base';
+    
     const faqActivator = (index) =>{
         if( isActive !== index){
             setIsActive(index);
@@ -20,7 +24,7 @@ const FAQ = ({ items }) => {
                         >
                         <h2>{parse(item[0])}</h2>
                         <div className={`accordion-icon ${isActive == index ? 'active' : ''}`}>
-                            <img src="/wp-content/plugins/ronik-base/assets/images/accordion-carrot.svg" alt="" />
+                            <img src={`/wp-content/plugins/${pluginName}/assets/images/accordion-carrot.svg`} alt="" />
                         </div>
                     </div>
                     {isActive == index && <div className="accordion-content">{parse(item[1])}</div>}

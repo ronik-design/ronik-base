@@ -60,7 +60,7 @@ td {
               width: 1.2rem;
               height: 0.9rem;
               background-size: contain;
-              background-image: url("/wp-content/plugins/ronik-base/assets/images/checkmark.svg");
+              background-image: var(--ronik-plugin-checkmark);
             }
           }
 
@@ -154,7 +154,7 @@ td {
                 width: 1.2rem;
                 height: 0.9rem;
                 background-size: contain;
-                background-image: url("/wp-content/plugins/ronik-base/assets/images/checkmark.svg");
+                background-image: var(--ronik-plugin-checkmark);
               }
             }
 
@@ -373,7 +373,7 @@ td {
     background-repeat: no-repeat;
     background-position: center;
     z-index: 100000;
-    background-image: url("/wp-content/plugins/ronik-base/assets/images/enlarge.svg");
+    background-image: var(--ronik-plugin-enlarge);
     border-radius: 4px;
     opacity: 0;
     transform: translateY(10px) translateX(10px);

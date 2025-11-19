@@ -34,6 +34,9 @@ const MediaFilter = ({ type }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Get pluginName from wpVars (localized by WordPress)
+  const pluginName = typeof window !== 'undefined' && window.wpVars ? (window.wpVars.pluginName || 'ronik-base') : 'ronik-base';
+
   // Initialize filters from URL on component mount
   // This will automatically trigger the data fetch in MediaCollector component
   // because its useEffect depends on selectedFilters
@@ -106,7 +109,7 @@ const MediaFilter = ({ type }) => {
       >
         <span className="media-filter-icon">
           <img
-            src="/wp-content/plugins/ronik-base/assets/images/filter.svg"
+            src={`/wp-content/plugins/${pluginName}/assets/images/filter.svg`}
             alt="Ronik Base Logo"
           />
         </span>

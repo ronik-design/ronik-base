@@ -56,7 +56,7 @@
                         setTimeout(() => {
                             // alert('RONIK TEST 2 COMPLETED');
 
-                            alert("CCCCCC.");
+                            // alert("CCCCCC.");
                             window.location.reload(true);
                         }, 500);
                     } else {

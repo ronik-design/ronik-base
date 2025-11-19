@@ -1,8 +1,10 @@
 import React from "react";
 
 function TopNav({ mode = 'light' }) {
-  // Get betaMode from wpVars (localized by WordPress)
-  const betaMode = typeof window !== 'undefined' && window.wpVars ? window.wpVars.betaMode : false;
+  // Get wpVars from WordPress localization
+  const wpVars = typeof window !== 'undefined' && window.wpVars ? window.wpVars : {};
+  const betaMode = wpVars.betaMode || false;
+  const pluginName = wpVars.pluginName || 'ronik-base';
 
   // Function to check if current page is active based on query parameter
   const isActive = (href) => {
@@ -48,9 +50,9 @@ function TopNav({ mode = 'light' }) {
       <div className={`top-nav ${mode === 'dark' ? 'top-nav--dark' : ''}`}>
         <div className="top-nav-left">
           {mode === 'dark' ? (
-            <img src="/wp-content/plugins/ronik-base/assets/images/logo-dark.svg" alt="Ronik Base Logo" />
+            <img src={`/wp-content/plugins/${pluginName}/assets/images/logo-dark.svg`} alt="Ronik Base Logo" />
           ) : (
-            <img src="/wp-content/plugins/ronik-base/assets/images/logo.svg" alt="Ronik Base Logo" />
+            <img src={`/wp-content/plugins/${pluginName}/assets/images/logo.svg`} alt="Ronik Base Logo" />
           )}
         </div>
         <div className="top-nav-right">

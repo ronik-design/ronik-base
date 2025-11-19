@@ -137,7 +137,13 @@ class Ronik_Base_Admin
 		
 		// Hide the "Media Harmony" submenu header and first menu item
 		if ( is_admin() ) {
+			// Set CSS custom properties for plugin image paths
+			$plugin_base = '/wp-content/plugins/' . $this->plugin_name;
 			echo '<style>
+				:root {
+					--ronik-plugin-checkmark: url("' . esc_attr($plugin_base) . '/assets/images/checkmark.svg");
+					--ronik-plugin-enlarge: url("' . esc_attr($plugin_base) . '/assets/images/enlarge.svg");
+				}
 				/* Hide the Media Harmony submenu header */
 				#toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-submenu-head,
 				#adminmenu #toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-submenu-head {
@@ -228,6 +234,7 @@ class Ronik_Base_Admin
 			'ajaxURL' => admin_url('admin-ajax.php'),
 			'nonce'	  => wp_create_nonce('ajax-nonce'),
 			'betaMode' => $this->beta_mode_state ? true : false,
+			'pluginName' => $this->plugin_name,
 		));
 	}
 
