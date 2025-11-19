@@ -4,7 +4,8 @@ const useMediaCleanerStore = create((set) => ({
   // Basic state
   isScanning: false,
   scanInitiated: false,
-  
+  scanInitiatedType: 'Scan in Progress',
+
   // Filter state
   selectedFilters: [],
   
@@ -24,6 +25,7 @@ const useMediaCleanerStore = create((set) => ({
   // Actions
   setScanning: (isScanning) => set({ isScanning }),
   setScanInitiated: (scanInitiated) => set({ scanInitiated }),
+  setScanInitiatedType: (scanInitiatedType) => set({ scanInitiatedType }),
   setSelectedFilters: (selectedFilters) => set({ selectedFilters }),
   setUserSelection: (userSelection) => set({ userSelection }),
   addToUserSelection: (id) => set((state) => ({

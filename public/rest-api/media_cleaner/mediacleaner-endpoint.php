@@ -364,10 +364,35 @@ class MediaCleanerDataHandler
         $image_src = wp_get_attachment_image_src($media_id);
         $file_path = get_attached_file($media_id);
         
-        if ($file_path && file_exists($file_path)) {
-            $image_url = wp_get_attachment_image_url($media_id, 'thumbnail');
-        } else {
+        // Primary check: Can WordPress generate image data?
+        if (!$image_src || empty($image_src[0])) {
             $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+        } else {
+            // Verify the original file exists and is readable
+            if (!$file_path || !file_exists($file_path) || !is_readable($file_path)) {
+                $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+            } else {
+                // For images, validate with getimagesize (fast, reads header only)
+                $mime_type = get_post_mime_type($media_id);
+                if (strpos($mime_type, 'image/') === 0) {
+                    $image_info = @getimagesize($file_path);
+                    if ($image_info === false) {
+                        $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                    } else {
+                        // Try to get thumbnail URL - if this fails, treat as corrupt
+                        $image_url = wp_get_attachment_image_url($media_id, 'thumbnail');
+                        if (!$image_url) {
+                            $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                        }
+                    }
+                } else {
+                    // For non-images, just check if thumbnail URL exists
+                    $image_url = wp_get_attachment_image_url($media_id, 'thumbnail');
+                    if (!$image_url) {
+                        $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                    }
+                }
+            }
         }
 
         $thumbnail = wp_get_attachment_image($media_id, 'small', false, [

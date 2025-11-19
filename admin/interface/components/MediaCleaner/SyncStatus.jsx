@@ -50,8 +50,9 @@ function SyncStatus() {
           if (isServerRunning) {
             // Server confirmed scan is running - safe to rely on server state
             setScanning(true);
-          } else if (timeSinceInitiated > 5000) {
-            // Grace period expired - assume scan failed or completed quickly
+          } else if (timeSinceInitiated > 30000) {
+            // Extended grace period (30 seconds) for large operations like bulk deletes
+            // This gives the server more time to start processing
             setScanInitiated(false);
             setScanning(false);
             scanInitiatedTimeRef.current = null;

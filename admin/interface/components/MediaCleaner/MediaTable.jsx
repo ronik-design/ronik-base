@@ -86,7 +86,7 @@ const FilterNav = React.memo(({ mediaCollector, filterMode, filter_size }) => {
 const PagerNav = React.memo(
   ({ pager, setFilterPager, mediaCollector = [], itemsPerPage }) => {
     const { totalItems, totalPages, visiblePages } = useMemo(() => {
-      const totalItems = mediaCollector.length || 0;
+      const totalItems = (mediaCollector && mediaCollector.length) || 0;
       const totalPages = Math.ceil(totalItems / itemsPerPage);
       
       // Smart pagination logic
@@ -146,7 +146,7 @@ const PagerNav = React.memo(
       const visiblePages = getVisiblePages(pager, totalPages);
 
       return { totalItems, totalPages, visiblePages };
-    }, [mediaCollector.length, itemsPerPage, pager]);
+    }, [mediaCollector, itemsPerPage, pager]);
 
     const handlePageClick = useCallback(
       (pageNumber) => {
@@ -274,7 +274,7 @@ const MediaTableRow = React.memo(
       );
     };
 
-    const { isScanning, setScanInitiated, syncStatus } = useMediaCleanerStore();
+    const { isScanning, setScanInitiated, syncStatus, scanInitiatedType } = useMediaCleanerStore();
     // Use local scanInitiated for immediate feedback, combined with global isScanning
     const showLoading = isScanning ;
 
@@ -478,10 +478,10 @@ const useMediaTableLogic = ({
   const { output, itemsPerPage, visibleIds, allSelected } = useMemo(() => {
     const page = parseInt(filterPager) || 0;
     let itemsPerPage = 20;
-    const mediaId = getQueryParameter("media_id");
-    if (mediaId) {
-      itemsPerPage = 2000;
-    }
+    // const mediaId = getQueryParameter("media_id");
+    // if (mediaId) {
+    //   itemsPerPage = 200000000;
+    // }
 
     const output = getPaginatedData(
       filterMode === "high"
@@ -579,6 +579,8 @@ const MediaCollectorTable = ({
 }) => {
   const isPreservedType = type === "preserved";
 
+  const { scanInitiatedType } = useMediaCleanerStore();
+
   const {
     output,
     itemsPerPage,
@@ -600,10 +602,6 @@ const MediaCollectorTable = ({
 
   // Memoized table rows
   const mediaCollectorItems = useMemo(() => {
-    if (mediaCollector === "no-images") {
-      return <p>No Media Found!</p>;
-    }
-
     return (output || []).map((collector) => (
       <MediaTableRow
         key={collector["id"]}
@@ -613,12 +611,20 @@ const MediaCollectorTable = ({
         onImageClick={openLightbox}
       />
     ));
-  }, [output, userSelection, handleSelect, openLightbox]);
+  }, [output, userSelection, handleSelect, openLightbox, scanInitiatedType, mediaCollector]);
 
   // Early return for no media
-  if (!mediaCollector || mediaCollector === "no-images") {
-    return <p>No Media Found!</p>;
+  if (mediaCollector === "no-images") {
+    return <p style={{ color: "#fff" }}>No Media Found!</p>;
   }
+
+  if (!mediaCollector && scanInitiatedType === "Loading Media in Progress") {
+    return <p style={{ color: "#fff" }}>Loading Media...</p>;
+  }
+
+
+
+
 
   return (
     <>
@@ -636,7 +642,7 @@ const MediaCollectorTable = ({
       <PagerNav
         pager={filterPager}
         setFilterPager={setFilterPager}
-        mediaCollector={mediaCollector}
+        mediaCollector={mediaCollector || []}
         itemsPerPage={itemsPerPage}
       />
       <LightboxModal

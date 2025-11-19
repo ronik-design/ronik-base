@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
 
 function StatsContainer() {
-  const { isScanning, setScanInitiated, syncStatus } = useMediaCleanerStore();
+  const { isScanning, scanInitiated, setScanInitiated, syncStatus, scanInitiatedType, setScanInitiatedType } = useMediaCleanerStore();
   const [statsUnlinked, setStatsUnlinked] = useState([]);
   const [statsPreserved, setStatsPreserved] = useState([]);
   const [breakdown, setBreakdown] = useState([]);
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const [localScanInitiated, setLocalScanInitiated] = useState(false);
 
-  // Use local scanInitiated for immediate feedback, combined with global isScanning
-  const showLoading = isScanning || localScanInitiated;
+  // Use both global scanInitiated and local scanInitiated for immediate feedback
+  const showLoading = isScanning || scanInitiated || localScanInitiated;
 
   useEffect(() => {
     fetchStats();
@@ -27,11 +27,11 @@ function StatsContainer() {
 
   // Watch for scan completion to reset local state and refresh stats
   useEffect(() => {
-    if (!isScanning && localScanInitiated) {
+    if (!isScanning && !scanInitiated && localScanInitiated) {
       setLocalScanInitiated(false);
       fetchStats(); // Refresh stats when scan completes
     }
-  }, [isScanning, localScanInitiated, fetchStats]);
+  }, [isScanning, scanInitiated, localScanInitiated, fetchStats]);
 
 
 
@@ -135,8 +135,7 @@ function StatsContainer() {
   const formatLastUpdate = (timestamp) => {
     if (!timestamp) return "Never";
 
-    // console.log("formatLastUpdate called with:", timestamp);
-
+    // alert(timestamp);
     let date;
 
     // Handle WordPress date format "m/d/Y h:ia" (e.g., "08/20/2025 01:54am")
@@ -148,58 +147,36 @@ function StatsContainer() {
         if (ampm === "pm" && hour24 !== 12) hour24 += 12;
         if (ampm === "am" && hour24 === 12) hour24 = 0;
 
-        // Create date (months are 0-indexed in JavaScript)
-        date = new Date(
-          parseInt(year),
-          parseInt(month) - 1,
-          parseInt(day),
-          hour24,
-          parseInt(minute)
-        );
-
-        // console.log("Date parsing details:", {
-        //   original: timestamp,
-        //   month: month,
-        //   day: day,
-        //   year: year,
-        //   hour: hour,
-        //   minute: minute,
-        //   ampm: ampm,
-        //   hour24: hour24,
-        //   parsedDate: date,
-        //   parsedDateString: date.toString(),
-        //   isValid: !isNaN(date.getTime()),
-        // });
+        // Create date string in ISO format to avoid timezone issues
+        // Format: YYYY-MM-DDTHH:mm:ss (treat as local time)
+        const dateString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour24.toString().padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
+        date = new Date(dateString);
       } else {
         // Fallback to direct parsing
         date = new Date(timestamp);
-        console.log("Fallback parsing used:", date);
       }
     } else {
       // Handle other date formats
       date = new Date(timestamp);
-      console.log("Direct parsing used:", date);
     }
 
     // Check if date is valid
     if (isNaN(date.getTime())) {
-      console.log("Invalid date parsed:", timestamp, "Date object:", date);
       return timestamp; // Return original if parsing failed
     }
 
     const now = new Date();
     const diffMs = now - date;
 
-    // console.log("Time calculation:", {
-    //   now: now,
-    //   parsedDate: date,
-    //   diffMs: diffMs,
-    //   diffMsFormatted: `${Math.floor(diffMs / 1000)} seconds`,
-    // });
-
-    // Handle future dates
-    if (diffMs < 0) {
+    // Handle future dates (likely due to timezone differences)
+    // If the date is less than 24 hours in the future, treat it as "just now"
+    if (diffMs < 0 && Math.abs(diffMs) < 24 * 60 * 60 * 1000) {
       return "Just now";
+    }
+    
+    // If it's more than 24 hours in the future, something is wrong - return original
+    if (diffMs < 0) {
+      return timestamp;
     }
 
     const diffMins = Math.floor(diffMs / 60000);
@@ -274,7 +251,8 @@ function StatsContainer() {
           <div className="stats-container-info-sync-progress">
             <div className="stats-container-info-sync-progress-header">
               <span className="stats-container-info-sync-progress-status">
-                Scan in Progress
+                {/* Scan in Progress */}
+                {scanInitiatedType}
               </span>
               <span className="stats-container-info-sync-progress-message">
                 {syncStatus.progress === "100%" ? "Complete!" : "Processing..."}

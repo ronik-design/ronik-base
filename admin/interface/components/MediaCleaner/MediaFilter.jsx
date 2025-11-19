@@ -1,19 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
 import ActionButtons from "./ActionButtons.jsx";
+
+// Function to update URL query parameters
+function updateURLQueryParams(filters) {
+  const url = new URL(window.location.href);
+  
+  // Remove existing filter parameters
+  url.searchParams.delete("filter");
+  
+  // Add new filter parameters
+  if (filters.length > 0) {
+    filters.forEach((filter) => {
+      url.searchParams.append("filter", filter);
+    });
+  }
+  
+  // Update URL without page reload
+  window.history.pushState({}, "", url.toString());
+}
+
+const filterOptions = [
+  { value: "jpg", label: "JPG" },
+  { value: "png", label: "PNG" },
+  { value: "video", label: "Video" },
+  { value: "gif", label: "GIF" },
+  { value: "audio", label: "Audio" },
+  { value: "misc", label: "Misc" },
+];
 
 const MediaFilter = ({ type }) => {
   const { selectedFilters, setSelectedFilters } = useMediaCleanerStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const filterOptions = [
-    { value: "jpg", label: "JPG" },
-    { value: "png", label: "PNG" },
-    { value: "video", label: "Video" },
-    { value: "gif", label: "GIF" },
-    { value: "audio", label: "Audio" },
-    { value: "misc", label: "Misc" },
-  ];
+  // Initialize filters from URL on component mount
+  // This will automatically trigger the data fetch in MediaCollector component
+  // because its useEffect depends on selectedFilters
+  useEffect(() => {
+    if (!isInitialized) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filterParams = urlParams.getAll("filter");
+      
+      if (filterParams.length > 0) {
+        // Validate that all filter params are valid options
+        const validFilters = filterParams.filter((filter) =>
+          filterOptions.some((option) => option.value === filter)
+        );
+        if (validFilters.length > 0) {
+          // Setting filters here will trigger the useEffect in MediaCollector
+          // that fetches filtered media data (it depends on selectedFilters)
+          setSelectedFilters(validFilters);
+        }
+      }
+      setIsInitialized(true);
+    }
+  }, [isInitialized, setSelectedFilters]);
+
+  // Update URL when filters change (but not on initial load)
+  useEffect(() => {
+    if (isInitialized) {
+      updateURLQueryParams(selectedFilters);
+    }
+  }, [selectedFilters, isInitialized]);
 
   const toggleFilter = (value) => {
     if (selectedFilters.includes(value)) {

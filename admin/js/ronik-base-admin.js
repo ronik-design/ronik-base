@@ -36,7 +36,7 @@
         // Pretty much this is a safe guard we simply reload the entire page incase things are acting wacky or slow.
         if (timeAdjust(progressTimerCounter) > 60 * safeGuard) {
             // alert('RONIK TEST progressTimerCounter safeGuard');
-            window.location.reload(true);
+            // window.location.reload(true);
         }
 
 
@@ -55,6 +55,8 @@
                     if (data.data === 'COMPLETED') {
                         setTimeout(() => {
                             // alert('RONIK TEST 2 COMPLETED');
+
+                            alert("CCCCCC.");
                             window.location.reload(true);
                         }, 500);
                     } else {

@@ -59,8 +59,45 @@ class RonikBaseHelper{
         @set_time_limit( intval( 3600*2 ) );
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13b, ronikdesigns_increase_memory Rewrite max_execution_time: ' . ini_get('max_execution_time'), 'low', 'rbp_media_cleaner');
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13c, ronikdesigns_increase_memory First memory_limit: ' . ini_get('memory_limit'), 'low', 'rbp_media_cleaner');
-        ini_set('memory_limit', '5024M');
+        
+        // Try to set memory limit to unlimited first, fallback to high value if that fails
+        $current_limit = ini_get('memory_limit');
+        $current_limit_bytes = $this->convertToBytes($current_limit);
+        
+        // If current limit is less than 8GB, try to increase it
+        if ($current_limit_bytes < 8 * 1024 * 1024 * 1024) {
+            // Try unlimited first
+            @ini_set('memory_limit', '-1');
+            $new_limit = ini_get('memory_limit');
+            
+            // If unlimited didn't work, try 8GB
+            if ($new_limit !== '-1') {
+                @ini_set('memory_limit', '8192M');
+            }
+        }
+        
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 13d, ronikdesigns_increase_memory Rewrite memory_limit: ' . ini_get('memory_limit'), 'low', 'rbp_media_cleaner');
+    }
+    
+    /**
+     * Convert memory limit string to bytes
+     */
+    private function convertToBytes($val) {
+        $val = trim($val);
+        if ($val === '-1') {
+            return PHP_INT_MAX; // Unlimited
+        }
+        $last = strtolower($val[strlen($val)-1]);
+        $val = (int) $val;
+        switch($last) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $val;
     }
 
 	// Write error logs cleanly.

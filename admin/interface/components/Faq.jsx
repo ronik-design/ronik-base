@@ -19,7 +19,9 @@ const FAQ = ({ items }) => {
                         onClick={() => faqActivator(index)}
                         >
                         <h2>{parse(item[0])}</h2>
-                        <div>{isActive == index ? '-' : '+'}</div>
+                        <div className={`accordion-icon ${isActive == index ? 'active' : ''}`}>
+                            <img src="/wp-content/plugins/ronik-base/assets/images/accordion-carrot.svg" alt="" />
+                        </div>
                     </div>
                     {isActive == index && <div className="accordion-content">{parse(item[1])}</div>}
                 </div>

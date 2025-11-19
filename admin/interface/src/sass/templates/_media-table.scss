@@ -232,6 +232,13 @@ td {
           font-size: 16px;
           width: 100%;
           padding-right: 40px;
+          max-width: 45%;
+
+          span{
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
         }
         &--media-link {
           max-width: 100px;

@@ -9,9 +9,28 @@
       align-items: center;
       justify-content: space-between;
 
+      h2{
+        font-size: 1.6rem;
+        padding-right: 1rem;
+      }
       h3{
         font-size: 1.6rem;
         font-weight: 500;
+      }
+
+      .accordion-icon {
+        display: flex;
+        align-items: center;
+        transition: transform 0.3s ease;
+
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+        }
+
+        &.active {
+          transform: rotate(180deg);
+        }
       }
 
     }

@@ -31,37 +31,111 @@ class RmcDataGathering
     public function rmc_getLineWithString_ronikdesigns($fileName, $id)
     {
         $f_attached_file = get_attached_file($id);
+        if (!$f_attached_file) {
+            return false;
+        }
+        
         $pieces = explode('/', $f_attached_file);
-        $lines = file(urldecode($fileName));
-        foreach ($lines as $lineNumber => $line) {
-            if (strpos($line, end($pieces)) !== false) {
+        $image_filename = end($pieces);
+        $decoded_fileName = urldecode($fileName);
+        
+        if (!file_exists($decoded_fileName) || !is_readable($decoded_fileName)) {
+            return false;
+        }
+        
+        // Skip files larger than 5MB to avoid memory issues
+        $file_size = filesize($decoded_fileName);
+        if ($file_size > 5 * 1024 * 1024) {
+            return false;
+        }
+        
+        // Use stream-based reading instead of loading entire file into memory
+        $handle = @fopen($decoded_fileName, 'r');
+        if ($handle === false) {
+            return false;
+        }
+        
+        $lineNumber = 0;
+        while (($line = fgets($handle)) !== false) {
+            $lineNumber++;
+            if (strpos($line, $image_filename) !== false) {
+                fclose($handle);
                 return $id;
             }
         }
+        
+        fclose($handle);
+        return false;
     }
 
     // This function pretty much scans all the files of the entire active theme.
     // We try to ignore files that are not using images within.
     public function rmc_receiveAllFiles_ronikdesigns($dir, $image_id)
     {
+        // Early exit if match already found
+        if (isset($_POST['imageDirFound'])) {
+            return $_POST['imageDirFound'];
+        }
+        
         $result = array();
-        $array_disallow = array("functions.php", "package.json", "package-lock.json", ".", "..", ".DS_Store", "README.md", "composer.json", "composer.lock", ".gitkeep", "node_modules", "vendor");
+        $array_disallow = array("functions.php", "package.json", "package-lock.json", ".", "..", ".DS_Store", "README.md", "composer.json", "composer.lock", ".gitkeep", "node_modules", "vendor", "images", "fonts", "js", "assets");
+        
+        // File extensions to skip (binary files, etc.)
+        $skip_extensions = array('jpg', 'jpeg', 'png', 'gif', 'svg', 'ico', 'webp', 'woff', 'woff2', 'ttf', 'eot', 'otf', 'mp4', 'mp3', 'mov', 'avi', 'pdf', 'zip', 'tar', 'gz', 'map');
+        
         $results = array_diff(scandir($dir), $array_disallow);
         $results_reindexed = array_values(array_filter($results));
-        $image_ids = '';
+        
+        $file_count = 0;
+        $dir_count = 0;
+        
         if ($results_reindexed) {
             foreach ($results_reindexed as $key => $value) {
-                if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                    $result[$dir . DIRECTORY_SEPARATOR . $value] = $this->rmc_receiveAllFiles_ronikdesigns($dir . DIRECTORY_SEPARATOR . $value,  $image_id);
+                // Early exit if match found
+                if (isset($_POST['imageDirFound'])) {
+                    return $_POST['imageDirFound'];
+                }
+                
+                $item_path = $dir . DIRECTORY_SEPARATOR . $value;
+                
+                if (is_dir($item_path)) {
+                    $dir_count++;
+                    $sub_result = $this->rmc_receiveAllFiles_ronikdesigns($item_path, $image_id);
+                    if ($sub_result) {
+                        $result[$item_path] = $sub_result;
+                        // Early exit if match found in subdirectory
+                        if (isset($_POST['imageDirFound'])) {
+                            return $_POST['imageDirFound'];
+                        }
+                    }
                 } else {
+                    // Check file extension before processing
+                    $file_extension = strtolower(pathinfo($value, PATHINFO_EXTENSION));
+                    if (in_array($file_extension, $skip_extensions)) {
+                        continue;
+                    }
+                    
+                    // Only scan text-based files that might contain image references
+                    // Note: We include minified files (.min.js, .min.css) as they can contain image references
+                    $text_extensions = array('php', 'js', 'css', 'scss', 'sass', 'less', 'html', 'htm', 'twig', 'blade', 'vue', 'jsx', 'ts', 'tsx', 'json', 'xml', 'txt', 'md');
+                    if (!in_array($file_extension, $text_extensions)) {
+                        continue;
+                    }
+                    
+                    $file_count++;
+                    $file_path = $item_path;
                     $result[] = $value;
-                    if ($this->rmc_getLineWithString_ronikdesigns(urlencode($dir . DIRECTORY_SEPARATOR . $value), $image_id)) {
+                    
+                    // Check for match
+                    if ($this->rmc_getLineWithString_ronikdesigns(urlencode($file_path), $image_id)) {
                         // Unfortunately we have to use the super global variable
-                        $_POST['imageDirFound'] = $this->rmc_getLineWithString_ronikdesigns(urlencode($dir . DIRECTORY_SEPARATOR . $value), $image_id);
+                        $_POST['imageDirFound'] = $image_id;
+                        return $image_id;
                     }
                 }
             }
         }
+        
         if (isset($_POST['imageDirFound'])) {
             return $_POST['imageDirFound'];
         } else {
@@ -298,45 +372,16 @@ class RmcDataGathering
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1a imageThumbnailAuditor Started ', 'low', 'rbp_media_cleaner');
 
-        // We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
-        $select_numberposts = 35;
-        $throttle_detector_attachement = count($allimagesid);
-        $maxIncrement_attachement = ceil($throttle_detector_attachement / $select_numberposts);
-
-        if (!function_exists('specificImageAttachement')) {
-            function specificImageAttachement($allimagesid)
-            {
-                $all_image_attachement_ids = array();
-                if ($allimagesid) {
-                    foreach ($allimagesid as $image_id) {
-                        if (wp_get_post_parent_id($image_id)) {
-                            // $all_image_attachement_ids[] = $all_image_attachement_ids[] = $image_id;
-                            $all_image_attachement_ids[] = $image_id;
-                        }
-                    }
-                }
-                return $all_image_attachement_ids;
-            }
-        }
-        // We throttle the number of images so it doesnt kill the server.
-        $all_image_attachement_ids_array = array();
-        $numbers_attachement = range(0, $maxIncrement_attachement);
-        foreach ($numbers_attachement as $number) {
-            $increment = $number;
-            $offsetValue = $increment * $select_numberposts;
-            $allimagesid_array = array_slice($allimagesid, $offsetValue, $select_numberposts, true);
-            $all_image_attachement_ids_array[] = specificImageAttachement($allimagesid_array);
-        }
-        $arr_checkpoint_1a = cleaner_compare_array_diff($allimagesid, array_values(array_filter(array_merge(...$all_image_attachement_ids_array))));
-        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1b imageThumbnailAuditor Checkpoint 1a DONE ', 'low', 'rbp_media_cleaner');
-
+        // Check if any of the images are used as thumbnails for the specific page
         $all_post_thumbnail_ids = array();
-        if (get_post_thumbnail_id($specificPageID)) {
-            $all_post_thumbnail_ids[] = get_post_thumbnail_id($specificPageID);
+        $post_thumbnail_id = get_post_thumbnail_id($specificPageID);
+        if ($post_thumbnail_id && in_array($post_thumbnail_id, $allimagesid)) {
+            $all_post_thumbnail_ids[] = $post_thumbnail_id;
         }
 
-        $arr_checkpoint_1b = cleaner_compare_array_diff($arr_checkpoint_1a, array_values(array_filter($all_post_thumbnail_ids)));
-        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1c imageThumbnailAuditor Checkpoint 1b DONE ', 'low', 'rbp_media_cleaner');
+        // Remove images that are used as thumbnails from the list
+        $arr_checkpoint_1b = cleaner_compare_array_diff($allimagesid, array_values(array_filter($all_post_thumbnail_ids)));
+        $rbpHelper->ronikdesigns_write_log_devmode('specificImageThumbnailAuditor: Ref 1c imageThumbnailAuditor Checkpoint 1b DONE - Found ' . count($all_post_thumbnail_ids) . ' thumbnail(s)', 'low', 'rbp_media_cleaner');
 
         return $arr_checkpoint_1b;
     }
@@ -414,8 +459,24 @@ class RmcDataGathering
         return $arr_checkpoint_1b;
     }
 
-
-
+    /**
+     * Get all image attachment IDs that have a parent post
+     * 
+     * @param array $allimagesid Array of image IDs
+     * @return array Array of image IDs that have a parent post
+     */
+    private function specificImageAttachement($allimagesid)
+    {
+        $all_image_attachement_ids = array();
+        if ($allimagesid) {
+            foreach ($allimagesid as $image_id) {
+                if (wp_get_post_parent_id($image_id)) {
+                    $all_image_attachement_ids[] = $image_id;
+                }
+            }
+        }
+        return $all_image_attachement_ids;
+    }
 
     // Check the image id, the og file path, and the image base name.
     public function specificImagePostAuditor($allimagesid, $specificPageID)
@@ -1007,33 +1068,41 @@ class RmcDataGathering
 
         if ($f_file_import == 'off' || !isset($f_file_import)) {
             if ($rbp_media_cleaner_media_data) {
-                foreach ($rbp_media_cleaner_media_data as $rbp_data_id) {
+                $total_count = is_array($rbp_media_cleaner_media_data) ? count($rbp_media_cleaner_media_data) : 1;
+                $processed = 0;
+                
+                foreach ($rbp_media_cleaner_media_data as $index => $rbp_data_id) {
                     $clone_path = get_post_meta($rbp_data_id, '_wp_attached_file'); // Full path
-                    $delete_attachment_clone = wp_delete_attachment(attachment_url_to_postid($clone_path[0]), true);
-                    if ($delete_attachment_clone) {
-
-
-                        //Delete attachment file from disk
-                        $clone_file = get_attached_file($clone_path);
-                        if ($clone_file && file_exists($clone_file)) {
-                            unlink($clone_file);
+                    if ($clone_path && isset($clone_path[0])) {
+                        $delete_attachment_clone = wp_delete_attachment(attachment_url_to_postid($clone_path[0]), true);
+                        if ($delete_attachment_clone) {
+                            //Delete attachment file from disk
+                            $clone_file = get_attached_file($clone_path[0]);
+                            if ($clone_file && file_exists($clone_file)) {
+                                unlink($clone_file);
+                            }
+                            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11b, imageCloneSave. Clone File Deleted', 'low', 'rbp_media_cleaner');
                         }
-
-                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11b, imageCloneSave. Clone File Deleted', 'low', 'rbp_media_cleaner');
                     }
 
                     // Delete attachment from database only, not file
                     $delete_attachment = wp_delete_attachment($rbp_data_id, true);
                     if ($delete_attachment) {
                         //Delete attachment file from disk
-                        if (get_attached_file($rbp_data_id)) {
-                            unlink(get_attached_file($rbp_data_id));
+                        $attached_file = get_attached_file($rbp_data_id);
+                        if ($attached_file && file_exists($attached_file)) {
+                            unlink($attached_file);
                         }
                         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11c, imageCloneSave. File Deleted', 'low', 'rbp_media_cleaner');
                     }
-
-                    if ($rbp_data_id == end($rbp_media_cleaner_media_data)) {
-                        return true;
+                    
+                    $processed++;
+                    
+                    // Force garbage collection every 5 files to free memory
+                    if ($processed % 5 === 0) {
+                        gc_collect_cycles();
+                        // Clear variables to free memory
+                        unset($delete_attachment, $delete_attachment_clone, $clone_file, $attached_file);
                     }
                 }
             }

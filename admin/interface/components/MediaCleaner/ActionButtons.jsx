@@ -2,7 +2,7 @@ import React from "react";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
 
 const ActionButtons = ({ type }) => {
-  const { isScanning, syncStatus, setScanInitiated, userSelection } =
+  const { isScanning, syncStatus, setScanInitiated, userSelection, scanInitiatedType, setScanInitiatedType } =
     useMediaCleanerStore();
 
   // Perform the POST request
@@ -18,16 +18,29 @@ const ActionButtons = ({ type }) => {
       // Only set scanInitiated - let SyncStatus handle all scanning state
       setScanInitiated(true);
 
+      // Set the scan initiated type based on the action
+      setScanInitiatedType(action === "media-preserve" ? "Preserve Media in Progress" : "Delete Media in Progress");
+
+
       const response = await fetch(wpVars.ajaxURL, {
         method: "POST",
         credentials: "same-origin",
         body: data,
       });
       const result = await response.json();
-      console.log("Action result:", result);
+      console.log("Action result:", result.data);
 
+      if(result.data){
+        if(result.data === "Reload"){
+          // Keep scanInitiated true until page reloads - don't reset it
+          alert("Synchronization is complete! Page will auto reload.");
+          location.reload();
+          return; // Exit early, page will reload
+        }
+      }
       // The SyncStatus component will take over from here and update the progress
       // It will set isScanning based on the actual API sync status
+      // Don't reset scanInitiated here - let SyncStatus handle it when sync completes
     } catch (error) {
       console.error("Error:", error);
       // If there's an error, reset the scan initiated state
@@ -42,7 +55,11 @@ const ActionButtons = ({ type }) => {
       if (!window.confirm("Are you sure you want to bulk delete media?")) {
         return;
       }
+      setScanInitiatedType("Delete Media in Progress");
     }
+
+    // Set scanInitiated immediately when user clicks preserve or delete
+    setScanInitiated(true);
 
     // For preserve-mediamedia-preserve action, we need to ensure StatsContainer also shows loading
     if (action === "media-preserve" || action === "media-unpreserve") {

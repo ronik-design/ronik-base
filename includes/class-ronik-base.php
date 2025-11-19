@@ -193,6 +193,9 @@ class Ronik_Base
 		// Lets check to see if dependencies are met before continuing...
 		// Disable the ACF DEPENDENCY
 		// $this->loader->add_action( 'admin_init', $plugin_admin, 'rbp_plugin_dependencies' );
+		
+		// Redirect parent Media Harmony page to dashboard (must run early before headers are sent)
+		$this->loader->add_action('admin_init', $plugin_admin, 'redirect_mediacleaner_parent_page', 1);
 
 		$this->loader->add_action('admin_notices', $plugin_admin, 'ronik_base_admin_notices');
 		// Add custom HTML class for media cleaner page

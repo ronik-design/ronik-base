@@ -1,34 +1,56 @@
 @use "../partials/variables";
 
-.support-container{
-    .content-block {
-        max-width: 500px;
-        width: 100%;
-        padding-top: 0;
-        padding-bottom: 3rem;
+.media-harmony_page_options-ronik-base_support_media_cleaner {
+  background-color: #ffff;
+}
+.support-container {
+  .support-container__article {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7rem;
+  }
+  .content-block {
+    max-width: 500px;
+    width: 100%;
 
-        .content-block__inner{
-            .content-block__content{
-                color: #3C434A;
-                h1{
-                    font-size: 2.4rem;
-                    font-weight: 600;
-                    color: #3C434A;
-                    font-family: variables.$primaryFont;
-                    line-height: 1.2;
-                    margin: 0;
-                    padding-bottom: 1.8rem;
-                }
-                p{
-                    font-size: 1.4rem;
-                    font-weight: 400;
-                    color: #3C434A;
-                    font-family: variables.$secondaryFont;
-                    line-height: 1.4;
-                    padding: 0;
-                    margin: 0;
-                }
-            }
-        }
+
+    &.support-container__article__content-block{
+        border-radius: 8px;
+        background: #edeff9;
+        display: flex;
+        // width: 373px;
+        // height: 326px;
+        padding: 23px 21px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        height: 100%;
     }
+
+    .content-block__inner {
+      .content-block__content {
+        color: #3c434a;
+        h1 {
+          font-size: 2.4rem;
+          font-weight: 600;
+          color: #3c434a;
+          font-family: variables.$primaryFont;
+          line-height: 1.2;
+          margin: 0;
+          padding-bottom: 1.8rem;
+        }
+        p {
+          font-size: 1.4rem;
+          font-weight: 400;
+          color: #3c434a;
+          font-family: variables.$secondaryFont;
+          line-height: 1.4;
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
+  }
 }

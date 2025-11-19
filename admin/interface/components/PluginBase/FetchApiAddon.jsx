@@ -109,6 +109,10 @@ const FetchAddon = ({ pluginName, pluginSlug, title, description, linkHref, link
             // Check if the server response indicates a need to reload
             if (result?.data === 'Reload') {
                 // Reload the page after 1 second
+
+                alert("AAAAAA.");
+
+
                 setTimeout(() => location.reload(), 1000);
             }
         } catch (error) {

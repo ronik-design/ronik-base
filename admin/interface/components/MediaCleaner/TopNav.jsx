@@ -1,6 +1,9 @@
 import React from "react";
 
 function TopNav({ mode = 'light' }) {
+  // Get betaMode from wpVars (localized by WordPress)
+  const betaMode = typeof window !== 'undefined' && window.wpVars ? window.wpVars.betaMode : false;
+
   // Function to check if current page is active based on query parameter
   const isActive = (href) => {
     if (typeof window !== 'undefined') {
@@ -34,6 +37,11 @@ function TopNav({ mode = 'light' }) {
       href: "/wp-admin/admin.php?page=options-ronik-base_support_media_cleaner",
     },
   ];
+
+  // Remove Settings if betaMode is on
+  if (betaMode) {
+    navItems = navItems.filter(item => item.label !== "Settings");
+  }
 
   return (
     <>

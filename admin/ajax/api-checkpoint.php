@@ -209,7 +209,7 @@ function handleApiValidation()
 // Handle API key checking
 function handleApiKeyCheck($apiKey)
 {
-    error_log(print_r('handleApiKeyCheck', true));
+    // error_log(print_r('handleApiKeyCheck', true));
 
     if ($apiKey) {
         wp_send_json_success($apiKey);

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import MediaTable from "./MediaTable";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
+
 
 const { MediaCollectorTable, PreservedMediaCollectorTable } = MediaTable;
 
@@ -20,12 +21,41 @@ const MediaCollector = ({ type }) => {
   const [preserveImageId, setPreserveImageId] = useState([]);
   const [deleteImageId, setDeleteImageId] = useState(null);
   const [mediaCollectorPreserved, setMediaCollectorPreserved] = useState(null);
-  
+  const filtersInitializedRef = useRef(false);
+
   // Use Zustand store for filters
-  const { selectedFilters } = useMediaCleanerStore();
-  
+  // const { selectedFilters } = useMediaCleanerStore();
+  const { selectedFilters, setSelectedFilters, isScanning, scanInitiated, setScanInitiated, syncStatus, scanInitiatedType, setScanInitiatedType } = useMediaCleanerStore();
+
+  // Initialize filters from URL on mount if not already set
+  // Use useLayoutEffect to ensure this runs synchronously before other effects
+  useLayoutEffect(() => {
+    // Only initialize if filters are empty and URL has filter params
+    if (!filtersInitializedRef.current && selectedFilters.length === 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filterParams = urlParams.getAll("filter");
+      
+      if (filterParams.length > 0) {
+        // Valid filter options
+        const validFilterOptions = ["jpg", "png", "video", "gif", "audio", "misc"];
+        const validFilters = filterParams.filter((filter) =>
+          validFilterOptions.includes(filter)
+        );
+        if (validFilters.length > 0) {
+          setSelectedFilters(validFilters);
+          filtersInitializedRef.current = true;
+        }
+      }
+    }
+    // Mark as initialized even if no URL params (to prevent re-checking)
+    if (!filtersInitializedRef.current) {
+      filtersInitializedRef.current = true;
+    }
+  }, [selectedFilters.length, setSelectedFilters]);
+
   // Convert store filters to the format expected by the component
-  const selectedDataFormValues = selectedFilters.length > 0 ? selectedFilters : ["all"];
+  const selectedDataFormValues =
+    selectedFilters.length > 0 ? selectedFilters : ["all"];
 
   // Utility function to get query parameters
   function getQueryParam(param, defaultValue) {
@@ -39,118 +69,168 @@ const MediaCollector = ({ type }) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const lazyImage = entry.target;
-          
+
           // Skip if already processed
-          if (lazyImage.classList.contains('reveal-enabled')) {
+          if (lazyImage.classList.contains("reveal-enabled")) {
             return;
           }
-          
-          console.log('Processing lazy image:', lazyImage.dataset.src);
-          
-          fetch(lazyImage.dataset.src).then(() => {
-            const imageSelector = document.querySelector(
-              `[data-id="${lazyImage.getAttribute("data-id")}"]`
-            );
-            
-            // Update class to indicate it's been processed
-            lazyImage.className = lazyImage.className.replace('reveal-disabled', 'reveal-enabled');
-            
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const img = new Image();
-            img.crossOrigin = "";
-            img.src = lazyImage.getAttribute("data-src");
-            
-            img.onload = function () {
-              canvas.width = this.naturalWidth;
-              canvas.height = this.naturalHeight;
-              ctx.drawImage(this, 0, 0);
-              canvas.toBlob(
-                function (blob) {
-                  if (imageSelector) {
-                    imageSelector.src = URL.createObjectURL(blob);
-                    console.log('✅ Lazy loaded image:', lazyImage.dataset.src);
-                  }
-                },
-                lazyImage.getAttribute("data-type"),
-                0.5
+
+          // console.log("Processing lazy image:", lazyImage.dataset.src);
+
+          fetch(lazyImage.dataset.src)
+            .then(() => {
+              const imageSelector = document.querySelector(
+                `[data-id="${lazyImage.getAttribute("data-id")}"]`
               );
-            };
-            
-            img.onerror = function() {
-              console.warn('❌ Failed to load lazy image:', lazyImage.dataset.src);
-            };
-          }).catch((error) => {
-            console.warn('❌ Fetch failed for lazy image:', error);
-          });
+
+              // Update class to indicate it's been processed
+              lazyImage.className = lazyImage.className.replace(
+                "reveal-disabled",
+                "reveal-enabled"
+              );
+
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              const img = new Image();
+              img.crossOrigin = "";
+              img.src = lazyImage.getAttribute("data-src");
+
+              img.onload = function () {
+                canvas.width = this.naturalWidth;
+                canvas.height = this.naturalHeight;
+                ctx.drawImage(this, 0, 0);
+                canvas.toBlob(
+                  function (blob) {
+                    if (imageSelector) {
+                      imageSelector.src = URL.createObjectURL(blob);
+                      // console.log(
+                      //   "✅ Lazy loaded image:",
+                      //   lazyImage.dataset.src
+                      // );
+                    }
+                  },
+                  lazyImage.getAttribute("data-type"),
+                  0.5
+                );
+              };
+
+              img.onerror = function () {
+                console.warn(
+                  "❌ Failed to load lazy image:",
+                  lazyImage.dataset.src
+                );
+                // Set corrupt thumbnail as fallback
+                if (imageSelector) {
+                  imageSelector.src = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                  imageSelector.classList.add("reveal-enabled");
+                }
+              };
+            })
+            .catch((error) => {
+              console.warn("❌ Fetch failed for lazy image:", error);
+              // Set corrupt thumbnail as fallback on fetch error
+              const imageSelector = document.querySelector(
+                `[data-id="${lazyImage.getAttribute("data-id")}"]`
+              );
+              if (imageSelector) {
+                imageSelector.src = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                imageSelector.classList.add("reveal-enabled");
+              }
+            });
         }
       });
     });
-    
+
     // Look for images with lzy_img class, including those with reveal-disabled
-    const images = document.querySelectorAll("img.lzy_img:not(.reveal-enabled)");
-    console.log(`🔍 Found ${images.length} lazy images to observe`);
-    
+    const images = document.querySelectorAll(
+      "img.lzy_img:not(.reveal-enabled)"
+    );
+    // console.log(`🔍 Found ${images.length} lazy images to observe`);
+
     // Debug: Let's see what images are actually in the DOM
     const allImages = document.querySelectorAll("img");
     const lzyImages = document.querySelectorAll("img.lzy_img");
     const revealDisabled = document.querySelectorAll("img.reveal-disabled");
     const revealEnabled = document.querySelectorAll("img.reveal-enabled");
-    
-    console.log(`📊 Image Debug:
-    - Total images in DOM: ${allImages.length}
-    - Images with .lzy_img: ${lzyImages.length}
-    - Images with .reveal-disabled: ${revealDisabled.length}
-    - Images with .reveal-enabled: ${revealEnabled.length}`);
-    
+
+    // console.log(`📊 Image Debug:
+    // - Total images in DOM: ${allImages.length}
+    // - Images with .lzy_img: ${lzyImages.length}
+    // - Images with .reveal-disabled: ${revealDisabled.length}
+    // - Images with .reveal-enabled: ${revealEnabled.length}`);
+
     // Show the first few images for debugging
-    if (allImages.length > 0) {
-      console.log('First 3 images in DOM:', Array.from(allImages).slice(0, 3).map(img => ({
-        src: img.src,
-        dataSrc: img.dataset.src,
-        className: img.className,
-        id: img.dataset.id
-      })));
-    }
-    
+    // if (allImages.length > 0) {
+    //   console.log(
+    //     "First 3 images in DOM:",
+    //     Array.from(allImages)
+    //       .slice(0, 3)
+    //       .map((img) => ({
+    //         src: img.src,
+    //         dataSrc: img.dataset.src,
+    //         className: img.className,
+    //         id: img.dataset.id,
+    //       }))
+    //   );
+    // }
+
     images.forEach((img) => imageObserver.observe(img));
   }
 
-     // Run lazyLoader when component has loaded and data is available
-   useEffect(() => {
-     console.log("hasLoaded changed to:", hasLoaded);
-     if (hasLoaded) {
-       console.log("✅ Running lazy loader - hasLoaded is true");
-       
-       // Multiple attempts with increasing delays to catch images that load later
-       const timer1 = setTimeout(() => {
-         console.log("🔄 Lazy loader executing (attempt 1 - 100ms)...");
-         lazyLoader();
-       }, 100);
-       
-       const timer2 = setTimeout(() => {
-         console.log("🔄 Lazy loader executing (attempt 2 - 500ms)...");
-         lazyLoader();
-       }, 500);
-       
-       const timer3 = setTimeout(() => {
-         console.log("🔄 Lazy loader executing (attempt 3 - 1000ms)...");
-         lazyLoader();
-       }, 1000);
-       
-       const timer4 = setTimeout(() => {
-         console.log("🔄 Lazy loader executing (attempt 4 - 2000ms)...");
-         lazyLoader();
-       }, 2000);
-       
-       return () => {
-         clearTimeout(timer1);
-         clearTimeout(timer2);
-         clearTimeout(timer3);
-         clearTimeout(timer4);
-       };
-     }
-   }, [hasLoaded, filterPager]);
+  // Run lazyLoader when scan is complete (scanInitiated becomes false)
+  useEffect(() => {
+    // Only trigger when scanInitiated is false (scan complete)
+    if (!scanInitiated) {
+      // Multiple attempts with increasing delays to catch images that load later
+      const timer1 = setTimeout(() => {
+        lazyLoader();
+      }, 100);
+
+      const timer2 = setTimeout(() => {
+        lazyLoader();
+      }, 500);
+
+      const timer3 = setTimeout(() => {
+        lazyLoader();
+      }, 1000);
+
+      const timer4 = setTimeout(() => {
+        lazyLoader();
+      }, 2000);
+
+      const timer5 = setTimeout(() => {
+        lazyLoader();
+      }, 4000);
+
+      const timer6 = setTimeout(() => {
+        lazyLoader();
+      }, 6000);
+
+      const timer7 = setTimeout(() => {
+        lazyLoader();
+      }, 8000);
+
+      const timer8 = setTimeout(() => {
+        lazyLoader();
+      }, 10000);
+
+      const timer9 = setTimeout(() => {
+        lazyLoader();
+      }, 50000);
+
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+        clearTimeout(timer4);
+        clearTimeout(timer5);
+        clearTimeout(timer6);
+        clearTimeout(timer7);
+        clearTimeout(timer8);
+        clearTimeout(timer9);
+      };
+    }
+  }, [scanInitiated, filterPager]);
 
   // Effect to handle image deletion
   useEffect(() => {
@@ -197,10 +277,31 @@ const MediaCollector = ({ type }) => {
 
   // Effect to fetch media collector data based on filters
   useEffect(() => {
+    // If filters are empty, check URL for filter params before fetching
+    let filtersToUse = selectedFilters;
+    if (filtersToUse.length === 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filterParams = urlParams.getAll("filter");
+      if (filterParams.length > 0) {
+        const validFilterOptions = ["jpg", "png", "video", "gif", "audio", "misc"];
+        const validFilters = filterParams.filter((filter) =>
+          validFilterOptions.includes(filter)
+        );
+        if (validFilters.length > 0) {
+          filtersToUse = validFilters;
+          // Update store for future renders
+          setSelectedFilters(validFilters);
+        }
+      }
+    }
+
+    setScanInitiated(true);
+    setScanInitiatedType("Loading Media in Progress");
+
     setHasLoaded(false);
-    const route = selectedDataFormValues.includes("all")
-      ? "all"
-      : selectedDataFormValues.join("?");
+    const route = filtersToUse.length > 0 && !filtersToUse.includes("all")
+      ? filtersToUse.join("?")
+      : "all";
     const endpoint = filterMode
       ? `${filterMode}?filter=${route}`
       : `all?filter=${route}`;
@@ -216,9 +317,11 @@ const MediaCollector = ({ type }) => {
           // Set empty state to indicate no data found
           setMediaCollector("no-images");
         }
-        
+
         // ALWAYS set hasLoaded to true after fetch completes
         setTimeout(() => {
+          setScanInitiated(false);
+
           setHasLoaded(true);
           removeLoader();
         }, 0);
@@ -259,7 +362,9 @@ const MediaCollector = ({ type }) => {
       if (filter) {
         setFilterMode(filter);
         const route = filter === "large" ? "large" : "small";
-        const endpoint = `/wp-json/mediacleaner/v1/mediacollector/${route}?filter=${selectedFilters.join("?")}`;
+        const endpoint = `/wp-json/mediacleaner/v1/mediacollector/${route}?filter=${selectedFilters.join(
+          "?"
+        )}`;
 
         alert(endpoint);
 
@@ -330,11 +435,13 @@ const MediaCollector = ({ type }) => {
         let resMessage, resUrl;
 
         if (preserveImageId !== "invalid") {
-          resMessage = "Media is preserved. Would you like to view the preserved content?";
+          resMessage =
+            "Media is preserved. Would you like to view the preserved content?";
           resUrl = `/wp-admin/admin.php?page=options-ronik-base_preserved&filter_size=large&page_number=0&media_id=${preserveImageId}`;
         }
         if (unPreserveImageId !== "invalid") {
-          resMessage = "Media is unpreserved. Would you like to view the unpreserved content?";
+          resMessage =
+            "Media is unpreserved. Would you like to view the unpreserved content?";
           resUrl = `/wp-admin/admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0&media_id=${unPreserveImageId}`;
         }
 
@@ -408,7 +515,8 @@ const MediaCollector = ({ type }) => {
     if (element) {
       element.classList.add("highlighted");
 
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const elementPosition =
+        element.getBoundingClientRect().top + window.scrollY;
       const scrollToPosition = elementPosition - offset;
 
       window.scrollTo({
@@ -447,9 +555,14 @@ const MediaCollector = ({ type }) => {
     activatePreserve,
   };
 
-  if(mediaCollector === "no-images"){
-    return <p>No Media Found!</p>;
-  }
+  // if(scanInitiatedType == "Loading Media in Progress") {
+
+  // } else {
+
+  //   if (mediaCollector === "no-images") {
+  //     return <p style={{ color: "#fff" }}>No Media Found!</p>;
+  //   }
+  // }
 
   return (
     <>

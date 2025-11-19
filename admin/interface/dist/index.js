@@ -21,16 +21,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var ContentBlock = function ContentBlock(_ref) {
-  var _ref$className = _ref.className,
+  var _ref$mode = _ref.mode,
+    mode = _ref$mode === void 0 ? "light" : _ref$mode,
+    _ref$className = _ref.className,
     className = _ref$className === void 0 ? "" : _ref$className,
     title = _ref.title,
     description = _ref.description;
+  var modeClass = mode === "light" ? "light-mode" : "dark-mode";
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-    className: "content-block ".concat(className),
+    className: "content-block ".concat(className, " content-block--").concat(modeClass),
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "content-block__inner",
+      className: "content-block__inner content-block__inner--".concat(modeClass),
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        className: "content-block__content",
+        className: "content-block__content content-block__content--".concat(modeClass),
         children: [title && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
           children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(title)
         }), description && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
@@ -95,7 +98,11 @@ var FAQ = function FAQ(_ref) {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
             children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(item[0])
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: isActive == index ? '-' : '+'
+            className: "accordion-icon ".concat(isActive == index ? 'active' : ''),
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+              src: "/wp-content/plugins/ronik-base/assets/images/accordion-carrot.svg",
+              alt: ""
+            })
           })]
         }), isActive == index && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           className: "accordion-content",
@@ -138,7 +145,9 @@ var ActionButtons = function ActionButtons(_ref) {
     isScanning = _useMediaCleanerStore.isScanning,
     syncStatus = _useMediaCleanerStore.syncStatus,
     setScanInitiated = _useMediaCleanerStore.setScanInitiated,
-    userSelection = _useMediaCleanerStore.userSelection;
+    userSelection = _useMediaCleanerStore.userSelection,
+    scanInitiatedType = _useMediaCleanerStore.scanInitiatedType,
+    setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType;
 
   // Perform the POST request
   var handlePostData = /*#__PURE__*/function () {
@@ -161,35 +170,48 @@ var ActionButtons = function ActionButtons(_ref) {
             _context.prev = 7;
             // Only set scanInitiated - let SyncStatus handle all scanning state
             setScanInitiated(true);
-            _context.next = 11;
+
+            // Set the scan initiated type based on the action
+            setScanInitiatedType(action === "media-preserve" ? "Preserve Media in Progress" : "Delete Media in Progress");
+            _context.next = 12;
             return fetch(wpVars.ajaxURL, {
               method: "POST",
               credentials: "same-origin",
               body: data
             });
-          case 11:
+          case 12:
             response = _context.sent;
-            _context.next = 14;
+            _context.next = 15;
             return response.json();
-          case 14:
+          case 15:
             result = _context.sent;
-            console.log("Action result:", result);
-
-            // The SyncStatus component will take over from here and update the progress
-            // It will set isScanning based on the actual API sync status
-            _context.next = 22;
+            console.log("Action result:", result.data);
+            if (!result.data) {
+              _context.next = 22;
+              break;
+            }
+            if (!(result.data === "Reload")) {
+              _context.next = 22;
+              break;
+            }
+            // Keep scanInitiated true until page reloads - don't reset it
+            alert("Synchronization is complete! Page will auto reload.");
+            location.reload();
+            return _context.abrupt("return");
+          case 22:
+            _context.next = 28;
             break;
-          case 18:
-            _context.prev = 18;
+          case 24:
+            _context.prev = 24;
             _context.t0 = _context["catch"](7);
             console.error("Error:", _context.t0);
             // If there's an error, reset the scan initiated state
             setScanInitiated(false);
-          case 22:
+          case 28:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[7, 18]]);
+      }, _callee, null, [[7, 24]]);
     }));
     return function handlePostData(_x) {
       return _ref2.apply(this, arguments);
@@ -202,7 +224,11 @@ var ActionButtons = function ActionButtons(_ref) {
         if (!window.confirm("Are you sure you want to bulk delete media?")) {
           return;
         }
+        setScanInitiatedType("Delete Media in Progress");
       }
+
+      // Set scanInitiated immediately when user clicks preserve or delete
+      setScanInitiated(true);
 
       // For preserve-mediamedia-preserve action, we need to ensure StatsContainer also shows loading
       if (action === "media-preserve" || action === "media-unpreserve") {
@@ -324,10 +350,44 @@ var MediaCollector = function MediaCollector(_ref) {
     _useState20 = _slicedToArray(_useState19, 2),
     mediaCollectorPreserved = _useState20[0],
     setMediaCollectorPreserved = _useState20[1];
+  var filtersInitializedRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(false);
 
   // Use Zustand store for filters
+  // const { selectedFilters } = useMediaCleanerStore();
   var _useMediaCleanerStore = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_2__["default"])(),
-    selectedFilters = _useMediaCleanerStore.selectedFilters;
+    selectedFilters = _useMediaCleanerStore.selectedFilters,
+    setSelectedFilters = _useMediaCleanerStore.setSelectedFilters,
+    isScanning = _useMediaCleanerStore.isScanning,
+    scanInitiated = _useMediaCleanerStore.scanInitiated,
+    setScanInitiated = _useMediaCleanerStore.setScanInitiated,
+    syncStatus = _useMediaCleanerStore.syncStatus,
+    scanInitiatedType = _useMediaCleanerStore.scanInitiatedType,
+    setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType;
+
+  // Initialize filters from URL on mount if not already set
+  // Use useLayoutEffect to ensure this runs synchronously before other effects
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(function () {
+    // Only initialize if filters are empty and URL has filter params
+    if (!filtersInitializedRef.current && selectedFilters.length === 0) {
+      var urlParams = new URLSearchParams(window.location.search);
+      var filterParams = urlParams.getAll("filter");
+      if (filterParams.length > 0) {
+        // Valid filter options
+        var validFilterOptions = ["jpg", "png", "video", "gif", "audio", "misc"];
+        var validFilters = filterParams.filter(function (filter) {
+          return validFilterOptions.includes(filter);
+        });
+        if (validFilters.length > 0) {
+          setSelectedFilters(validFilters);
+          filtersInitializedRef.current = true;
+        }
+      }
+    }
+    // Mark as initialized even if no URL params (to prevent re-checking)
+    if (!filtersInitializedRef.current) {
+      filtersInitializedRef.current = true;
+    }
+  }, [selectedFilters.length, setSelectedFilters]);
 
   // Convert store filters to the format expected by the component
   var selectedDataFormValues = selectedFilters.length > 0 ? selectedFilters : ["all"];
@@ -346,15 +406,17 @@ var MediaCollector = function MediaCollector(_ref) {
           var lazyImage = entry.target;
 
           // Skip if already processed
-          if (lazyImage.classList.contains('reveal-enabled')) {
+          if (lazyImage.classList.contains("reveal-enabled")) {
             return;
           }
-          console.log('Processing lazy image:', lazyImage.dataset.src);
+
+          // console.log("Processing lazy image:", lazyImage.dataset.src);
+
           fetch(lazyImage.dataset.src).then(function () {
             var imageSelector = document.querySelector("[data-id=\"".concat(lazyImage.getAttribute("data-id"), "\"]"));
 
             // Update class to indicate it's been processed
-            lazyImage.className = lazyImage.className.replace('reveal-disabled', 'reveal-enabled');
+            lazyImage.className = lazyImage.className.replace("reveal-disabled", "reveal-enabled");
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
             var img = new Image();
@@ -367,15 +429,29 @@ var MediaCollector = function MediaCollector(_ref) {
               canvas.toBlob(function (blob) {
                 if (imageSelector) {
                   imageSelector.src = URL.createObjectURL(blob);
-                  console.log('✅ Lazy loaded image:', lazyImage.dataset.src);
+                  // console.log(
+                  //   "✅ Lazy loaded image:",
+                  //   lazyImage.dataset.src
+                  // );
                 }
               }, lazyImage.getAttribute("data-type"), 0.5);
             };
             img.onerror = function () {
-              console.warn('❌ Failed to load lazy image:', lazyImage.dataset.src);
+              console.warn("❌ Failed to load lazy image:", lazyImage.dataset.src);
+              // Set corrupt thumbnail as fallback
+              if (imageSelector) {
+                imageSelector.src = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+                imageSelector.classList.add("reveal-enabled");
+              }
             };
           })["catch"](function (error) {
-            console.warn('❌ Fetch failed for lazy image:', error);
+            console.warn("❌ Fetch failed for lazy image:", error);
+            // Set corrupt thumbnail as fallback on fetch error
+            var imageSelector = document.querySelector("[data-id=\"".concat(lazyImage.getAttribute("data-id"), "\"]"));
+            if (imageSelector) {
+              imageSelector.src = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
+              imageSelector.classList.add("reveal-enabled");
+            }
           });
         }
       });
@@ -383,62 +459,85 @@ var MediaCollector = function MediaCollector(_ref) {
 
     // Look for images with lzy_img class, including those with reveal-disabled
     var images = document.querySelectorAll("img.lzy_img:not(.reveal-enabled)");
-    console.log("\uD83D\uDD0D Found ".concat(images.length, " lazy images to observe"));
+    // console.log(`🔍 Found ${images.length} lazy images to observe`);
 
     // Debug: Let's see what images are actually in the DOM
     var allImages = document.querySelectorAll("img");
     var lzyImages = document.querySelectorAll("img.lzy_img");
     var revealDisabled = document.querySelectorAll("img.reveal-disabled");
     var revealEnabled = document.querySelectorAll("img.reveal-enabled");
-    console.log("\uD83D\uDCCA Image Debug:\n    - Total images in DOM: ".concat(allImages.length, "\n    - Images with .lzy_img: ").concat(lzyImages.length, "\n    - Images with .reveal-disabled: ").concat(revealDisabled.length, "\n    - Images with .reveal-enabled: ").concat(revealEnabled.length));
+
+    // console.log(`📊 Image Debug:
+    // - Total images in DOM: ${allImages.length}
+    // - Images with .lzy_img: ${lzyImages.length}
+    // - Images with .reveal-disabled: ${revealDisabled.length}
+    // - Images with .reveal-enabled: ${revealEnabled.length}`);
 
     // Show the first few images for debugging
-    if (allImages.length > 0) {
-      console.log('First 3 images in DOM:', Array.from(allImages).slice(0, 3).map(function (img) {
-        return {
-          src: img.src,
-          dataSrc: img.dataset.src,
-          className: img.className,
-          id: img.dataset.id
-        };
-      }));
-    }
+    // if (allImages.length > 0) {
+    //   console.log(
+    //     "First 3 images in DOM:",
+    //     Array.from(allImages)
+    //       .slice(0, 3)
+    //       .map((img) => ({
+    //         src: img.src,
+    //         dataSrc: img.dataset.src,
+    //         className: img.className,
+    //         id: img.dataset.id,
+    //       }))
+    //   );
+    // }
+
     images.forEach(function (img) {
       return imageObserver.observe(img);
     });
   }
 
-  // Run lazyLoader when component has loaded and data is available
+  // Run lazyLoader when scan is complete (scanInitiated becomes false)
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log("hasLoaded changed to:", hasLoaded);
-    if (hasLoaded) {
-      console.log("✅ Running lazy loader - hasLoaded is true");
-
+    // Only trigger when scanInitiated is false (scan complete)
+    if (!scanInitiated) {
       // Multiple attempts with increasing delays to catch images that load later
       var timer1 = setTimeout(function () {
-        console.log("🔄 Lazy loader executing (attempt 1 - 100ms)...");
         lazyLoader();
       }, 100);
       var timer2 = setTimeout(function () {
-        console.log("🔄 Lazy loader executing (attempt 2 - 500ms)...");
         lazyLoader();
       }, 500);
       var timer3 = setTimeout(function () {
-        console.log("🔄 Lazy loader executing (attempt 3 - 1000ms)...");
         lazyLoader();
       }, 1000);
       var timer4 = setTimeout(function () {
-        console.log("🔄 Lazy loader executing (attempt 4 - 2000ms)...");
         lazyLoader();
       }, 2000);
+      var timer5 = setTimeout(function () {
+        lazyLoader();
+      }, 4000);
+      var timer6 = setTimeout(function () {
+        lazyLoader();
+      }, 6000);
+      var timer7 = setTimeout(function () {
+        lazyLoader();
+      }, 8000);
+      var timer8 = setTimeout(function () {
+        lazyLoader();
+      }, 10000);
+      var timer9 = setTimeout(function () {
+        lazyLoader();
+      }, 50000);
       return function () {
         clearTimeout(timer1);
         clearTimeout(timer2);
         clearTimeout(timer3);
         clearTimeout(timer4);
+        clearTimeout(timer5);
+        clearTimeout(timer6);
+        clearTimeout(timer7);
+        clearTimeout(timer8);
+        clearTimeout(timer9);
       };
     }
-  }, [hasLoaded, filterPager]);
+  }, [scanInitiated, filterPager]);
 
   // Effect to handle image deletion
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -484,8 +583,27 @@ var MediaCollector = function MediaCollector(_ref) {
 
   // Effect to fetch media collector data based on filters
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // If filters are empty, check URL for filter params before fetching
+    var filtersToUse = selectedFilters;
+    if (filtersToUse.length === 0) {
+      var urlParams = new URLSearchParams(window.location.search);
+      var filterParams = urlParams.getAll("filter");
+      if (filterParams.length > 0) {
+        var validFilterOptions = ["jpg", "png", "video", "gif", "audio", "misc"];
+        var validFilters = filterParams.filter(function (filter) {
+          return validFilterOptions.includes(filter);
+        });
+        if (validFilters.length > 0) {
+          filtersToUse = validFilters;
+          // Update store for future renders
+          setSelectedFilters(validFilters);
+        }
+      }
+    }
+    setScanInitiated(true);
+    setScanInitiatedType("Loading Media in Progress");
     setHasLoaded(false);
-    var route = selectedDataFormValues.includes("all") ? "all" : selectedDataFormValues.join("?");
+    var route = filtersToUse.length > 0 && !filtersToUse.includes("all") ? filtersToUse.join("?") : "all";
     var endpoint = filterMode ? "".concat(filterMode, "?filter=").concat(route) : "all?filter=".concat(route);
     fetch("/wp-json/mediacleaner/v1/mediacollector/".concat(endpoint)).then(function (response) {
       return response.json();
@@ -501,6 +619,7 @@ var MediaCollector = function MediaCollector(_ref) {
 
       // ALWAYS set hasLoaded to true after fetch completes
       setTimeout(function () {
+        setScanInitiated(false);
         setHasLoaded(true);
         removeLoader();
       }, 0);
@@ -773,11 +892,16 @@ var MediaCollector = function MediaCollector(_ref) {
     activateDelete: activateDelete,
     activatePreserve: activatePreserve
   };
-  if (mediaCollector === "no-images") {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
-      children: "No Media Found!"
-    });
-  }
+
+  // if(scanInitiatedType == "Loading Media in Progress") {
+
+  // } else {
+
+  //   if (mediaCollector === "no-images") {
+  //     return <p style={{ color: "#fff" }}>No Media Found!</p>;
+  //   }
+  // }
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(MediaCollectorTable, _objectSpread(_objectSpread({}, commonTableProps), {}, {
       mediaCollector: mediaCollector
@@ -820,7 +944,44 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+// Function to update URL query parameters
 
+
+function updateURLQueryParams(filters) {
+  var url = new URL(window.location.href);
+
+  // Remove existing filter parameters
+  url.searchParams["delete"]("filter");
+
+  // Add new filter parameters
+  if (filters.length > 0) {
+    filters.forEach(function (filter) {
+      url.searchParams.append("filter", filter);
+    });
+  }
+
+  // Update URL without page reload
+  window.history.pushState({}, "", url.toString());
+}
+var filterOptions = [{
+  value: "jpg",
+  label: "JPG"
+}, {
+  value: "png",
+  label: "PNG"
+}, {
+  value: "video",
+  label: "Video"
+}, {
+  value: "gif",
+  label: "GIF"
+}, {
+  value: "audio",
+  label: "Audio"
+}, {
+  value: "misc",
+  label: "Misc"
+}];
 var MediaFilter = function MediaFilter(_ref) {
   var type = _ref.type;
   var _useMediaCleanerStore = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_1__["default"])(),
@@ -830,25 +991,41 @@ var MediaFilter = function MediaFilter(_ref) {
     _useState2 = _slicedToArray(_useState, 2),
     isOpen = _useState2[0],
     setIsOpen = _useState2[1];
-  var filterOptions = [{
-    value: "jpg",
-    label: "JPG"
-  }, {
-    value: "png",
-    label: "PNG"
-  }, {
-    value: "video",
-    label: "Video"
-  }, {
-    value: "gif",
-    label: "GIF"
-  }, {
-    value: "audio",
-    label: "Audio"
-  }, {
-    value: "misc",
-    label: "Misc"
-  }];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    isInitialized = _useState4[0],
+    setIsInitialized = _useState4[1];
+
+  // Initialize filters from URL on component mount
+  // This will automatically trigger the data fetch in MediaCollector component
+  // because its useEffect depends on selectedFilters
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (!isInitialized) {
+      var urlParams = new URLSearchParams(window.location.search);
+      var filterParams = urlParams.getAll("filter");
+      if (filterParams.length > 0) {
+        // Validate that all filter params are valid options
+        var validFilters = filterParams.filter(function (filter) {
+          return filterOptions.some(function (option) {
+            return option.value === filter;
+          });
+        });
+        if (validFilters.length > 0) {
+          // Setting filters here will trigger the useEffect in MediaCollector
+          // that fetches filtered media data (it depends on selectedFilters)
+          setSelectedFilters(validFilters);
+        }
+      }
+      setIsInitialized(true);
+    }
+  }, [isInitialized, setSelectedFilters]);
+
+  // Update URL when filters change (but not on initial load)
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (isInitialized) {
+      updateURLQueryParams(selectedFilters);
+    }
+  }, [selectedFilters, isInitialized]);
   var toggleFilter = function toggleFilter(value) {
     if (selectedFilters.includes(value)) {
       setSelectedFilters(selectedFilters.filter(function (filter) {
@@ -1052,7 +1229,7 @@ var PagerNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(fu
     mediaCollector = _ref2$mediaCollector === void 0 ? [] : _ref2$mediaCollector,
     itemsPerPage = _ref2.itemsPerPage;
   var _useMemo = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
-      var totalItems = mediaCollector.length || 0;
+      var totalItems = mediaCollector && mediaCollector.length || 0;
       var totalPages = Math.ceil(totalItems / itemsPerPage);
 
       // Smart pagination logic
@@ -1116,7 +1293,7 @@ var PagerNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(fu
         totalPages: totalPages,
         visiblePages: visiblePages
       };
-    }, [mediaCollector.length, itemsPerPage, pager]),
+    }, [mediaCollector, itemsPerPage, pager]),
     totalItems = _useMemo.totalItems,
     totalPages = _useMemo.totalPages,
     visiblePages = _useMemo.visiblePages;
@@ -1214,7 +1391,8 @@ var MediaTableRow = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().me
   var _useMediaCleanerStore = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_2__["default"])(),
     isScanning = _useMediaCleanerStore.isScanning,
     setScanInitiated = _useMediaCleanerStore.setScanInitiated,
-    syncStatus = _useMediaCleanerStore.syncStatus;
+    syncStatus = _useMediaCleanerStore.syncStatus,
+    scanInitiatedType = _useMediaCleanerStore.scanInitiatedType;
   // Use local scanInitiated for immediate feedback, combined with global isScanning
   var showLoading = isScanning;
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("tr", {
@@ -1405,10 +1583,11 @@ var useMediaTableLogic = function useMediaTableLogic(_ref6) {
   var _useMemo2 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
       var page = parseInt(filterPager) || 0;
       var itemsPerPage = 20;
-      var mediaId = getQueryParameter("media_id");
-      if (mediaId) {
-        itemsPerPage = 2000;
-      }
+      // const mediaId = getQueryParameter("media_id");
+      // if (mediaId) {
+      //   itemsPerPage = 200000000;
+      // }
+
       var output = getPaginatedData(filterMode === "high" ? mediaCollectorHigh : filterMode === "low" ? mediaCollectorLow : mediaCollector, page, itemsPerPage);
       if (output === "no-images") {
         return {
@@ -1490,6 +1669,8 @@ var MediaCollectorTable = function MediaCollectorTable(_ref7) {
     mediaCollectorHigh = _ref7.mediaCollectorHigh,
     mediaCollectorLow = _ref7.mediaCollectorLow;
   var isPreservedType = type === "preserved";
+  var _useMediaCleanerStore3 = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_2__["default"])(),
+    scanInitiatedType = _useMediaCleanerStore3.scanInitiatedType;
   var _useMediaTableLogic = useMediaTableLogic({
       filterPager: filterPager,
       filterMode: filterMode,
@@ -1510,11 +1691,6 @@ var MediaCollectorTable = function MediaCollectorTable(_ref7) {
 
   // Memoized table rows
   var mediaCollectorItems = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
-    if (mediaCollector === "no-images") {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
-        children: "No Media Found!"
-      });
-    }
     return (output || []).map(function (collector) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(MediaTableRow, {
         collector: collector,
@@ -1523,12 +1699,23 @@ var MediaCollectorTable = function MediaCollectorTable(_ref7) {
         onImageClick: openLightbox
       }, collector["id"]);
     });
-  }, [output, userSelection, handleSelect, openLightbox]);
+  }, [output, userSelection, handleSelect, openLightbox, scanInitiatedType, mediaCollector]);
 
   // Early return for no media
-  if (!mediaCollector || mediaCollector === "no-images") {
+  if (mediaCollector === "no-images") {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      style: {
+        color: "#fff"
+      },
       children: "No Media Found!"
+    });
+  }
+  if (!mediaCollector && scanInitiatedType === "Loading Media in Progress") {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      style: {
+        color: "#fff"
+      },
+      children: "Loading Media..."
     });
   }
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
@@ -1544,7 +1731,7 @@ var MediaCollectorTable = function MediaCollectorTable(_ref7) {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(PagerNav, {
       pager: filterPager,
       setFilterPager: setFilterPager,
-      mediaCollector: mediaCollector,
+      mediaCollector: mediaCollector || [],
       itemsPerPage: itemsPerPage
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(LightboxModal, {
       lightboxOpen: lightboxOpen,
@@ -1617,8 +1804,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function StatsContainer() {
   var _useMediaCleanerStore = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_1__["default"])(),
     isScanning = _useMediaCleanerStore.isScanning,
+    scanInitiated = _useMediaCleanerStore.scanInitiated,
     setScanInitiated = _useMediaCleanerStore.setScanInitiated,
-    syncStatus = _useMediaCleanerStore.syncStatus;
+    syncStatus = _useMediaCleanerStore.syncStatus,
+    scanInitiatedType = _useMediaCleanerStore.scanInitiatedType,
+    setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     statsUnlinked = _useState2[0],
@@ -1640,8 +1830,8 @@ function StatsContainer() {
     localScanInitiated = _useState10[0],
     setLocalScanInitiated = _useState10[1];
 
-  // Use local scanInitiated for immediate feedback, combined with global isScanning
-  var showLoading = isScanning || localScanInitiated;
+  // Use both global scanInitiated and local scanInitiated for immediate feedback
+  var showLoading = isScanning || scanInitiated || localScanInitiated;
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchStats();
     // SyncStatus component will handle all sync state management
@@ -1657,11 +1847,11 @@ function StatsContainer() {
 
   // Watch for scan completion to reset local state and refresh stats
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (!isScanning && localScanInitiated) {
+    if (!isScanning && !scanInitiated && localScanInitiated) {
       setLocalScanInitiated(false);
       fetchStats(); // Refresh stats when scan completes
     }
-  }, [isScanning, localScanInitiated, fetchStats]);
+  }, [isScanning, scanInitiated, localScanInitiated, fetchStats]);
   var fetchStats = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
     fetch("/wp-json/mediacleaner/v1/mediacollector/stats").then(function (response) {
       return response.json();
@@ -1774,8 +1964,7 @@ function StatsContainer() {
   var formatLastUpdate = function formatLastUpdate(timestamp) {
     if (!timestamp) return "Never";
 
-    // console.log("formatLastUpdate called with:", timestamp);
-
+    // alert(timestamp);
     var date;
 
     // Handle WordPress date format "m/d/Y h:ia" (e.g., "08/20/2025 01:54am")
@@ -1793,52 +1982,36 @@ function StatsContainer() {
         if (ampm === "pm" && hour24 !== 12) hour24 += 12;
         if (ampm === "am" && hour24 === 12) hour24 = 0;
 
-        // Create date (months are 0-indexed in JavaScript)
-        date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hour24, parseInt(minute));
-
-        // console.log("Date parsing details:", {
-        //   original: timestamp,
-        //   month: month,
-        //   day: day,
-        //   year: year,
-        //   hour: hour,
-        //   minute: minute,
-        //   ampm: ampm,
-        //   hour24: hour24,
-        //   parsedDate: date,
-        //   parsedDateString: date.toString(),
-        //   isValid: !isNaN(date.getTime()),
-        // });
+        // Create date string in ISO format to avoid timezone issues
+        // Format: YYYY-MM-DDTHH:mm:ss (treat as local time)
+        var dateString = "".concat(year, "-").concat(month.padStart(2, '0'), "-").concat(day.padStart(2, '0'), "T").concat(hour24.toString().padStart(2, '0'), ":").concat(minute.padStart(2, '0'), ":00");
+        date = new Date(dateString);
       } else {
         // Fallback to direct parsing
         date = new Date(timestamp);
-        console.log("Fallback parsing used:", date);
       }
     } else {
       // Handle other date formats
       date = new Date(timestamp);
-      console.log("Direct parsing used:", date);
     }
 
     // Check if date is valid
     if (isNaN(date.getTime())) {
-      console.log("Invalid date parsed:", timestamp, "Date object:", date);
       return timestamp; // Return original if parsing failed
     }
 
     var now = new Date();
     var diffMs = now - date;
 
-    // console.log("Time calculation:", {
-    //   now: now,
-    //   parsedDate: date,
-    //   diffMs: diffMs,
-    //   diffMsFormatted: `${Math.floor(diffMs / 1000)} seconds`,
-    // });
-
-    // Handle future dates
-    if (diffMs < 0) {
+    // Handle future dates (likely due to timezone differences)
+    // If the date is less than 24 hours in the future, treat it as "just now"
+    if (diffMs < 0 && Math.abs(diffMs) < 24 * 60 * 60 * 1000) {
       return "Just now";
+    }
+
+    // If it's more than 24 hours in the future, something is wrong - return original
+    if (diffMs < 0) {
+      return timestamp;
     }
     var diffMins = Math.floor(diffMs / 60000);
     var diffHours = Math.floor(diffMins / 60);
@@ -1892,7 +2065,7 @@ function StatsContainer() {
           className: "stats-container-info-sync-progress-header",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
             className: "stats-container-info-sync-progress-status",
-            children: "Scan in Progress"
+            children: scanInitiatedType
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
             className: "stats-container-info-sync-progress-message",
             children: syncStatus.progress === "100%" ? "Complete!" : "Processing..."
@@ -2056,8 +2229,9 @@ function SyncStatus() {
                 if (isServerRunning) {
                   // Server confirmed scan is running - safe to rely on server state
                   setScanning(true);
-                } else if (timeSinceInitiated > 5000) {
-                  // Grace period expired - assume scan failed or completed quickly
+                } else if (timeSinceInitiated > 30000) {
+                  // Extended grace period (30 seconds) for large operations like bulk deletes
+                  // This gives the server more time to start processing
                   setScanInitiated(false);
                   setScanning(false);
                   scanInitiatedTimeRef.current = null;
@@ -2168,6 +2342,9 @@ __webpack_require__.r(__webpack_exports__);
 function TopNav(_ref) {
   var _ref$mode = _ref.mode,
     mode = _ref$mode === void 0 ? 'light' : _ref$mode;
+  // Get betaMode from wpVars (localized by WordPress)
+  var betaMode = typeof window !== 'undefined' && window.wpVars ? window.wpVars.betaMode : false;
+
   // Function to check if current page is active based on query parameter
   var isActive = function isActive(href) {
     if (typeof window !== 'undefined') {
@@ -2194,6 +2371,13 @@ function TopNav(_ref) {
     label: "Support",
     href: "/wp-admin/admin.php?page=options-ronik-base_support_media_cleaner"
   }];
+
+  // Remove Settings if betaMode is on
+  if (betaMode) {
+    navItems = navItems.filter(function (item) {
+      return item.label !== "Settings";
+    });
+  }
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "top-nav ".concat(mode === 'dark' ? 'top-nav--dark' : ''),
@@ -2463,6 +2647,8 @@ var FetchAddon = function FetchAddon(_ref) {
             // Check if the server response indicates a need to reload
             if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
               // Reload the page after 1 second
+
+              alert("AAAAAA.");
               setTimeout(function () {
                 return location.reload();
               }, 1000);
@@ -40790,6 +40976,7 @@ var useMediaCleanerStore = (0,zustand__WEBPACK_IMPORTED_MODULE_0__.create)(funct
     // Basic state
     isScanning: false,
     scanInitiated: false,
+    scanInitiatedType: 'Scan in Progress',
     // Filter state
     selectedFilters: [],
     // User selection state
@@ -40812,6 +40999,11 @@ var useMediaCleanerStore = (0,zustand__WEBPACK_IMPORTED_MODULE_0__.create)(funct
     setScanInitiated: function setScanInitiated(scanInitiated) {
       return set({
         scanInitiated: scanInitiated
+      });
+    },
+    setScanInitiatedType: function setScanInitiatedType(scanInitiatedType) {
+      return set({
+        scanInitiatedType: scanInitiatedType
       });
     },
     setSelectedFilters: function setSelectedFilters(selectedFilters) {
@@ -40875,151 +41067,158 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ContentBlock.jsx */ "./admin/interface/components/ContentBlock.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MediaCleaner/TopNav.jsx */ "./admin/interface/components/MediaCleaner/TopNav.jsx");
+/* harmony import */ var _components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/MediaCleaner/SyncStatus.jsx */ "./admin/interface/components/MediaCleaner/SyncStatus.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
 
 
 
 function General() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    className: "general-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    className: "general-container mediacleaner-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      mode: "dark"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+      mode: "dark",
       title: "Plugin Info",
       description: "Thanks for using the Media Harmony !"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "container",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
         className: "section",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           className: "section-content",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
             children: "In the future, we expect to offer a full suite of functionality; for now we have Media Harmony."
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
             children: "For developers and content admins alike, we know how tricky it can be to manage a media library, especially for a large or aging website with multiple hands involved in asset creation and use. When not actively managed, the space used by old files quickly grows, negatively impacting site load times, performance, and internal hygiene. As soon as you have more than one person producing content, you get a messy basement, which also makes it hard for admins to locate and make use of the correct files for front-end publishing. Attempts to manually mitigate the issue by regularly reviewing, removing, or editing unlinked or improper files could take hours and is likely to result in mistakes."
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
             children: "The solution we saw to this issue is a tool that reviews your database for any unlinked files and allows for easy removal. Our plugin is compatible with most common frameworks and does a full database scan to reveal a holistic picture of unlinked files of all types in the media library. Editors can refine their results thanks to an array of sort and filter criteria and then preserve, individually target, or bulk delete their unlinked and matching files."
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
             children: "Most plugins out there that offer similar functionality are less reliable, lack granularity of selection, and fail to go as deep as ours to find things like nested clones of assets or corrupt files."
           })]
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "section",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
           children: "Feature List"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           className: "section-content",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Comprehensive Media Scanning"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Full Site Scan:"
               }), " Analyzes all media files used across posts, pages, custom post types, widgets, and theme settings to identify unused files."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Cross-Reference:"
               }), " Compares media files in your library with those used in your content to detect and flag potentially unused media."]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Safe Media Deletion"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Thorough Verification:"
               }), " Ensures that only truly unused media files are flagged for deletion."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Review and Backup:"
               }), " Allows you to review flagged files before deletion."]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Manual and Automated Scan"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Automated Scan:"
               }), " Performs nightly scan of unused media files."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Manual Scan:"
               }), " Initiates a scan to allow for more frequent or immediate review."]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Performance Optimization"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Efficient Algorithms:"
               }), " Utilizes optimized algorithms for scanning and deletion tasks to minimize impact on site performance."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Custom Throttle System:"
               }), " Features a throttle system to cool down your server before proceeding with heavy tasks, reducing the risk of strain or slowdowns."]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Comprehensive File Usage Checking"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Includes Widgets and Theme Settings:"
               }), " Checks for media files used in widgets and theme settings, not just posts and pages, to prevent accidental deletion of important files."]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "Compatibility and Support"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Standard Compatibility:"
               }), " Designed to work with standard WordPress media libraries."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Support and Issue Reporting:"
               }), " Team contact information available for support and issue reporting, in addition to extensive built-in error-logging."]
             })]
           })]
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "section",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
           children: "Plugin Usage"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           className: "usage",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "1. Accessing Media Harmony"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "In WordPress Admin Dashboard:"
               }), " After activation, you\u2019ll find Media Harmony listed under the Settings menu or as a separate menu item in your WordPress Admin Dashboard."]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "2. Performing Media Scan"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Initiate Manual Scan:"
               }), " In addition to the automated scans, scan your site at any time using the Initiate Scan options in the plugin or WP-Admin bar."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Reviewing Results:"
               }), " Once the scan is complete, review the unlinked files found and individually delete, bulk delete, and preserve them."]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "3. Checking Performance"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ul", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Monitor Plugin Impact:"
               }), " Media Harmony includes a custom throttle system designed to minimize performance impact. For optimal performance, consider running the plugin during off-peak hours."]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
             children: "4. Troubleshooting and Support"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Consult the FAQ:"
               }), " For common questions and troubleshooting tips, refer to the FAQ or Support sections of the plugin."]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
                 children: "Contact Support:"
               }), " If you encounter issues or need assistance, contact our support team via the support email."]
             })]
@@ -41339,13 +41538,19 @@ function Support() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
       mode: "dark"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      mode: "dark",
       title: "Frequently asked questions",
       description: "Here, you'll find answers to commonly asked questions about using Media Harmony Plugin. If you don't see your question listed, you can have a look at the section below."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_Faq_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      items: faqItems
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      title: "Contact our team:",
-      description: "Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>! <br>Want to report an issue? Send us a note describing your issue <a target='_blank' href='https://forms.gle/qhBq6qi22BWE7cRA8'>here</a> We'd love your feedback! Share your thoughts <a target='_blank' href='https://forms.gle/DiRgBfXqtvCkr8tX6'>here</a>"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      className: "support-container__article",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_Faq_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+        items: faqItems
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+        mode: "dark",
+        className: "support-container__article__content-block",
+        title: "Contact our team:",
+        description: " Need more help? Drop us a line at <a href='mailto:dev@ronikdesign.com'>dev@ronikdesign.com</a>!  <br><br> <a class='button-rmc' href='mailto:dev@ronikdesign.com'>Email Us</a> <br><br> Want to report an issue? Send us a note describing your issue <a target='_blank' href='https://forms.gle/qhBq6qi22BWE7cRA8'>here</a>  <br><br> <a class='button-rmc' href='https://forms.gle/qhBq6qi22BWE7cRA8'>Report an Issue</a> "
+      })]
     })]
   });
 }

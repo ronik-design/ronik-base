@@ -1,16 +1,22 @@
 import ContentBlock from '../components/ContentBlock.jsx';
-
+import TopNav from '../components/MediaCleaner/TopNav.jsx';
+import SyncStatus from '../components/MediaCleaner/SyncStatus.jsx';
 
 function General() {
 
 	return (
-		<div className='general-container'>
-			<ContentBlock
-				title= "Plugin Info"
-				description= "Thanks for using the Media Harmony !"
-			/>
-			<br></br>
+		<div className='general-container mediacleaner-container'>
 
+			{/* SyncStatus manages global state independently */}
+			<SyncStatus />
+
+			<TopNav mode="dark" />
+
+			<ContentBlock
+				mode="dark"
+				title="Plugin Info"
+				description="Thanks for using the Media Harmony !"
+			/>
 
 			<div className="container">
 				<div className="section">

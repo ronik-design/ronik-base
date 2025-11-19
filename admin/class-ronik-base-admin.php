@@ -117,7 +117,7 @@ class Ronik_Base_Admin
 	public function add_media_cleaner_html_class($classes)
 	{
 		// Check if we're on the admin page and it's the media cleaner page
-		if (is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner')) {
+		if (is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner_about')) {
 			$classes .= ' media-cleaner-page';
 		}
 		return $classes;
@@ -131,8 +131,24 @@ class Ronik_Base_Admin
 	public function add_media_cleaner_html_class_head()
 	{
 		// Check if we're on the admin page and it's the media cleaner page
-		if ( is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner')) {
+		if ( is_admin() && (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_preserved') || (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_support_media_cleaner'	|| (isset($_GET['page']) && $_GET['page'] === 'options-ronik-base_media_cleaner_about'))) {
 			echo '<script>document.documentElement.classList.add("media-cleaner-page");</script>';
+		}
+		
+		// Hide the "Media Harmony" submenu header and first menu item
+		if ( is_admin() ) {
+			echo '<style>
+				/* Hide the Media Harmony submenu header */
+				#toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-submenu-head,
+				#adminmenu #toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-submenu-head {
+					display: none !important;
+				}
+				/* Hide the first Media Harmony menu item */
+				#toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-first-item,
+				#adminmenu #toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-first-item {
+					display: none !important;
+				}
+			</style>';
 		}
 	}
 
@@ -219,9 +235,24 @@ class Ronik_Base_Admin
 	{
 		if (get_option('permalink_structure') === '') {
 			echo '<div class="notice notice-error"><p>';
-			echo '🚨 <strong>Warning:</strong> The Media Harmony REST API requires <em>“pretty permalinks”</em> to be enabled in order for <code>/wp-json/</code> routes to function correctly.';
+			echo '🚨 <strong>Warning:</strong> The Media Harmony REST API requires <em>"pretty permalinks"</em> to be enabled in order for <code>/wp-json/</code> routes to function correctly.';
 			echo ' <a href="' . esc_url(admin_url('options-permalink.php')) . '">Fix it now</a>.';
 			echo '</p></div>';
+		}
+	}
+
+	/**
+	 * Redirect the parent Media Harmony menu page to the dashboard
+	 * This runs on admin_init before headers are sent
+	 *
+	 * @since    1.0.0
+	 */
+	public function redirect_mediacleaner_parent_page()
+	{
+		if (is_admin() && isset($_GET['page']) && $_GET['page'] === 'options-ronik-base-mediacleaner') {
+			$redirect_url = admin_url('admin.php?page=options-ronik-base_media_cleaner&filter_size=large&page_number=0');
+			wp_safe_redirect($redirect_url);
+			exit;
 		}
 	}
 
@@ -276,12 +307,27 @@ class Ronik_Base_Admin
 				}
 
 
-				function ronikbase_support_general()
-				{
-					echo '
-				<div id="ronik-base_general"></div>
-			';
-				}
+					function ronikbase_support_general()
+					{
+						// This function is kept for compatibility but redirect happens in redirect_mediacleaner_parent_page()
+						echo '
+					<div id="ronik-base_general"></div>
+				';
+					}
+
+
+
+					function ronikbase_media_cleaner_about_callback()
+					{
+						echo '
+					<div id="ronik-base_general"></div>
+				';
+					}
+
+
+
+
+
 				function ronikbase_support_settings()
 				{
 					echo '
@@ -405,13 +451,38 @@ class Ronik_Base_Admin
 					update_option('rbp_media_cleaner_sync-reason', 'media-uploaded-saved');
 				}
 
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_id_array_finalized, true));
+
+
+				
 				$rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array = $RmcDataGathering->specificImageThumbnailAuditor($post_id, $rmc_media_cleaner_media_data_collectors_image_id_array_finalized);
 				set_transient('rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array', $rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array, DAY_IN_SECONDS);
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2b, specificImageThumbnailAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array), 'low', 'rbp_media_cleaner');
 
+
+				error_log(print_r($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array, true));
+
+
+
 				$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->specificImagePostAuditor($rmc_media_cleaner_media_data_collectors_image_thumbnail_auditor_array,  $post_id);
 				set_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array', $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, DAY_IN_SECONDS);
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2b, specificImagePostAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array), 'low', 'rbp_media_cleaner');
+
+				// Run imagePostAuditor to check across all posts (broader check)
+				$select_post_status = array('publish', 'pending', 'draft', 'private', 'future', 'archive');
+				$select_post_type = $RmcDataGathering->postTypesRetrieval();
+				
+				$transient_rmc_media_cleaner_media_data_collectors_posts_array = get_transient('rmc_media_cleaner_media_data_collectors_posts_array');
+				if (!empty($transient_rmc_media_cleaner_media_data_collectors_posts_array)) {
+					$rmc_media_cleaner_media_data_collectors_posts_array = $transient_rmc_media_cleaner_media_data_collectors_posts_array;
+				} else {
+					// If transient doesn't exist, get posts array
+					$rmc_media_cleaner_media_data_collectors_posts_array = $RmcDataGathering->postIDCollector($select_post_status, $select_post_type);
+				}
+				
+				$rmc_media_cleaner_media_data_collectors_image_post_auditor_array = $RmcDataGathering->imagePostAuditor($rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $rmc_media_cleaner_media_data_collectors_posts_array, $select_post_status, $select_post_type);
+				set_transient('rmc_media_cleaner_media_data_collectors_image_post_auditor_array', $rmc_media_cleaner_media_data_collectors_image_post_auditor_array, DAY_IN_SECONDS);
+				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 2b-2, imagePostAuditor ' . count($rmc_media_cleaner_media_data_collectors_image_post_auditor_array), 'low', 'rbp_media_cleaner');
 
 				$rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array = $RmcDataGathering->specificImagePostContentAuditor($rmc_media_cleaner_media_data_collectors_image_post_auditor_array, $post_id);
 				set_transient('rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array', $rmc_media_cleaner_media_data_collectors_image_post_content_auditor_array, DAY_IN_SECONDS);
