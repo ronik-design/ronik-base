@@ -2,7 +2,7 @@ import React from "react";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
 
 const ActionButtons = ({ type }) => {
-  const { isScanning, syncStatus, setScanInitiated, userSelection, scanInitiatedType, setScanInitiatedType } =
+  const { isScanning, syncStatus, setScanInitiated, userSelection, scanInitiatedType, setScanInitiatedType , deleteInitiated , setDeleteInitiated} =
     useMediaCleanerStore();
 
   // Perform the POST request
@@ -56,6 +56,7 @@ const ActionButtons = ({ type }) => {
         return;
       }
       setScanInitiatedType("Delete Media in Progress");
+      setDeleteInitiated(true);
     }
 
     // Set scanInitiated immediately when user clicks preserve or delete

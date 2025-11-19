@@ -477,11 +477,12 @@ const useMediaTableLogic = ({
   // Memoized pagination and data processing
   const { output, itemsPerPage, visibleIds, allSelected } = useMemo(() => {
     const page = parseInt(filterPager) || 0;
-    let itemsPerPage = 20;
-    // const mediaId = getQueryParameter("media_id");
-    // if (mediaId) {
-    //   itemsPerPage = 200000000;
-    // }
+    // &custom_items_per_page=1000 
+    const customItemsPerPage = getQueryParameter("custom_items_per_page");
+    let itemsPerPage = 20; // Default value
+    if (customItemsPerPage) {
+      itemsPerPage = parseInt(customItemsPerPage);
+    }
 
     const output = getPaginatedData(
       filterMode === "high"

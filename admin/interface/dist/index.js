@@ -147,7 +147,9 @@ var ActionButtons = function ActionButtons(_ref) {
     setScanInitiated = _useMediaCleanerStore.setScanInitiated,
     userSelection = _useMediaCleanerStore.userSelection,
     scanInitiatedType = _useMediaCleanerStore.scanInitiatedType,
-    setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType;
+    setScanInitiatedType = _useMediaCleanerStore.setScanInitiatedType,
+    deleteInitiated = _useMediaCleanerStore.deleteInitiated,
+    setDeleteInitiated = _useMediaCleanerStore.setDeleteInitiated;
 
   // Perform the POST request
   var handlePostData = /*#__PURE__*/function () {
@@ -225,6 +227,7 @@ var ActionButtons = function ActionButtons(_ref) {
           return;
         }
         setScanInitiatedType("Delete Media in Progress");
+        setDeleteInitiated(true);
       }
 
       // Set scanInitiated immediately when user clicks preserve or delete
@@ -1582,12 +1585,12 @@ var useMediaTableLogic = function useMediaTableLogic(_ref6) {
   // Memoized pagination and data processing
   var _useMemo2 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
       var page = parseInt(filterPager) || 0;
-      var itemsPerPage = 20;
-      // const mediaId = getQueryParameter("media_id");
-      // if (mediaId) {
-      //   itemsPerPage = 200000000;
-      // }
-
+      // &custom_items_per_page=1000 
+      var customItemsPerPage = getQueryParameter("custom_items_per_page");
+      var itemsPerPage = 20; // Default value
+      if (customItemsPerPage) {
+        itemsPerPage = parseInt(customItemsPerPage);
+      }
       var output = getPaginatedData(filterMode === "high" ? mediaCollectorHigh : filterMode === "low" ? mediaCollectorLow : mediaCollector, page, itemsPerPage);
       if (output === "no-images") {
         return {
@@ -2229,9 +2232,10 @@ function SyncStatus() {
                 if (isServerRunning) {
                   // Server confirmed scan is running - safe to rely on server state
                   setScanning(true);
-                } else if (timeSinceInitiated > 30000) {
-                  // Extended grace period (30 seconds) for large operations like bulk deletes
+                } else if (timeSinceInitiated > 100000) {
+                  // Extended grace period (100 seconds) for large operations like bulk deletes
                   // This gives the server more time to start processing
+                  alert("Grace period reached. Time since initiated: " + timeSinceInitiated + " seconds.");
                   setScanInitiated(false);
                   setScanning(false);
                   scanInitiatedTimeRef.current = null;
@@ -2264,6 +2268,7 @@ function SyncStatus() {
               _timeSinceInitiated = scanInitiatedTimeRef.current ? Date.now() - scanInitiatedTimeRef.current : 0;
               if (_timeSinceInitiated > 10000) {
                 // 10 second timeout on error
+
                 setScanInitiated(false);
                 setScanning(false);
                 scanInitiatedTimeRef.current = null;
@@ -40976,6 +40981,7 @@ var useMediaCleanerStore = (0,zustand__WEBPACK_IMPORTED_MODULE_0__.create)(funct
     // Basic state
     isScanning: false,
     scanInitiated: false,
+    deleteInitiated: false,
     scanInitiatedType: 'Scan in Progress',
     // Filter state
     selectedFilters: [],
@@ -41004,6 +41010,11 @@ var useMediaCleanerStore = (0,zustand__WEBPACK_IMPORTED_MODULE_0__.create)(funct
     setScanInitiatedType: function setScanInitiatedType(scanInitiatedType) {
       return set({
         scanInitiatedType: scanInitiatedType
+      });
+    },
+    setDeleteInitiated: function setDeleteInitiated(deleteInitiated) {
+      return set({
+        deleteInitiated: deleteInitiated
       });
     },
     setSelectedFilters: function setSelectedFilters(selectedFilters) {

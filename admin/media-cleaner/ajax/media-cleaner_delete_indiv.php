@@ -67,6 +67,9 @@ if(isset($_POST['imageId']) && $_POST['imageId']){
         set_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized', $array_without_deleted_img, DAY_IN_SECONDS);
 
     }
+
+    error_log(print_r('media-cleaner_delete_indiv.php', true));
+    
     // Send sucess message!
     $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 3b, Init Remove individual Media Deleted ', 'low', 'rbp_media_cleaner');
     wp_send_json_success('Reload');     
