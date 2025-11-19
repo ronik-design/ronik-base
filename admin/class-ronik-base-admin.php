@@ -103,11 +103,15 @@ class Ronik_Base_Admin
 		
 		// Get plugin slug from plugin directory path
 		$plugin_dir = plugin_dir_path(__FILE__);
+		error_log(print_r($plugin_dir, true));
+
 		// Go up one level from admin/ to get plugin root directory
 		$plugin_root = dirname($plugin_dir);
+		error_log(print_r($plugin_root, true));
 		// Extract the folder name (slug) from the path
 		$this->plugin_slug = basename($plugin_root);
-		
+		error_log(print_r($this->plugin_slug, true));
+
 		// Initialize CLI commands if WP_CLI is available
 		$this->init_cli();
 	}
@@ -153,7 +157,7 @@ class Ronik_Base_Admin
 		
 		// Hide the "Media Harmony" submenu header and first menu item
 		if ( is_admin() ) {
-			// error_log(print_r($this->plugin_slug, true));
+			error_log(print_r($this->plugin_slug, true));
 			// Set CSS custom properties for plugin image paths
 			$plugin_base = $this->plugin_slug;
 			echo '<style>
