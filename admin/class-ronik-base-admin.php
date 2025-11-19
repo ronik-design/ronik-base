@@ -76,6 +76,15 @@ class Ronik_Base_Admin
 	 */
 	private $beta_mode_state;
 
+	/**
+	 * The plugin slug (folder name).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_slug    The slug/folder name of this plugin.
+	 */
+	private $plugin_slug;
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -91,6 +100,13 @@ class Ronik_Base_Admin
 		$this->optimization_state = $optimization_state;
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		
+		// Get plugin slug from plugin directory path
+		$plugin_dir = plugin_dir_path(__FILE__);
+		// Go up one level from admin/ to get plugin root directory
+		$plugin_root = dirname($plugin_dir);
+		// Extract the folder name (slug) from the path
+		$this->plugin_slug = basename($plugin_root);
 		
 		// Initialize CLI commands if WP_CLI is available
 		$this->init_cli();
@@ -137,8 +153,9 @@ class Ronik_Base_Admin
 		
 		// Hide the "Media Harmony" submenu header and first menu item
 		if ( is_admin() ) {
+			// error_log(print_r($this->plugin_slug, true));
 			// Set CSS custom properties for plugin image paths
-			$plugin_base = '/wp-content/plugins/' . $this->plugin_name;
+			$plugin_base = $this->plugin_slug;
 			echo '<style>
 				:root {
 					--ronik-plugin-checkmark: url("' . esc_attr($plugin_base) . '/assets/images/checkmark.svg");
