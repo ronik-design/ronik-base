@@ -101,16 +101,28 @@ class Ronik_Base_Admin
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		
-		// Get plugin slug from plugin directory path
-		$plugin_dir = plugin_dir_path(__FILE__);
-		error_log(print_r($plugin_dir, true));
-
-		// Go up one level from admin/ to get plugin root directory
-		$plugin_root = dirname($plugin_dir);
-		error_log(print_r($plugin_root, true));
-		// Extract the folder name (slug) from the path
-		$this->plugin_slug = basename($plugin_root);
-		error_log(print_r($this->plugin_slug, true));
+		// Get plugin slug from actual file system path (not WordPress plugin registry)
+		// Use realpath() to resolve symlinks and get the actual filesystem path
+		$current_file = realpath(__FILE__);
+		// Go up two levels: from admin/class-ronik-base-admin.php -> admin/ -> plugin root
+		$plugin_root = dirname(dirname($current_file));
+		
+		// Extract the plugin path relative to wp-content/plugins
+		// Find the position of 'wp-content/plugins' in the path
+		$plugins_pos = strpos($plugin_root, 'wp-content/plugins/');
+		if ($plugins_pos !== false) {
+			// Extract everything after 'wp-content/plugins/'
+			$relative_path = substr($plugin_root, $plugins_pos + strlen('wp-content/plugins/'));
+			// Get just the folder name (slug)
+			$path_parts = explode('/', $relative_path);
+			$this->plugin_slug = $path_parts[0];
+		} else {
+			// Fallback: just use basename if we can't find wp-content/plugins
+			$this->plugin_slug = basename($plugin_root);
+		}
+		
+		// // Debug: Log paths to verify we're getting the correct folder name
+		error_log('Plugin slug detection - plugin_slug: ' . $this->plugin_slug);
 
 		// Initialize CLI commands if WP_CLI is available
 		$this->init_cli();
@@ -157,9 +169,10 @@ class Ronik_Base_Admin
 		
 		// Hide the "Media Harmony" submenu header and first menu item
 		if ( is_admin() ) {
-			error_log(print_r($this->plugin_slug, true));
-			// Set CSS custom properties for plugin image paths
-			$plugin_base = $this->plugin_slug;
+			// Set CSS custom properties for plugin image paths using actual folder name
+			$plugin_base = '/wp-content/plugins/' . $this->plugin_slug;
+			error_log('CSS Generation - plugin_slug: ' . $this->plugin_slug);
+			error_log('CSS Generation - plugin_base: ' . $plugin_base);
 			echo '<style>
 				:root {
 					--ronik-plugin-checkmark: url("' . esc_attr($plugin_base) . '/assets/images/checkmark.svg");
@@ -256,6 +269,7 @@ class Ronik_Base_Admin
 			'nonce'	  => wp_create_nonce('ajax-nonce'),
 			'betaMode' => $this->beta_mode_state ? true : false,
 			'pluginName' => $this->plugin_name,
+			'pluginSlug' => $this->plugin_slug,
 		));
 	}
 
