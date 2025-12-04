@@ -61,79 +61,82 @@ html.media-cleaner-page {
 }
 body.media-cleaner-page {
   font-family: variables.$primaryFont;
-}
 
-.loading {
-  font-size: 0 !important;
-  position: relative;
-
-  > * {
-    opacity: 0;
-    display: none;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  &::before {
-    content: "";
+  .loading {
+    font-size: 0 !important;
     position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 1.1rem;
-    background: #82848b;
-    border-radius: 10px;
-    animation: fade-swipe 5s ease-in-out infinite;
-    background: linear-gradient(
-      120deg,
-      #82848b 0%,
-      #82848b7f 50%,
-      #82848b 100%
-    );
-    background-size: 200% 10%;
-  }
 
-  &:is(.stats-container-breakdown-graph-bar) {
-    &::before {
-      height: 5.2rem;
+    > * {
+      opacity: 0;
+      display: none;
+      width: 0 !important;
+      height: 0 !important;
+      font-size: 0 !important;
+      line-height: 0 !important;
     }
-  }
-  &:is(.media-collector-table__td) {
+
     &::before {
-      height: 2.1rem;
+      content: "";
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 1.1rem;
+      background: #82848b;
+      border-radius: 10px;
+      animation: fade-swipe 5s ease-in-out infinite;
+      background: linear-gradient(
+        120deg,
+        #82848b 0%,
+        #82848b7f 50%,
+        #82848b 100%
+      );
+      background-size: 200% 10%;
     }
-  }
-  &:is(.media-collector-table__td--img-thumb) {
-    &::before {
-      height: 9.4rem;
+
+    &:is(.stats-container-breakdown-graph-bar) {
+      &::before {
+        height: 5.2rem;
+      }
+    }
+    &:is(.media-collector-table__td) {
+      &::before {
+        height: 2.1rem;
+      }
+    }
+    &:is(.media-collector-table__td--img-thumb) {
+      &::before {
+        height: 9.4rem;
+      }
+    }
+
+    // Staggered loading animations - dynamic based on nth-child
+    &:nth-child(1)::before {
+      animation-delay: 0s;
+    }
+    &:nth-child(2)::before {
+      animation-delay: 0.05s;
+    }
+    &:nth-child(3)::before {
+      animation-delay: 0.1s;
+    }
+    &:nth-child(4)::before {
+      animation-delay: 0.15s;
+    }
+    &:nth-child(5)::before {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(6)::before {
+      animation-delay: 0.25s;
+    }
+    &:nth-child(7)::before {
+      animation-delay: 0.3s;
+    }
+    &:nth-child(8)::before {
+      animation-delay: 0.35s;
     }
   }
 }
 
-// Staggered loading animations - dynamic based on nth-child
-.loading:nth-child(1)::before {
-  animation-delay: 0s;
-}
-.loading:nth-child(2)::before {
-  animation-delay: 0.05s;
-}
-.loading:nth-child(3)::before {
-  animation-delay: 0.1s;
-}
-.loading:nth-child(4)::before {
-  animation-delay: 0.15s;
-}
-.loading:nth-child(5)::before {
-  animation-delay: 0.2s;
-}
-.loading:nth-child(6)::before {
-  animation-delay: 0.25s;
-}
-.loading:nth-child(7)::before {
-  animation-delay: 0.3s;
-}
-.loading:nth-child(8)::before {
-  animation-delay: 0.35s;
-}
 
 // Progress bar styles for scanning state
 .stats-container-info-sync-progress {

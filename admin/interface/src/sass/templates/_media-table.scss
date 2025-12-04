@@ -81,37 +81,61 @@ td {
         }
         &--img-thumb {
           max-width: 95px;
-          padding-right: 20px;
+          margin-right: 20px;
+
+          .thumbnail-clickableP{
+            position: relative;
+          }
         }
         &--file-type {
           max-width: 100px;
-          padding-right: 40px;
+          margin-right: 40px;
         }
         &--file-size {
           max-width: 100px;
-          padding-right: 50px;
+          margin-right: 50px;
           .filter-nav {
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            padding-left: 8px;
             &__button {
-              font-size: 0;
-              line-height: 0;
+              font-size: 0 !important;
+              line-height: 0 !important;
+              height: 20px !important;
+              width: 20px !important;
+
+              &.filter-nav__button-sort{
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                width: 10px !important;
+                height: 10px !important;
+                cursor: pointer;
+
+                &:first-child{
+                  background-image: var(--ronik-plugin-sort-large);
+                  margin-bottom: 2px;
+                }
+                &:last-child{
+                  background-image: var(--ronik-plugin-sort-small);
+                }
+              }
             }
           }
         }
         &--img-url {
           width: 100%;
-          padding-right: 40px;
+          margin-right: 40px;
         }
         &--id {
           max-width: 50px;
-          padding-right: 40px;
+          margin-right: 40px;
         }
         &--media-link {
           max-width: 100px;
-          padding-right: 40px;
+          margin-right: 40px;
         }
       }
       .media-collector-table__td {
@@ -174,20 +198,21 @@ td {
           max-width: 94px;
           padding-top: 14px;
           padding-bottom: 16px;
-          padding-right: 20px;
+          margin-right: 20px;
           position: relative;
           overflow: hidden;
           img {
             max-width: 94px;
             max-height: 94px;
-            object-fit: cover;
+            // object-fit: cover;
+            object-fit: contain;
             border-radius: 5px;
             z-index: 10000;
           }
         }
         &--file-type {
           max-width: 100px;
-          padding-right: 40px;
+          margin-right: 40px;
 
           .media-collector-table__td--file-type-pill {
             background-color: #666c79;
@@ -207,7 +232,7 @@ td {
         }
         &--file-size {
           max-width: 100px;
-          padding-right: 50px;
+          margin-right: 50px;
           .media-collector-table__td--file-size-pill {
             background-color: #666c79;
             color: #fff;
@@ -223,7 +248,7 @@ td {
         }
         &--id {
           max-width: 50px;
-          padding-right: 40px;
+          margin-right: 40px;
           color: #fff;
           font-size: 16px;
         }
@@ -231,7 +256,7 @@ td {
           color: #fff;
           font-size: 16px;
           width: 100%;
-          padding-right: 40px;
+          margin-right: 40px;
           max-width: 45%;
 
           span{
@@ -242,7 +267,7 @@ td {
         }
         &--media-link {
           max-width: 100px;
-          padding-right: 40px;
+          margin-right: 40px;
           a {
             color: #8993ff;
             text-decoration: underline;
@@ -333,7 +358,7 @@ td {
     .lightbox-content-lightbox-image{
       width: 100%;
       height: 100%;
-      background-size: cover;
+      background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       
@@ -366,7 +391,7 @@ td {
     transition: all 0.3s ease;
     position: absolute;
     bottom: 2.5rem;
-    right: 2.8rem;
+    right: .8rem;
     width: 20px;
     height: 20px;
     background-size: contain;

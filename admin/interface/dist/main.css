@@ -570,8 +570,8 @@
   cursor: not-allowed;
 }
 .media-filter-container .media-filter-action-buttons__inner button img {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 2.6rem;
+  height: 2.6rem;
   padding-right: 0.8rem;
 }
 .media-filter-container .media-filter-action-buttons__inner .submit-btn {
@@ -579,8 +579,8 @@
   color: #7b84ff;
 }
 .media-filter-container .media-filter-action-buttons__inner .submit-btn img {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 2.6rem;
+  height: 2.6rem;
   padding-right: 0.8rem;
 }
 .media-filter-container .media-filter-action-buttons__inner .delete-btn {
@@ -588,8 +588,8 @@
   color: #ff4f63;
 }
 .media-filter-container .media-filter-action-buttons__inner .delete-btn img {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 2.6rem;
+  height: 2.6rem;
   padding-right: 0.8rem;
 }
 .media-filter-container .media-filter-button {
@@ -818,37 +818,58 @@ td {
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--img-thumb {
   max-width: 95px;
-  padding-right: 20px;
+  margin-right: 20px;
+}
+.media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--img-thumb .thumbnail-clickableP {
+  position: relative;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-type {
   max-width: 100px;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size {
   max-width: 100px;
-  padding-right: 50px;
+  margin-right: 50px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size .filter-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  padding-left: 8px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size .filter-nav__button {
-  font-size: 0;
-  line-height: 0;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  height: 20px !important;
+  width: 20px !important;
+}
+.media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size .filter-nav__button.filter-nav__button-sort {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 10px !important;
+  height: 10px !important;
+  cursor: pointer;
+}
+.media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size .filter-nav__button.filter-nav__button-sort:first-child {
+  background-image: var(--ronik-plugin-sort-large);
+  margin-bottom: 2px;
+}
+.media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--file-size .filter-nav__button.filter-nav__button-sort:last-child {
+  background-image: var(--ronik-plugin-sort-small);
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--img-url {
   width: 100%;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--id {
   max-width: 50px;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__th--media-link {
   max-width: 100px;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td {
   width: 16.667%;
@@ -904,21 +925,21 @@ td {
   max-width: 94px;
   padding-top: 14px;
   padding-bottom: 16px;
-  padding-right: 20px;
+  margin-right: 20px;
   position: relative;
   overflow: hidden;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--img-thumb img {
   max-width: 94px;
   max-height: 94px;
-  -o-object-fit: cover;
-     object-fit: cover;
+  -o-object-fit: contain;
+     object-fit: contain;
   border-radius: 5px;
   z-index: 10000;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--file-type {
   max-width: 100px;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--file-type .media-collector-table__td--file-type-pill {
   background-color: #666c79;
@@ -935,7 +956,7 @@ td {
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--file-size {
   max-width: 100px;
-  padding-right: 50px;
+  margin-right: 50px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--file-size .media-collector-table__td--file-size-pill {
   background-color: #666c79;
@@ -951,7 +972,7 @@ td {
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--id {
   max-width: 50px;
-  padding-right: 40px;
+  margin-right: 40px;
   color: #fff;
   font-size: 16px;
 }
@@ -959,7 +980,7 @@ td {
   color: #fff;
   font-size: 16px;
   width: 100%;
-  padding-right: 40px;
+  margin-right: 40px;
   max-width: 45%;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--img-url span {
@@ -969,7 +990,7 @@ td {
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--media-link {
   max-width: 100px;
-  padding-right: 40px;
+  margin-right: 40px;
 }
 .media-collector-table .media-collector-table__tbody .media-collector-table__tr .media-collector-table__td--media-link a {
   color: #8993ff;
@@ -1048,7 +1069,7 @@ td {
 .lightbox-overlay .lightbox-content .lightbox-content-lightbox-image {
   width: 100%;
   height: 100%;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -1076,7 +1097,7 @@ td {
   transition: all 0.3s ease;
   position: absolute;
   bottom: 2.5rem;
-  right: 2.8rem;
+  right: 0.8rem;
   width: 20px;
   height: 20px;
   background-size: contain;
@@ -1261,18 +1282,19 @@ html.media-cleaner-page {
 body.media-cleaner-page {
   font-family: "Inter", sans-serif;
 }
-
-.loading {
+body.media-cleaner-page .loading {
   font-size: 0 !important;
   position: relative;
 }
-.loading > * {
+body.media-cleaner-page .loading > * {
   opacity: 0;
   display: none;
   width: 0 !important;
   height: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
-.loading::before {
+body.media-cleaner-page .loading::before {
   content: "";
   position: relative;
   display: inline-block;
@@ -1284,45 +1306,37 @@ body.media-cleaner-page {
   background: linear-gradient(120deg, #82848b 0%, rgba(130, 132, 139, 0.4980392157) 50%, #82848b 100%);
   background-size: 200% 10%;
 }
-.loading:is(.stats-container-breakdown-graph-bar)::before {
+body.media-cleaner-page .loading:is(.stats-container-breakdown-graph-bar)::before {
   height: 5.2rem;
 }
-.loading:is(.media-collector-table__td)::before {
+body.media-cleaner-page .loading:is(.media-collector-table__td)::before {
   height: 2.1rem;
 }
-.loading:is(.media-collector-table__td--img-thumb)::before {
+body.media-cleaner-page .loading:is(.media-collector-table__td--img-thumb)::before {
   height: 9.4rem;
 }
-
-.loading:nth-child(1)::before {
+body.media-cleaner-page .loading:nth-child(1)::before {
   animation-delay: 0s;
 }
-
-.loading:nth-child(2)::before {
+body.media-cleaner-page .loading:nth-child(2)::before {
   animation-delay: 0.05s;
 }
-
-.loading:nth-child(3)::before {
+body.media-cleaner-page .loading:nth-child(3)::before {
   animation-delay: 0.1s;
 }
-
-.loading:nth-child(4)::before {
+body.media-cleaner-page .loading:nth-child(4)::before {
   animation-delay: 0.15s;
 }
-
-.loading:nth-child(5)::before {
+body.media-cleaner-page .loading:nth-child(5)::before {
   animation-delay: 0.2s;
 }
-
-.loading:nth-child(6)::before {
+body.media-cleaner-page .loading:nth-child(6)::before {
   animation-delay: 0.25s;
 }
-
-.loading:nth-child(7)::before {
+body.media-cleaner-page .loading:nth-child(7)::before {
   animation-delay: 0.3s;
 }
-
-.loading:nth-child(8)::before {
+body.media-cleaner-page .loading:nth-child(8)::before {
   animation-delay: 0.35s;
 }
 

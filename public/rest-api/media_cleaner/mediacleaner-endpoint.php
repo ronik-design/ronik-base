@@ -380,7 +380,7 @@ class MediaCleanerDataHandler
                         $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
                     } else {
                         // Try to get thumbnail URL - if this fails, treat as corrupt
-                        $image_url = wp_get_attachment_image_url($media_id, 'thumbnail');
+                        $image_url = wp_get_attachment_image_url($media_id, 'medium');
                         if (!$image_url) {
                             $image_url = "/wp-content/plugins/ronik-base/admin/media-cleaner/image/thumb-corrupt-file.svg";
                         }
@@ -395,7 +395,7 @@ class MediaCleanerDataHandler
             }
         }
 
-        $thumbnail = wp_get_attachment_image($media_id, 'small', false, [
+        $thumbnail = wp_get_attachment_image($media_id, 'medium', false, [
             'data-src' => $image_url,
             'data-id' => $media_id,
             'data-class' => 'image-target',

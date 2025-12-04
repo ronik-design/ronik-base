@@ -155,7 +155,7 @@ var ActionButtons = function ActionButtons(_ref) {
     setDeleteInitiated = _useMediaCleanerStore.setDeleteInitiated;
 
   // Get pluginSlug from wpVars (localized by WordPress)
-  var pluginSlug = typeof window !== 'undefined' && window.wpVars ? window.wpVars.pluginSlug || 'ronik-base' : 'ronik-base';
+  var pluginSlug = typeof window !== "undefined" && window.wpVars ? window.wpVars.pluginSlug || "ronik-base" : "ronik-base";
 
   // Perform the POST request
   var handlePostData = /*#__PURE__*/function () {
@@ -253,7 +253,7 @@ var ActionButtons = function ActionButtons(_ref) {
     className: "media-filter-action-buttons",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "media-filter-action-buttons__inner",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("button", {
+      children: [type !== "preserved" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("button", {
         onClick: handleSubmitWithAction("media-delete-indiv"),
         className: isScanning || userSelection.length === 0 ? "submit-btn submit-btn-disabled delete-btn" : "submit-btn delete-btn",
         disabled: isScanning || userSelection.length === 0,
@@ -1217,18 +1217,18 @@ var FilterNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(f
     className: "filter-nav",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
       type: "button",
-      title: "Sort Smallest to Largest File Size",
-      onClick: filter_size,
-      "data-filter": "small",
-      className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === "small" ? "active" : "inactive"),
-      children: "Sort Smallest to Largest File Size"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
-      type: "button",
       title: "Sort Largest to Smallest File Size",
       onClick: filter_size,
       "data-filter": "large",
       className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === "large" || filterMode === "all" ? "active" : "inactive"),
       children: "Sort Largest to Smallest File Size"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+      type: "button",
+      title: "Sort Smallest to Largest File Size",
+      onClick: filter_size,
+      "data-filter": "small",
+      className: "filter-nav__button filter-nav__button-sort filter-nav__button--".concat(filterMode === "small" ? "active" : "inactive"),
+      children: "Sort Smallest to Largest File Size"
     })]
   });
 });
@@ -1278,7 +1278,7 @@ var PagerNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(fu
 
         // Add ellipsis before middle section if needed
         if (startRange > 1) {
-          pages.push('ellipsis-start');
+          pages.push("ellipsis-start");
         }
 
         // Add middle section pages
@@ -1290,7 +1290,7 @@ var PagerNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(fu
 
         // Add ellipsis after middle section if needed
         if (endRange < totalPages - 2) {
-          pages.push('ellipsis-end');
+          pages.push("ellipsis-end");
         }
 
         // Always show last page (if more than 1 page)
@@ -1348,7 +1348,7 @@ var PagerNav = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(fu
         }), " "]
       }), visiblePages.map(function (pageNumber, index) {
         // Handle ellipsis
-        if (typeof pageNumber === 'string' && pageNumber.startsWith('ellipsis')) {
+        if (typeof pageNumber === "string" && pageNumber.startsWith("ellipsis")) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
             className: "filter-pagination__ellipsis",
             "aria-label": "More pages",
@@ -1398,6 +1398,9 @@ var MediaTableRow = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().me
   }, [collector["id"], onSelect]);
   var mediaFileType = function mediaFileType() {
     var fileType = collector["media_file_type"];
+    if (!fileType || typeof fileType !== "string") {
+      return false;
+    }
     return fileType.includes("image") || fileType.includes("png") || fileType.includes("jpg") || fileType.includes("jpeg");
   };
   var _useMediaCleanerStore = (0,_stores_mediaCleanerStore__WEBPACK_IMPORTED_MODULE_2__["default"])(),
@@ -1594,7 +1597,7 @@ var useMediaTableLogic = function useMediaTableLogic(_ref6) {
   // Memoized pagination and data processing
   var _useMemo2 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
       var page = parseInt(filterPager) || 0;
-      // &custom_items_per_page=1000 
+      // &custom_items_per_page=1000
       var customItemsPerPage = getQueryParameter("custom_items_per_page");
       var itemsPerPage = 20; // Default value
       if (customItemsPerPage) {
@@ -1919,6 +1922,12 @@ function StatsContainer() {
         console.log("Scan initiated:", result);
         // The scan will now be managed by the SyncStatus component
         // which will automatically update isScanning based on real API status
+
+        if (result.data == 'COMPLETED') {
+          // Keep scanInitiated true until page reloads - don't reset it
+          alert("Synchronization is complete! Page will auto reload.");
+          location.reload();
+        }
       })["catch"](function (error) {
         console.error("Error initiating scan:", error);
         setScanInitiated(false);

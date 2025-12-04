@@ -57,18 +57,6 @@ const FilterNav = React.memo(({ mediaCollector, filterMode, filter_size }) => {
     <div className="filter-nav">
       <button
         type="button"
-        title="Sort Smallest to Largest File Size"
-        onClick={filter_size}
-        data-filter="small"
-        className={`filter-nav__button filter-nav__button-sort filter-nav__button--${
-          filterMode === "small" ? "active" : "inactive"
-        }`}
-      >
-        Sort Smallest to Largest File Size
-      </button>
-
-      <button
-        type="button"
         title="Sort Largest to Smallest File Size"
         onClick={filter_size}
         data-filter="large"
@@ -77,6 +65,18 @@ const FilterNav = React.memo(({ mediaCollector, filterMode, filter_size }) => {
         }`}
       >
         Sort Largest to Smallest File Size
+      </button>
+
+      <button
+        type="button"
+        title="Sort Smallest to Largest File Size"
+        onClick={filter_size}
+        data-filter="small"
+        className={`filter-nav__button filter-nav__button-sort filter-nav__button--${
+          filterMode === "small" ? "active" : "inactive"
+        }`}
+      >
+        Sort Smallest to Largest File Size
       </button>
     </div>
   );
@@ -88,61 +88,61 @@ const PagerNav = React.memo(
     const { totalItems, totalPages, visiblePages } = useMemo(() => {
       const totalItems = (mediaCollector && mediaCollector.length) || 0;
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-      
+
       // Smart pagination logic
       const getVisiblePages = (currentPage, totalPages) => {
         if (totalPages <= 10) {
           // Show all pages if 10 or fewer
           return Array.from({ length: totalPages }, (_, i) => i);
         }
-        
+
         const pages = [];
         const current = currentPage;
-        
+
         // Always show first page
         pages.push(0);
-        
+
         // Determine the range around current page
         let startRange = Math.max(1, current - 2);
         let endRange = Math.min(totalPages - 2, current + 2);
-        
+
         // Adjust range if we're near the beginning
         if (current <= 3) {
           startRange = 1;
           endRange = Math.min(5, totalPages - 2);
         }
-        
+
         // Adjust range if we're near the end
         if (current >= totalPages - 4) {
           startRange = Math.max(1, totalPages - 6);
           endRange = totalPages - 2;
         }
-        
+
         // Add ellipsis before middle section if needed
         if (startRange > 1) {
-          pages.push('ellipsis-start');
+          pages.push("ellipsis-start");
         }
-        
+
         // Add middle section pages
         for (let i = startRange; i <= endRange; i++) {
           if (i !== 0 && i !== totalPages - 1) {
             pages.push(i);
           }
         }
-        
+
         // Add ellipsis after middle section if needed
         if (endRange < totalPages - 2) {
-          pages.push('ellipsis-end');
+          pages.push("ellipsis-end");
         }
-        
+
         // Always show last page (if more than 1 page)
         if (totalPages > 1) {
           pages.push(totalPages - 1);
         }
-        
+
         return pages;
       };
-      
+
       const visiblePages = getVisiblePages(pager, totalPages);
 
       return { totalItems, totalPages, visiblePages };
@@ -200,9 +200,12 @@ const PagerNav = React.memo(
 
           {visiblePages.map((pageNumber, index) => {
             // Handle ellipsis
-            if (typeof pageNumber === 'string' && pageNumber.startsWith('ellipsis')) {
+            if (
+              typeof pageNumber === "string" &&
+              pageNumber.startsWith("ellipsis")
+            ) {
               return (
-                <span 
+                <span
                   key={pageNumber}
                   className="filter-pagination__ellipsis"
                   aria-label="More pages"
@@ -211,13 +214,15 @@ const PagerNav = React.memo(
                 </span>
               );
             }
-            
+
             // Handle regular page numbers
             return (
               <button
                 key={pageNumber}
                 className={`filter-pagination__button ${
-                  pageNumber === pager ? "filter-pagination__button--active" : ""
+                  pageNumber === pager
+                    ? "filter-pagination__button--active"
+                    : ""
                 }`}
                 onClick={() => handlePageClick(pageNumber)}
               >
@@ -266,6 +271,9 @@ const MediaTableRow = React.memo(
 
     const mediaFileType = () => {
       const fileType = collector["media_file_type"];
+      if (!fileType || typeof fileType !== "string") {
+        return false;
+      }
       return (
         fileType.includes("image") ||
         fileType.includes("png") ||
@@ -274,9 +282,10 @@ const MediaTableRow = React.memo(
       );
     };
 
-    const { isScanning, setScanInitiated, syncStatus, scanInitiatedType } = useMediaCleanerStore();
+    const { isScanning, setScanInitiated, syncStatus, scanInitiatedType } =
+      useMediaCleanerStore();
     // Use local scanInitiated for immediate feedback, combined with global isScanning
-    const showLoading = isScanning ;
+    const showLoading = isScanning;
 
     return (
       <tr
@@ -292,9 +301,11 @@ const MediaTableRow = React.memo(
             aria-label={`Select media ${collector["id"]}`}
           />
         </td>
-        <td className={`media-collector-table__td media-collector-table__td--img-thumb ${
+        <td
+          className={`media-collector-table__td media-collector-table__td--img-thumb ${
             showLoading ? "loading" : ""
-          }`}>
+          }`}
+        >
           {mediaFileType() ? (
             <div
               className="thumbnail-clickable"
@@ -318,14 +329,15 @@ const MediaTableRow = React.memo(
             showLoading ? "loading" : ""
           }`}
         >
-          <div
-            className="media-collector-table__td--file-type-pill">
+          <div className="media-collector-table__td--file-type-pill">
             {collector["media_file_type"]}
           </div>
         </td>
-        <td className={`media-collector-table__td media-collector-table__td--file-size ${
+        <td
+          className={`media-collector-table__td media-collector-table__td--file-size ${
             showLoading ? "loading" : ""
-          }`}>
+          }`}
+        >
           <div
             className="media-collector-table__td--file-size-pill"
             style={{
@@ -335,14 +347,18 @@ const MediaTableRow = React.memo(
             {collector["media_size"]}
           </div>
         </td>
-        <td className={`media-collector-table__td media-collector-table__td--id ${
+        <td
+          className={`media-collector-table__td media-collector-table__td--id ${
             showLoading ? "loading" : ""
-          }`}>
+          }`}
+        >
           {collector["id"]}
         </td>
-        <td className={`media-collector-table__td media-collector-table__td--media-link ${
+        <td
+          className={`media-collector-table__td media-collector-table__td--media-link ${
             showLoading ? "loading" : ""
-          }`}>
+          }`}
+        >
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -351,9 +367,11 @@ const MediaTableRow = React.memo(
             Go to media
           </a>
         </td>
-        <td className={`media-collector-table__td media-collector-table__td--img-url ${
+        <td
+          className={`media-collector-table__td media-collector-table__td--img-url ${
             showLoading ? "loading" : ""
-          }`}>
+          }`}
+        >
           <span className="media-collector-table__td--img-url-text">
             {collector["media_file"]}
           </span>
@@ -477,7 +495,7 @@ const useMediaTableLogic = ({
   // Memoized pagination and data processing
   const { output, itemsPerPage, visibleIds, allSelected } = useMemo(() => {
     const page = parseInt(filterPager) || 0;
-    // &custom_items_per_page=1000 
+    // &custom_items_per_page=1000
     const customItemsPerPage = getQueryParameter("custom_items_per_page");
     let itemsPerPage = 20; // Default value
     if (customItemsPerPage) {
@@ -612,7 +630,14 @@ const MediaCollectorTable = ({
         onImageClick={openLightbox}
       />
     ));
-  }, [output, userSelection, handleSelect, openLightbox, scanInitiatedType, mediaCollector]);
+  }, [
+    output,
+    userSelection,
+    handleSelect,
+    openLightbox,
+    scanInitiatedType,
+    mediaCollector,
+  ]);
 
   // Early return for no media
   if (mediaCollector === "no-images") {
@@ -622,10 +647,6 @@ const MediaCollectorTable = ({
   if (!mediaCollector && scanInitiatedType === "Loading Media in Progress") {
     return <p style={{ color: "#fff" }}>Loading Media...</p>;
   }
-
-
-
-
 
   return (
     <>

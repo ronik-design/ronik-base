@@ -102,6 +102,13 @@ function StatsContainer() {
         console.log("Scan initiated:", result);
         // The scan will now be managed by the SyncStatus component
         // which will automatically update isScanning based on real API status
+
+        if(result.data == 'COMPLETED'){
+          // Keep scanInitiated true until page reloads - don't reset it
+          alert("Synchronization is complete! Page will auto reload.");
+          location.reload();
+
+        }
       })
       .catch((error) => {
         console.error("Error initiating scan:", error);

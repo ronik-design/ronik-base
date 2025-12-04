@@ -22,32 +22,30 @@ if(isset($_POST['imageId']) && $_POST['imageId']){
     if (str_contains($_POST['imageId'], ',')) {
         $imageIdArray = explode(',', $_POST['imageId']);
         $total_count = count($imageIdArray);
-        $processed = 0;
         
-        foreach ($imageIdArray as $index => $imageId) {
-            $delete_attachment = $RmcDataGathering->imageCloneSave( false,  $imageId);
-            if($delete_attachment){
-                // Simple function that resets everything before we continue processing all the files..
-                databaseScannerMedia__cleaner();
-                // Throttle after cleaner.
-                sleep(1);
-            }
-            $array_without_deleted_img = $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized = array_values(
+        // Convert string IDs to integers
+        $imageIdArray = array_map('intval', $imageIdArray);
+        
+        // Delete all images at once
+        $delete_attachment = $RmcDataGathering->imageCloneSave(true, $imageIdArray);
+        
+        if($delete_attachment){
+            // Simple function that resets everything after processing all the files
+            databaseScannerMedia__cleaner();
+            
+            // Remove all deleted IDs from transient at once
+            $array_without_deleted_img = array_values(
                 array_diff(
                     $transient_rmc_media_cleaner_media_data_collectors_image_id_array_finalized,
-                    array($imageId)
+                    $imageIdArray
                 )
             );
             set_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized', $array_without_deleted_img, DAY_IN_SECONDS);
             
-            $processed++;
-            
-            // Force garbage collection every 10 files to free memory
-            if ($processed % 10 === 0) {
-                gc_collect_cycles();
-                $current_memory = memory_get_usage(true) / 1024 / 1024;
-                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Deleted ' . $processed . '/' . $total_count . ' files. Memory: ' . round($current_memory, 2) . 'MB', 'low', 'rbp_media_cleaner');
-            }
+            // Force garbage collection after bulk delete
+            gc_collect_cycles();
+            $current_memory = memory_get_usage(true) / 1024 / 1024;
+            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Deleted ' . $total_count . ' files. Memory: ' . round($current_memory, 2) . 'MB', 'low', 'rbp_media_cleaner');
         }
     } else {
 
@@ -67,6 +65,8 @@ if(isset($_POST['imageId']) && $_POST['imageId']){
         set_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized', $array_without_deleted_img, DAY_IN_SECONDS);
 
     }
+
+    error_log(print_r($_POST['imageId'], true));
 
     error_log(print_r('media-cleaner_delete_indiv.php', true));
     

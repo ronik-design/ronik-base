@@ -122,7 +122,7 @@ class Ronik_Base_Admin
 		}
 		
 		// // Debug: Log paths to verify we're getting the correct folder name
-		error_log('Plugin slug detection - plugin_slug: ' . $this->plugin_slug);
+		// error_log('Plugin slug detection - plugin_slug: ' . $this->plugin_slug);
 
 		// Initialize CLI commands if WP_CLI is available
 		$this->init_cli();
@@ -177,6 +177,8 @@ class Ronik_Base_Admin
 				:root {
 					--ronik-plugin-checkmark: url("' . esc_attr($plugin_base) . '/assets/images/checkmark.svg");
 					--ronik-plugin-enlarge: url("' . esc_attr($plugin_base) . '/assets/images/enlarge.svg");
+					--ronik-plugin-sort-large: url("' . esc_attr($plugin_base) . '/assets/images/sort-large.svg");
+					--ronik-plugin-sort-small: url("' . esc_attr($plugin_base) . '/assets/images/sort-small.svg");
 				}
 				/* Hide the Media Harmony submenu header */
 				#toplevel_page_options-ronik-base-mediacleaner .wp-submenu .wp-submenu-head,
@@ -594,6 +596,8 @@ class Ronik_Base_Admin
 				$select_post_status = array('publish', 'pending', 'draft', 'private', 'future', 'archive');
 				// Dynamically retrieve the post types for entire site including custom post types.
 				$select_post_type = $RmcDataGathering->postTypesRetrieval();
+
+				error_log(print_r($select_post_type, true));
 				// Mime_type.
 				$select_attachment_type = cleaner_post_mime_type('all');
 				// error_log(print_r($_POST['mime_type'], true));

@@ -2,11 +2,22 @@ import React from "react";
 import useMediaCleanerStore from "./stores/mediaCleanerStore";
 
 const ActionButtons = ({ type }) => {
-  const { isScanning, syncStatus, setScanInitiated, userSelection, scanInitiatedType, setScanInitiatedType , deleteInitiated , setDeleteInitiated} =
-    useMediaCleanerStore();
+  const {
+    isScanning,
+    syncStatus,
+    setScanInitiated,
+    userSelection,
+    scanInitiatedType,
+    setScanInitiatedType,
+    deleteInitiated,
+    setDeleteInitiated,
+  } = useMediaCleanerStore();
 
   // Get pluginSlug from wpVars (localized by WordPress)
-  const pluginSlug = typeof window !== 'undefined' && window.wpVars ? (window.wpVars.pluginSlug || 'ronik-base') : 'ronik-base';
+  const pluginSlug =
+    typeof window !== "undefined" && window.wpVars
+      ? window.wpVars.pluginSlug || "ronik-base"
+      : "ronik-base";
 
   // Perform the POST request
   const handlePostData = async (action, preserveType = null) => {
@@ -22,8 +33,11 @@ const ActionButtons = ({ type }) => {
       setScanInitiated(true);
 
       // Set the scan initiated type based on the action
-      setScanInitiatedType(action === "media-preserve" ? "Preserve Media in Progress" : "Delete Media in Progress");
-
+      setScanInitiatedType(
+        action === "media-preserve"
+          ? "Preserve Media in Progress"
+          : "Delete Media in Progress"
+      );
 
       const response = await fetch(wpVars.ajaxURL, {
         method: "POST",
@@ -33,8 +47,9 @@ const ActionButtons = ({ type }) => {
       const result = await response.json();
       console.log("Action result:", result.data);
 
-      if(result.data){
-        if(result.data === "Reload"){
+
+      if (result.data) {
+        if (result.data === "Reload") {
           // Keep scanInitiated true until page reloads - don't reset it
           alert("Synchronization is complete! Page will auto reload.");
           location.reload();
@@ -81,26 +96,28 @@ const ActionButtons = ({ type }) => {
   return (
     <div className="media-filter-action-buttons">
       <div className="media-filter-action-buttons__inner">
-        <button
-          onClick={handleSubmitWithAction("media-delete-indiv")}
-          className={
-            isScanning || userSelection.length === 0
-              ? "submit-btn submit-btn-disabled delete-btn"
-              : "submit-btn delete-btn"
-          }
-          disabled={isScanning || userSelection.length === 0}
-        >
-          <img
-            src={`/wp-content/plugins/${pluginSlug}/assets/images/delete.svg`}
-            alt="Ronik Base Logo"
-          />
+        {type !== "preserved" && (
+          <button
+            onClick={handleSubmitWithAction("media-delete-indiv")}
+            className={
+              isScanning || userSelection.length === 0
+                ? "submit-btn submit-btn-disabled delete-btn"
+                : "submit-btn delete-btn"
+            }
+            disabled={isScanning || userSelection.length === 0}
+          >
+            <img
+              src={`/wp-content/plugins/${pluginSlug}/assets/images/delete.svg`}
+              alt="Ronik Base Logo"
+            />
 
-          {userSelection.length === 0
-            ? "No media selected"
-            : isScanning || userSelection.length === 0
-            ? "Sync in progress — delete unavailable"
-            : "Delete Media"}
-        </button>
+            {userSelection.length === 0
+              ? "No media selected"
+              : isScanning || userSelection.length === 0
+              ? "Sync in progress — delete unavailable"
+              : "Delete Media"}
+          </button>
+        )}
 
         <button
           onClick={handleSubmitWithAction("media-preserve")}

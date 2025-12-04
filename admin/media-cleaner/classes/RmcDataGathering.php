@@ -500,8 +500,16 @@ class RmcDataGathering
                         ),
                         'relation' => 'AND',
                         array(
-                            'key' => '_wp_attachment_backup_sizes',
-                            'compare' => '!='
+                            'relation' => 'OR',
+                            array(
+                                'key' => '_wp_attachment_backup_sizes',
+                                'compare' => 'NOT EXISTS'
+                            ),
+                            array(
+                                'key' => '_wp_attachment_backup_sizes',
+                                'compare' => '!=',
+                                'value' => ''
+                            )
                         )
                     ),
                     'orderby' => 'date',
@@ -539,6 +547,44 @@ class RmcDataGathering
         $wp_postsmeta_id_audit_array = array();
         if ($allimagesid) {
             foreach ($allimagesid as $j => $image_id) {
+                // // First check if the image ID is stored as an exact meta value
+                // $exact_match_posts = get_posts(array(
+                //     'fields' => 'ids',
+                //     'post_type' => $select_post_type,
+                //     'post_status'  => $select_post_status,
+                //     'posts_per_page' => 1,
+                //     'meta_query' => array(
+                //         array(
+                //             'value' => $image_id,
+                //             'compare' => '=',
+                //         ),
+                //         'relation' => 'AND',
+                //         array(
+                //             'relation' => 'OR',
+                //             array(
+                //                 'key' => '_wp_attachment_backup_sizes',
+                //                 'compare' => 'NOT EXISTS'
+                //             ),
+                //             array(
+                //                 'key' => '_wp_attachment_backup_sizes',
+                //                 'compare' => '!=',
+                //                 'value' => ''
+                //             )
+                //         )
+                //     ),
+                //     'orderby' => 'date',
+                //     'order'  => 'DESC', 
+                // ));
+
+                // if ($exact_match_posts) {
+                //     foreach ($exact_match_posts as $key => $posts) {
+                //         if ($posts) {
+                //             $wp_postsmeta_id_audit_array[] = $image_id;
+                //         }
+                //     }
+                // }
+
+                // Also check with regex patterns for embedded image IDs
                 $f_posts = get_posts(array(
                     'fields' => 'ids',
                     'post_type' => $select_post_type,
@@ -551,8 +597,16 @@ class RmcDataGathering
                         ),
                         'relation' => 'AND',
                         array(
-                            'key' => '_wp_attachment_backup_sizes',
-                            'compare' => '!='
+                            'relation' => 'OR',
+                            array(
+                                'key' => '_wp_attachment_backup_sizes',
+                                'compare' => 'NOT EXISTS'
+                            ),
+                            array(
+                                'key' => '_wp_attachment_backup_sizes',
+                                'compare' => '!=',
+                                'value' => ''
+                            )
                         )
                     ),
                     'orderby' => 'date',
@@ -1070,7 +1124,12 @@ class RmcDataGathering
             if ($rbp_media_cleaner_media_data) {
                 $total_count = is_array($rbp_media_cleaner_media_data) ? count($rbp_media_cleaner_media_data) : 1;
                 $processed = 0;
-                
+
+                error_log(print_r( $total_count, true));
+                error_log(print_r( $imagesid, true));
+                error_log(print_r( $is_array, true));
+
+
                 foreach ($rbp_media_cleaner_media_data as $index => $rbp_data_id) {
                     $clone_path = get_post_meta($rbp_data_id, '_wp_attached_file'); // Full path
                     if ($clone_path && isset($clone_path[0])) {
