@@ -129,7 +129,7 @@ if ($rbp_media_cleaner_sync_running == 'running') {
             // sleep(2);
             // wp_die();
         } else {
-            $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, NOT EXPIRED ', 'low', 'rbp_media_cleaner');
+            // $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, NOT EXPIRED ', 'low', 'rbp_media_cleaner');
         }
     }
 }

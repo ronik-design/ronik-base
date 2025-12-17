@@ -2,6 +2,10 @@
 /**
 * Init Remove Unused Media .
 */
+
+use Ronik\Base\RbpHelper;
+use Ronik\Base\RmcDataGathering;
+
 $RmcDataGathering = new RmcDataGathering;
 $rbpHelper = new RbpHelper;
 $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 8a, Init Remove Unused Media . ', 'low', 'rbp_media_cleaner');

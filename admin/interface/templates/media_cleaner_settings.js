@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ContentBlock from '../components/ContentBlock.jsx';
+import TopNav from '../components/MediaCleaner/TopNav.jsx';
+import SyncStatus from '../components/MediaCleaner/SyncStatus.jsx';
 
 // Helper function to get data attribute from an element
 const getDataAttribute = (selector, attribute) => {
@@ -93,46 +95,48 @@ const MediaCleanerSettings = () => {
     };
 
     return (
-        <div className='settings-container'>
-            {/* Display general settings message */}
-            <ContentBlock
-                title="Media Cleaner Settings:"
-                description="Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards."
-            />
-            <ContentBlock
-                title=""
-                description="Please note that if you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files."
-            />
-            <br />
-            {/* File size settings */}
-            <div className='media-cleaner-item-settings__file-size'>
-                <input
-                    type="number"
-                    id="file-size-selector"
-                    name="filesize-option"
-                    min="0.1"
-                    max="1000"
-                    step=".01"
-                    value={formValues['filesize-option']}
-                    onChange={handleChange}
-                />
-                <p id="file-size-selector_val">
-                    {formValues['filesize-option'] < 1
-                        ? `${(formValues['filesize-option'] * 1024).toFixed(2)} KB`
-                        : `${formValues['filesize-option']} MB`}
-                </p>
+        <div className='general-container mediacleaner-container'>
+            {/* SyncStatus manages global state independently */}
+            <SyncStatus />
 
-                {/* Additional KB Input Field */}
-                {/* <input
-                    type="number"
-                    id="file-size-kb-selector"
-                    name="filesize-kb-option"
-                    min="0"
-                    step=".01"
-                    value={formValues['filesize-kb-option']}
-                    readOnly // You can make this read-only if you want it to reflect the conversion
-                />
-                <p id="file-size-kb-selector_val">{formValues['filesize-kb-option']} KB</p> */}
+            <TopNav mode="dark" />
+
+            <ContentBlock
+                mode="dark"
+                title="Media Cleaner Settings"
+                description="Configure your media cleaner preferences below. Adjust the minimum file size limit to control which files are targeted for review."
+            />
+
+            <div className="container">
+                <div className="section">
+                    <h2>File Size Settings</h2>
+                    <div className="section-content">
+                        <p>Minimum File Size Limit: Only files above the number entered below will be targeted for review. Anything less will be ignored. We recommend 750KB to target files with higher impact; or, you can start with a higher limit first, and try a lower limit afterwards.</p>
+                        <p><strong>Please note:</strong> If you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files.</p>
+                        
+                        {/* File size settings */}
+                        <div className='media-cleaner-item-settings__file-size'>
+                            <label htmlFor="file-size-selector">Minimum File Size (MB):</label>
+                            <input
+                                type="number"
+                                id="file-size-selector"
+                                name="filesize-option"
+                                min="0"
+                                max="1000"
+                                step=".01"
+                                value={formValues['filesize-option']}
+                                onChange={handleChange}
+                            />
+                            <p id="file-size-selector_val">
+                                {formValues['filesize-option'] == 0
+                                    ? '0 MB (all files)'
+                                    : formValues['filesize-option'] < 1
+                                    ? `${(formValues['filesize-option'] * 1024).toFixed(2)} KB`
+                                    : `${formValues['filesize-option']} MB`}
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -59,7 +59,8 @@ if ($syncRunning === 'running') {
 }
 
 if (empty($progress) || $progress !== 'DONE') {
-    $this->rmc_media_sync();
+    // Call the sync method via do_action to trigger the hook
+    do_action('rmc_media_sync');
     sleep(2);
 
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
@@ -75,8 +76,8 @@ if (!$finalizedImageIds || (isset($_POST['sync']) && $_POST['sync'] === 'inprogr
     // Retrieve the current progress status.
     $progress = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_progress');
     
-    // Call the sync method to ensure the image IDs are up-to-date.
-    $this->rmc_media_sync();
+    // Call the sync method via do_action to trigger the hook
+    do_action('rmc_media_sync');
     sleep(1); // Short delay to ensure the sync process is updated.
 
     // If progress is 'DONE', send a success response indicating completion.
@@ -88,12 +89,14 @@ if (!$finalizedImageIds || (isset($_POST['sync']) && $_POST['sync'] === 'inprogr
     $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6e, Collector-Sync-done'  , 'low', 'rbp_media_cleaner');
 }
 
+// Sanitize and validate increment parameter
+$increment = isset($_POST['increment']) ? intval($_POST['increment']) : null;
+
 // Log the increment value or indicate if it is not set.
-$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6f '.$_POST['increment'] ?? 'No increment'  , 'low', 'rbp_media_cleaner');
+$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 6f ' . ($increment !== null ? $increment : 'No increment'), 'low', 'rbp_media_cleaner');
 
 // Handle the increment and update the sync progress accordingly.
-if (isset($_POST['increment'])) {
-    $increment = $_POST['increment'];
+if ($increment !== null) {
 
     // Check if the finalized image IDs are available.
     if (!empty($finalizedImageIds)) {
@@ -113,8 +116,9 @@ if (isset($_POST['increment'])) {
     sleep(1); // Short delay to ensure the process is up-to-date.
 
     // Get the MIME type filter and apply it to the image IDs.
-    $mimeType = cleaner_post_mime_type($_POST['mime_type']);
-    $filteredImageIds = $_POST['mime_type'] === 'all' ? $imageIds : array_filter($imageIds, function($id) use ($mimeType) {
+    $mime_type = isset($_POST['mime_type']) ? sanitize_text_field($_POST['mime_type']) : 'all';
+    $mimeType = cleaner_post_mime_type($mime_type);
+    $filteredImageIds = $mime_type === 'all' ? $imageIds : array_filter($imageIds, function($id) use ($mimeType) {
         return in_array(get_post_mime_type($id), $mimeType);
     });
 

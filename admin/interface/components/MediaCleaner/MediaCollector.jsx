@@ -366,7 +366,7 @@ const MediaCollector = ({ type }) => {
           "?"
         )}`;
 
-        alert(endpoint);
+        // alert(endpoint);
 
         fetch(endpoint)
           .then((response) => response.json())

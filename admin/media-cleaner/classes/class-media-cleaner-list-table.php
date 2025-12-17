@@ -95,7 +95,9 @@ class Media_Cleaner_List_Table extends WP_List_Table
     }
 
     private function get_sample_data() {
-        $response = wp_remote_get('https://media-harmony.local/wp-json/mediacleaner/v1/mediacollector/large?filter=all');
+        // Use home_url() instead of hardcoded URL for portability
+        $api_url = home_url('/wp-json/mediacleaner/v1/mediacollector/large?filter=all');
+        $response = wp_remote_get($api_url);
         if (is_wp_error($response)) {
             return [];
         }

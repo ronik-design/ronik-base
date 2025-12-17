@@ -14,15 +14,17 @@ use Ronik\Base\RonikBaseHelper;
 
 $rbpHelper = new RbpHelper;
 
-if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
-	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5a, wp_send_json_error ', 'low', 'rbp_media_cleaner');
-
-	wp_send_json_error('Security check failed', '400');
+// Check if user is logged in first
+if (!is_user_logged_in()) {
+	wp_send_json_error('Authentication required', 401);
 	wp_die();
 }
-// Check if user is logged in.
-if (!is_user_logged_in()) {
-	return;
+
+// Verify nonce for security
+if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'ajax-nonce')) {
+	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5a, wp_send_json_error ', 'low', 'rbp_media_cleaner');
+	wp_send_json_error('Security check failed', 400);
+	wp_die();
 }
 
 function rmc_timeout_extend($time)
@@ -40,11 +42,8 @@ function databaseScannerMedia__cleaner()
 	global $wpdb;
 
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 4a, databaseScannerMedia__cleaner Lets cleanup the database ', 'low', 'rbp_media_cleaner');
-
-	// Remove the original post value to null..
-	$_POST['imageDirFound'] = '';
-	$tablename = $wpdb->prefix . "posts";
-	$sql = $wpdb->prepare("SELECT * FROM wp_options WHERE option_name LIKE '%rbp_media_cleaner_%' ORDER BY option_name ASC", $tablename);
+	// Use proper table name with prefix
+	$sql = $wpdb->prepare("SELECT * FROM {$wpdb->options} WHERE option_name LIKE %s ORDER BY option_name ASC", $wpdb->esc_like('rbp_media_cleaner_') . '%');
 	$results = $wpdb->get_results($sql, ARRAY_A);
 	if ($results) {
 		foreach ($results as $result) {
@@ -63,43 +62,48 @@ function databaseScannerMedia__cleaner()
 
 
 
-if ($_POST['post_overide'] == 'media-preserve') {
-	error_log(print_r('preserve 2 ', true));
+// Sanitize and validate post_overide parameter
+$post_override = isset($_POST['post_overide']) ? sanitize_text_field($_POST['post_overide']) : '';
 
+if ($post_override == 'media-preserve') {
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-preserve ', 'low', 'rbp_media_cleaner');
-	foreach (glob(dirname(__FILE__) . '/media-cleaner_preserve.php') as $file) {
-		include $file;
+	$preserve_file = dirname(__FILE__) . '/media-cleaner_preserve.php';
+	if (file_exists($preserve_file)) {
+		include $preserve_file;
 	}
-} else if ($_POST['post_overide'] == 'media-unpreserve') {
+} else if ($post_override == 'media-unpreserve') {
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-unpreserve ', 'low', 'rbp_media_cleaner');
-	foreach (glob(dirname(__FILE__) . '/media-cleaner_unpreserve.php') as $file) {
-		include $file;
+	$unpreserve_file = dirname(__FILE__) . '/media-cleaner_unpreserve.php';
+	if (file_exists($unpreserve_file)) {
+		include $unpreserve_file;
 	}
-} else if ($_POST['post_overide'] == 'media-delete-indiv') {
+} else if ($post_override == 'media-delete-indiv') {
 	$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5b, media-delete-indiv ', 'low', 'rbp_media_cleaner');
-	foreach (glob(dirname(__FILE__) . '/media-cleaner_delete_indiv.php') as $file) {
-		include $file;
+	$delete_file = dirname(__FILE__) . '/media-cleaner_delete_indiv.php';
+	if (file_exists($delete_file)) {
+		include $delete_file;
 	}
 } else {
-	if (!$_POST['user_option']) {
+	$user_option = isset($_POST['user_option']) ? sanitize_text_field($_POST['user_option']) : '';
+	
+	if (!$user_option) {
 		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5c, Security check failed ', 'low', 'rbp_media_cleaner');
-
-		wp_send_json_error('Security check failed', '400');
+		wp_send_json_error('Security check failed', 400);
 		wp_die();
 	}
 
-	if (($_POST['user_option'] == 'fetch-media')) {
+	if ($user_option == 'fetch-media') {
 		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5d, fetch-media ', 'low', 'rbp_media_cleaner');
-
-		foreach (glob(dirname(__FILE__) . '/media-cleaner_init.php') as $file) {
-			include $file;
+		$init_file = dirname(__FILE__) . '/media-cleaner_init.php';
+		if (file_exists($init_file)) {
+			include $init_file;
 		}
 	}
-	if ($_POST['user_option'] == 'delete-media') {
+	if ($user_option == 'delete-media') {
 		$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 5e, delete-media ', 'low', 'rbp_media_cleaner');
-
-		foreach (glob(dirname(__FILE__) . '/media-cleaner-remove.php') as $file) {
-			include $file;
+		$remove_file = dirname(__FILE__) . '/media-cleaner-remove.php';
+		if (file_exists($remove_file)) {
+			include $remove_file;
 		}
 	}
 }

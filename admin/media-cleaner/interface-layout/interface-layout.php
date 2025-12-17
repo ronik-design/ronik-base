@@ -27,7 +27,7 @@ if (!$this->beta_mode_state) {
 
 if ($this->media_cleaner_state) {
     // Add Settings page.
-    if (!$this->beta_mode_state) {
+    if ($this->beta_mode_state) {
         add_submenu_page(
             'options-ronik-base-mediacleaner', // parent page slug
             'Ronik Base Settings',

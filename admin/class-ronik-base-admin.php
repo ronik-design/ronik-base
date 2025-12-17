@@ -607,11 +607,6 @@ class Ronik_Base_Admin
 				$select_numberposts = 35;
 				// We get the overall number of posts and divide it by the numberposts and round up that will allow us to page correctly. Then we plus by 1 for odd errors.
 				$maxIncrement = ceil($throttle_detector / $select_numberposts);
-				// File Size
-				// $targetFileSize = get_option('rbp_media_cleaner_file_size') ? get_option('rbp_media_cleaner_file_size') : .1;
-				$targetFileSize = (get_option('rbp_media_cleaner_file_size') === '0')
-					? 0
-					: (get_option('rbp_media_cleaner_file_size') ?: .1);
 
 
 				// Gather all the posts ID of the entire database...
@@ -627,6 +622,44 @@ class Ronik_Base_Admin
 				$rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 1b, rmc_media_sync running, transient: Gather all the posts ID of the entire database ' . count($rmc_media_cleaner_media_data_collectors_posts_array), 'low', 'rbp_media_cleaner');
 				$rbpHelper->ronikdesigns_write_log_devmode($rmc_media_cleaner_media_data_collectors_posts_array, 'low', 'rbp_media_cleaner');
 
+
+
+
+
+
+
+
+
+				// File Size - Convert from bytes to MB for consistency
+				$file_size_bytes = get_option('rbp_media_cleaner_file_size', 0);
+				// Convert bytes to MB: 0 bytes = 0 MB, otherwise divide by 1048576
+				$targetFileSize = ($file_size_bytes == 0) ? 0 : ($file_size_bytes / 1048576);
+
+				// $count_images_overall = array_sum((array) wp_count_attachments());
+				// $count_posts_overall = count($rmc_media_cleaner_media_data_collectors_posts_array);
+
+
+				// if ($count_images_overall * $count_posts_overall > 6000) {
+				// 	$targetFileSize = 1;       // Extremely large site
+				// } elseif ($count_images_overall * $count_posts_overall > 5000) {
+				// 	$targetFileSize = .8;       // Very large
+				// } elseif ($count_images_overall * $count_posts_overall > 4000) {
+				// 	$targetFileSize = .6;       // Large
+				// } elseif ($count_images_overall * $count_posts_overall > 3000) {
+				// 	$targetFileSize = .4;       // Moderate
+				// } elseif ($count_images_overall * $count_posts_overall > 2000) {
+				// 	$targetFileSize = .2;      // Smallish
+				// } else {
+				// 	$targetFileSize = 0;      // Very small site → process more
+				// }
+
+
+				// error_log(print_r(count($rmc_media_cleaner_media_data_collectors_posts_array), true));
+				// error_log(print_r('count_images_overall: ' . $count_images_overall, true));
+				error_log(print_r( $targetFileSize, true));
+
+
+
 				sleep(1);
 
 				// Gather all the image ids.
@@ -638,7 +671,7 @@ class Ronik_Base_Admin
 				} else {
 					error_log(print_r('$transient_rmc_media_cleaner_media_data_collectors_image_id_array YES', true));
 
-					$rmc_media_cleaner_media_data_collectors_image_id_array = $RmcDataGathering->imageIDCollector($select_attachment_type, $select_numberposts, $targetFileSize, $maxIncrement);
+					$rmc_media_cleaner_media_data_collectors_image_id_array = $RmcDataGathering->imageIDCollector($select_attachment_type, $select_numberposts, $targetFileSize, $maxIncrement , $rmc_media_cleaner_media_data_collectors_posts_array);
 					// Save the response so we don't have to call again until tomorrow.
 					set_transient('rmc_media_cleaner_media_data_collectors_image_id_array', $rmc_media_cleaner_media_data_collectors_image_id_array, DAY_IN_SECONDS);
 				}
