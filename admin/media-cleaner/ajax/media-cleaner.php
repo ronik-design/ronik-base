@@ -52,7 +52,9 @@ function databaseScannerMedia__cleaner()
 				($result['option_name'] !== 'rbp_media_cleaner_api_key_validation') &&
 				($result['option_name'] !== 'rbp_media_cleaner_counter') &&
 				($result['option_name'] !== 'rbp_media_cleaner_increment') &&
-				($result['option_name'] !== 'rbp_media_cleaner_sync-time')
+				($result['option_name'] !== 'rbp_media_cleaner_sync-time') &&
+				($result['option_name'] !== 'rbp_media_cleaner_file_import') &&
+				($result['option_name'] !== 'rbp_media_cleaner_file_size')
 			) {
 				delete_option($result['option_name']);
 			}

@@ -58,7 +58,7 @@ if ($rbp_media_cleaner_sync_running == 'running') {
             error_log(print_r('Start Reseting Everything!', true));
             $RmcDataGathering->rmc_reset_alldata();
             $rbpHelper->ronikdesigns_write_log_devmode('API Checkpoint: Ref 1d, EXPIRED ', 'low', 'rbp_media_cleaner');
-            error_log(print_r('Completed Reseting Everything!', true));
+            error_log(print_r('Completed Reseting Everything! API Checkpoint', true));
 
             // Retrieve the current sync status from the database.
             $syncRunning = get_option('rbp_media_cleaner_sync_running', 'not-running');

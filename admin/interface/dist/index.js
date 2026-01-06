@@ -1786,6 +1786,361 @@ var PreservedMediaCollectorTable = function PreservedMediaCollectorTable(props) 
 
 /***/ }),
 
+/***/ "./admin/interface/components/MediaCleaner/PageMediaRatioAlert.jsx":
+/*!*************************************************************************!*\
+  !*** ./admin/interface/components/MediaCleaner/PageMediaRatioAlert.jsx ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+
+// Component to show file size recommendations
+
+
+
+var FileSizeRecommendation = function FileSizeRecommendation(_ref) {
+  var distribution = _ref.distribution,
+    currentSetting = _ref.currentSetting,
+    totalMedia = _ref.totalMedia;
+  // Toggle this to show only 1MB recommendation (for testing)
+  // const SHOW_ONLY_1MB = false; // Set to true to show only 1MB
+  var SHOW_ONLY_1MB = true; // Set to true to show only 1MB
+
+  console.log('[FileSizeRecommendation] Props:', {
+    distribution: distribution,
+    currentSetting: currentSetting,
+    totalMedia: totalMedia
+  });
+  if (!distribution || _typeof(distribution) !== 'object') {
+    console.log('[FileSizeRecommendation] No distribution data available');
+    return null;
+  }
+
+  // Validate distribution - backend should always return correct data now
+  // If there's a mismatch, log a warning but don't scale (backend should handle this)
+  if (distribution[0] !== undefined && distribution[0] !== totalMedia && distribution[0] > 0) {
+    console.warn('[FileSizeRecommendation] Distribution mismatch detected! Distribution[0] =', distribution[0], 'but totalMedia =', totalMedia, '- This should not happen with the updated backend.');
+    // Use the backend's distribution[0] value as the source of truth
+    var _actualTotal = distribution[0];
+    // Recalculate reductions based on actual total from backend
+    // (This is just a fallback - backend should always be correct now)
+  }
+
+  // Find the best recommendation (threshold that reduces files by at least 15%)
+  var recommendations = [];
+  // Use distribution[0] as the actual total (backend provides this correctly now)
+  var actualTotal = distribution[0] !== undefined ? distribution[0] : totalMedia;
+  var currentCount = distribution[currentSetting] !== undefined ? distribution[currentSetting] : actualTotal;
+
+  // Common thresholds to suggest (show all, even if one is current setting)
+  // If SHOW_ONLY_1MB is true, only show 1MB
+  var suggestedThresholds = SHOW_ONLY_1MB ? [1] : [1, 5, 10];
+  suggestedThresholds.forEach(function (threshold) {
+    var countAtThreshold = distribution[threshold] !== undefined ? distribution[threshold] : 0;
+
+    // Skip if count is 0 or invalid
+    if (countAtThreshold === 0 && threshold > 0) {
+      console.log("[FileSizeRecommendation] Skipping ".concat(threshold, "MB - no files found"));
+      return;
+    }
+
+    // Calculate reduction based on actual total from backend
+    var reduction = actualTotal - countAtThreshold;
+    // Calculate percentage with one decimal place for accuracy
+    // Use Math.round to nearest 0.1% to avoid showing 100% when it's actually 99.5%
+    var reductionPercent = actualTotal > 0 ? Math.round(reduction / actualTotal * 1000) / 10 : 0;
+    console.log("[FileSizeRecommendation] Threshold ".concat(threshold, "MB: ").concat(countAtThreshold, " files, reduction: ").concat(reduction, " (").concat(reductionPercent, "%)"));
+
+    // Show recommendation if it reduces by at least 15%
+    // Show all thresholds, even if one matches current setting (so user can see all options)
+    if (reductionPercent >= 15) {
+      recommendations.push({
+        threshold: threshold,
+        count: countAtThreshold,
+        reduction: reduction,
+        reductionPercent: reductionPercent
+      });
+    }
+  });
+  console.log('[FileSizeRecommendation] Recommendations found:', recommendations);
+
+  // Sort recommendations with smart logic:
+  // 1. Prefer reductions between 50-85% (sweet spot) - balanced and practical
+  // 2. If multiple in sweet spot, prefer lower threshold (more files scanned)
+  // 3. If none in sweet spot, prefer highest reduction
+  // TEMPORARY FOR TESTING: Prefer lower thresholds first
+  recommendations.sort(function (a, b) {
+    // For testing: prefer lower threshold first
+    if (a.threshold !== b.threshold) {
+      return a.threshold - b.threshold; // Lower threshold comes first
+    }
+
+    // If same threshold, prefer higher reduction
+    return b.reductionPercent - a.reductionPercent;
+
+    /* ORIGINAL LOGIC (commented out for testing):
+    const aInSweetSpot = a.reductionPercent >= 50 && a.reductionPercent <= 85;
+    const bInSweetSpot = b.reductionPercent >= 50 && b.reductionPercent <= 85;
+    
+    // If both in sweet spot, prefer lower threshold (more practical)
+    if (aInSweetSpot && bInSweetSpot) {
+        return a.threshold - b.threshold;
+    }
+    
+    // If only one in sweet spot, prefer that one
+    if (aInSweetSpot && !bInSweetSpot) {
+        return -1; // a comes first
+    }
+    if (!aInSweetSpot && bInSweetSpot) {
+        return 1; // b comes first
+    }
+    
+    // If neither in sweet spot, prefer higher reduction
+    return b.reductionPercent - a.reductionPercent;
+    */
+  });
+
+  console.log('[FileSizeRecommendation] Sorted recommendations:', recommendations);
+  if (recommendations.length === 0) {
+    console.log('[FileSizeRecommendation] No valid recommendations');
+    return null;
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    style: {
+      marginTop: '0',
+      padding: '10px',
+      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+      borderRadius: '4px',
+      fontSize: '13px'
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+      children: "\uD83D\uDCA1 Quick Tip:"
+    }), " Consider adjusting your minimum file size setting:", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
+      style: {
+        margin: '8px 0 0 0',
+        paddingLeft: '20px'
+      },
+      children: recommendations.map(function (rec, index) {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+          style: {
+            marginBottom: '6px'
+          },
+          children: ["Setting to ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("strong", {
+            children: [rec.threshold, " MB"]
+          }), " would reduce scanning by", ' ', /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("strong", {
+            children: [rec.reduction.toLocaleString(), " files"]
+          }), " (", rec.reductionPercent.toFixed(1), "% fewer files to scan)."]
+        }, index);
+      })
+    })]
+  });
+};
+var PageMediaRatioAlert = function PageMediaRatioAlert() {
+  var _stats$total_pages, _stats$total, _stats$total2, _stats$total_pages2;
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    showAlert = _useState2[0],
+    setShowAlert = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState4 = _slicedToArray(_useState3, 2),
+    stats = _useState4[0],
+    setStats = _useState4[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchStats();
+  }, []);
+  var fetchStats = function fetchStats() {
+    fetch("/wp-json/mediacleaner/v1/mediacollector/stats").then(function (response) {
+      return response.json();
+    }).then(function (response) {
+      if (response && response.success && response.data) {
+        var data = response.data;
+
+        // Debug logging
+        console.log('[PageMediaRatioAlert] Full stats data:', data);
+        console.log('[PageMediaRatioAlert] File size distribution:', data.file_size_distribution);
+        console.log('[PageMediaRatioAlert] Current file size setting:', data.current_file_size_setting);
+        setStats(data);
+
+        // Thresholds for showing the alert
+        var MAX_RATIO = 10; // Alert if more than 10 pages per media file
+        var MIN_PAGES_FOR_LARGE_SITE = 1000; // Alert if more than this many pages
+        var MAX_MEDIA_FOR_LARGE_SITE = 100; // AND less than this many media files
+        var MIN_MEDIA_FOR_LARGE_LIBRARY = 50000; // Alert if more than this many media files
+        var MIN_MEDIA_FOR_MEDIUM_LIBRARY = 20000; // Alert if more than this many media files (with pages context)
+
+        var ratio = data.pages_to_media_ratio || 0;
+        var totalPages = data.total_pages || 0;
+        var totalMedia = data.total || 0;
+
+        // Check conditions for high pages-to-media ratio
+        var ratioTooHigh = ratio > MAX_RATIO;
+        var largeSiteLowMedia = totalPages > MIN_PAGES_FOR_LARGE_SITE && totalMedia < MAX_MEDIA_FOR_LARGE_SITE;
+
+        // Check conditions for large media library
+        var veryLargeMediaLibrary = totalMedia > MIN_MEDIA_FOR_LARGE_LIBRARY;
+        var largeMediaLibraryWithPages = totalMedia > MIN_MEDIA_FOR_MEDIUM_LIBRARY && totalPages > 0;
+
+        // Determine alert type
+        var alertType = null;
+        if (ratioTooHigh || largeSiteLowMedia) {
+          alertType = 'high_pages_ratio';
+        } else if (veryLargeMediaLibrary || largeMediaLibraryWithPages) {
+          alertType = 'large_media_library';
+        }
+        console.log('[PageMediaRatioAlert] Stats:', {
+          totalPages: totalPages,
+          totalMedia: totalMedia,
+          ratio: ratio,
+          ratioTooHigh: ratioTooHigh,
+          largeSiteLowMedia: largeSiteLowMedia,
+          veryLargeMediaLibrary: veryLargeMediaLibrary,
+          largeMediaLibraryWithPages: largeMediaLibraryWithPages,
+          alertType: alertType,
+          shouldShowAlert: !!alertType
+        });
+        if (alertType) {
+          console.log('[PageMediaRatioAlert] Alert triggered:', {
+            type: alertType,
+            reason: ratioTooHigh ? "Ratio ".concat(ratio, " > ").concat(MAX_RATIO) : largeSiteLowMedia ? "Large site (".concat(totalPages, " pages, ").concat(totalMedia, " media)") : veryLargeMediaLibrary ? "Very large media library (".concat(totalMedia, " files)") : "Large media library (".concat(totalMedia, " files, ").concat(totalPages, " pages)")
+          });
+          setShowAlert(true);
+          setStats(_objectSpread(_objectSpread({}, data), {}, {
+            alertType: alertType
+          }));
+        }
+      }
+    })["catch"](function (error) {
+      console.error("Error fetching stats for ratio alert:", error);
+    });
+  };
+  var handleGoToSettings = function handleGoToSettings() {
+    window.location.href = '/wp-admin/admin.php?page=options-ronik-base_settings_media_cleaner';
+  };
+  var handleDismiss = function handleDismiss() {
+    setShowAlert(false);
+  };
+  if (!showAlert || !stats) {
+    return null;
+  }
+  var isHighPagesRatio = stats.alertType === 'high_pages_ratio';
+  var isLargeMediaLibrary = stats.alertType === 'large_media_library';
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    style: {
+      margin: '20px 0',
+      padding: '15px 20px',
+      backgroundColor: isHighPagesRatio ? '#fff3cd' : '#d1ecf1',
+      border: "1px solid ".concat(isHighPagesRatio ? '#ffc107' : '#0c5460'),
+      borderRadius: '4px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      gap: '15px'
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      style: {
+        flex: '1',
+        minWidth: '250px'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+        style: {
+          display: 'block',
+          marginBottom: '8px',
+          color: isHighPagesRatio ? '#856404' : '#0c5460'
+        },
+        children: isHighPagesRatio ? '⚠️ High Pages to Media Ratio Detected' : '📦 Large Media Library Detected'
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          style: {
+            margin: 0,
+            marginBottom: '12px',
+            color: isHighPagesRatio ? '#856404' : '#0c5460',
+            fontSize: '14px'
+          },
+          children: isHighPagesRatio ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+            children: ["Your site has ", (_stats$total_pages = stats.total_pages) === null || _stats$total_pages === void 0 ? void 0 : _stats$total_pages.toLocaleString(), " pages/posts but only ", (_stats$total = stats.total) === null || _stats$total === void 0 ? void 0 : _stats$total.toLocaleString(), " media files (ratio: ", stats.pages_to_media_ratio, ":1). This may cause slow scanning. Consider reducing the number of post types scanned in Settings to improve performance."]
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+            children: ["Your site has a large media library with ", (_stats$total2 = stats.total) === null || _stats$total2 === void 0 ? void 0 : _stats$total2.toLocaleString(), " media files", stats.total_pages > 0 && " and ".concat((_stats$total_pages2 = stats.total_pages) === null || _stats$total_pages2 === void 0 ? void 0 : _stats$total_pages2.toLocaleString(), " pages/posts"), ". Scanning this many files may take a long time. Consider adjusting your file size settings in Settings to focus on larger files first, or reduce the number of post types scanned."]
+          })
+        }), stats.file_size_distribution && stats.current_file_size_setting !== undefined && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(FileSizeRecommendation, {
+          distribution: stats.file_size_distribution,
+          currentSetting: stats.current_file_size_setting,
+          totalMedia: stats.total
+        })]
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      style: {
+        display: 'flex',
+        gap: '10px',
+        flexWrap: 'wrap'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        onClick: handleGoToSettings,
+        style: {
+          padding: '8px 16px',
+          backgroundColor: '#0073aa',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          fontWeight: '500'
+        },
+        onMouseOver: function onMouseOver(e) {
+          return e.target.style.backgroundColor = '#005a87';
+        },
+        onMouseOut: function onMouseOut(e) {
+          return e.target.style.backgroundColor = '#0073aa';
+        },
+        children: "Go to Settings"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        onClick: handleDismiss,
+        style: {
+          padding: '8px 16px',
+          backgroundColor: 'transparent',
+          color: isHighPagesRatio ? '#856404' : '#0c5460',
+          border: "1px solid ".concat(isHighPagesRatio ? '#856404' : '#0c5460'),
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '14px'
+        },
+        onMouseOver: function onMouseOver(e) {
+          e.target.style.backgroundColor = isHighPagesRatio ? '#856404' : '#0c5460';
+          e.target.style.color = 'white';
+        },
+        onMouseOut: function onMouseOut(e) {
+          e.target.style.backgroundColor = 'transparent';
+          e.target.style.color = isHighPagesRatio ? '#856404' : '#0c5460';
+        },
+        children: "Dismiss"
+      })]
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PageMediaRatioAlert);
+
+/***/ }),
+
 /***/ "./admin/interface/components/MediaCleaner/StatsContainer.jsx":
 /*!********************************************************************!*\
   !*** ./admin/interface/components/MediaCleaner/StatsContainer.jsx ***!
@@ -2674,8 +3029,6 @@ var FetchAddon = function FetchAddon(_ref) {
             // Check if the server response indicates a need to reload
             if ((result === null || result === void 0 ? void 0 : result.data) === 'Reload') {
               // Reload the page after 1 second
-
-              alert("AAAAAA.");
               setTimeout(function () {
                 return location.reload();
               }, 1000);
@@ -2730,6 +3083,8 @@ var FetchAddon = function FetchAddon(_ref) {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
           href: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(linkHref),
           className: "tile-item__text tile-item__text--link",
+          target: "_blank",
+          rel: "noopener noreferrer",
           children: (0,html_react_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(linkName)
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
           className: "tile-item__form",
@@ -2745,11 +3100,12 @@ var FetchAddon = function FetchAddon(_ref) {
               id: licenseKeyId,
               value: formValues[licenseKeyId] || (dataResponse.responseResults === 'valid' ? "xxxxxxxxxxxxxxxxxxxxxxxx" : ""),
               onChange: handleChange,
-              disabled: dataResponse.responseResults === 'valid'
+              disabled: dataResponse.responseResults === 'valid',
+              placeholder: "Enter your license key"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
             type: "submit",
-            className: "submit-btn",
+            className: "submit-btn ".concat(dataResponse.responseResults === 'valid' ? 'submit-btn--deactivate' : 'submit-btn--activate'),
             onClick: function onClick(e) {
               if (dataResponse.responseResults === 'valid') {
                 // Call deactivateLicense if the license is valid
@@ -41277,36 +41633,54 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ContentBlock.jsx */ "./admin/interface/components/ContentBlock.jsx");
-/* harmony import */ var _components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/PluginBase/FetchApiAddon.jsx */ "./admin/interface/components/PluginBase/FetchApiAddon.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MediaCleaner/TopNav.jsx */ "./admin/interface/components/MediaCleaner/TopNav.jsx");
+/* harmony import */ var _components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/MediaCleaner/SyncStatus.jsx */ "./admin/interface/components/MediaCleaner/SyncStatus.jsx");
+/* harmony import */ var _components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/PluginBase/FetchApiAddon.jsx */ "./admin/interface/components/PluginBase/FetchApiAddon.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
 
 
 
 
 function Integrations() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-    className: "integrations-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
-      title: "Integrations Message",
-      description: "Media Harmony can integrate with other products, to help you further improve your website. You can enable or disable these integrations below."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "tile-block",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        className: "tile-block__inner",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          pluginName: "Media Harmony Cleaner",
-          pluginSlug: "ronik_media_cleaner",
-          title: "Speed Up your website",
-          description: "Media Cleaner is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present. <br> <br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.\t\t\t\t\t\t",
-          linkName: "details & pricing",
-          linkHref: "https://together.nbcudev.local"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          pluginName: "Media Harmony Optimization",
-          pluginSlug: "ronik_optimization",
-          title: "Speed Up your website",
-          description: "Optimization is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present. <br> <br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.\t\t\t\t\t\t",
-          linkName: "details & pricing",
-          linkHref: "https://together.nbcudev.local"
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+    className: "general-container mediacleaner-container integrations-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      mode: "dark"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+      mode: "dark",
+      title: "Integrations",
+      description: "Media Harmony can integrate with other products to help you further improve your website. You can enable or disable these integrations below."
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "container",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
+          children: "Available Integrations"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "section-content",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "tile-block",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "tile-block__inner",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+                pluginName: "Media Harmony Cleaner",
+                pluginSlug: "ronik_media_cleaner",
+                title: "Speed Up your website",
+                description: "Media Cleaner is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present.<br><br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.",
+                linkName: "details & pricing",
+                linkHref: "https://together.nbcudev.local"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_PluginBase_FetchApiAddon_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+                pluginName: "Media Harmony Optimization",
+                pluginSlug: "ronik_optimization",
+                title: "Speed Up your website",
+                description: "Optimization is a highly effective plugin that aids in the organization and maintenance of your WordPress media library. It accomplishes this by removing unused media entries and files, while also repairing any broken entries present.<br><br>To unlock updates, please enter your license key below. If you don't have a licence key, please see details & pricing.",
+                linkName: "details & pricing",
+                linkHref: "https://together.nbcudev.local"
+              })]
+            })
+          })
         })]
       })
     })]
@@ -41333,7 +41707,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_MediaCleaner_StatsContainer_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/MediaCleaner/StatsContainer.jsx */ "./admin/interface/components/MediaCleaner/StatsContainer.jsx");
 /* harmony import */ var _components_MediaCleaner_MediaFilter_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/MediaCleaner/MediaFilter.jsx */ "./admin/interface/components/MediaCleaner/MediaFilter.jsx");
 /* harmony import */ var _components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/MediaCleaner/SyncStatus.jsx */ "./admin/interface/components/MediaCleaner/SyncStatus.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _components_MediaCleaner_PageMediaRatioAlert_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/MediaCleaner/PageMediaRatioAlert.jsx */ "./admin/interface/components/MediaCleaner/PageMediaRatioAlert.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
 
 
 
@@ -41343,14 +41719,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function Mediacleaner() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
     className: "mediacleaner-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_MediaCleaner_StatsContainer_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_SyncStatus_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_TopNav_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_PageMediaRatioAlert_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_StatsContainer_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_ContentBlock_jsx__WEBPACK_IMPORTED_MODULE_0__["default"], {
       title: "All Unlinked Files",
       description: ""
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_MediaCleaner_MediaFilter_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_MediaFilter_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
       type: "media_cleaner"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_MediaCleaner_MediaCollector_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
       type: "media_cleaner"
     })]
   });
@@ -41379,6 +41755,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -41406,29 +41786,50 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   // Default value for file size from the data attribute
   var fileSizeDefault = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-size');
 
+  // Get post types from data attributes
+  var postTypesJson = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-post-types');
+  var selectedPostTypesJson = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-selected-post-types');
+  var allPostTypes = postTypesJson ? JSON.parse(postTypesJson) : [];
+  var initialSelectedPostTypes = selectedPostTypesJson ? JSON.parse(selectedPostTypesJson) : allPostTypes;
+
   // State to manage form input values and backup status
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      'filesize-option': fileSizeDefault
+      'filesize-option': fileSizeDefault,
+      'fileimport-option': getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-backup') || 'off'
     }),
     _useState2 = _slicedToArray(_useState, 2),
     formValues = _useState2[0],
     setFormValues = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(initialSelectedPostTypes),
     _useState4 = _slicedToArray(_useState3, 2),
-    dataResponse = _useState4[0],
-    setDataResponse = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('off'),
+    selectedPostTypes = _useState4[0],
+    setSelectedPostTypes = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
     _useState6 = _slicedToArray(_useState5, 2),
-    backupEnabled = _useState6[0],
-    setBackupEnabled = _useState6[1];
+    dataResponse = _useState6[0],
+    setDataResponse = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('off'),
+    _useState8 = _slicedToArray(_useState7, 2),
+    backupEnabled = _useState8[0],
+    setBackupEnabled = _useState8[1];
 
   // Effect hook to initialize backup settings and handle form changes
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fileBackupEnabled = getDataAttribute('#ronik-base_settings-media-cleaner', 'data-file-backup');
     setBackupEnabled(fileBackupEnabled === 'on' ? 'valid' : 'invalid');
   }, []);
+
+  // Track if this is the initial mount to prevent unnecessary API calls
+  var isInitialMount = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(true);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (formValues['filesize-option'] > 0) {
+    // Skip API calls on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Handle file size changes
+    if (formValues['filesize-option'] !== undefined && formValues['filesize-option'] !== null) {
       handlePostData({
         fileSizeSelector: formValues['filesize-option'],
         fileSizeSelectorChanged: 'changed',
@@ -41436,7 +41837,16 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
         fileImportSelectorChanged: 'invalid'
       });
     }
-    if (formValues['fileimport-option']) {
+  }, [formValues['filesize-option']]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // Skip API calls on initial mount
+    if (isInitialMount.current) {
+      return;
+    }
+
+    // Handle file import/backup changes - send immediately when changed
+    if (formValues['fileimport-option'] !== undefined) {
+      console.log('File import option changed, sending to server:', formValues['fileimport-option']);
       handlePostData({
         fileSizeSelector: 'invalid',
         fileSizeSelectorChanged: 'invalid',
@@ -41444,7 +41854,26 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
         fileImportSelectorChanged: 'changed'
       });
     }
-  }, [formValues]);
+  }, [formValues['fileimport-option']]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // Skip API calls on initial mount
+    if (isInitialMount.current) {
+      return;
+    }
+
+    // Handle post types changes - send immediately when changed
+    if (selectedPostTypes !== undefined && Array.isArray(selectedPostTypes)) {
+      console.log('Post types changed, sending to server:', selectedPostTypes);
+      handlePostData({
+        fileSizeSelector: 'invalid',
+        fileSizeSelectorChanged: 'invalid',
+        fileImportSelector: 'invalid',
+        fileImportSelectorChanged: 'invalid',
+        postTypesSelector: selectedPostTypes,
+        postTypesSelectorChanged: 'changed'
+      });
+    }
+  }, [selectedPostTypes]);
 
   // Handle changes to the file size input
   var handleChange = function handleChange(e) {
@@ -41458,10 +41887,15 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
   // Handle changes to the file import checkbox
   var handleImportChange = function handleImportChange(e) {
     var isChecked = e.target.checked;
+    var newValue = isChecked ? 'on' : 'off';
+    console.log('File import checkbox changed:', isChecked, 'New value:', newValue);
     setFormValues(function (prevValues) {
-      return _objectSpread(_objectSpread({}, prevValues), {}, {
-        'fileimport-option': isChecked ? 'on' : 'off'
+      console.log('Previous formValues:', prevValues);
+      var updated = _objectSpread(_objectSpread({}, prevValues), {}, {
+        'fileimport-option': newValue
       });
+      console.log('Updated formValues:', updated);
+      return updated;
     });
     setBackupEnabled(isChecked ? 'valid' : 'invalid');
     if (isChecked) {
@@ -41469,14 +41903,38 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
     }
   };
 
+  // Handle changes to post type checkboxes
+  var handlePostTypeChange = function handlePostTypeChange(postType, isChecked) {
+    setSelectedPostTypes(function (prevSelected) {
+      if (isChecked) {
+        // Add post type if not already selected
+        return prevSelected.includes(postType) ? prevSelected : [].concat(_toConsumableArray(prevSelected), [postType]);
+      } else {
+        // Remove post type
+        return prevSelected.filter(function (type) {
+          return type !== postType;
+        });
+      }
+    });
+  };
+
+  // Handle select all / deselect all for post types
+  var handleSelectAllPostTypes = function handleSelectAllPostTypes(selectAll) {
+    if (selectAll) {
+      setSelectedPostTypes(_toConsumableArray(allPostTypes));
+    } else {
+      setSelectedPostTypes([]);
+    }
+  };
+
   // Post data to the server
   var handlePostData = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-      var fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged, data, response, result;
+      var fileSizeSelector, fileSizeSelectorChanged, fileImportSelector, fileImportSelectorChanged, postTypesSelector, postTypesSelectorChanged, data, response, result;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            fileSizeSelector = _ref.fileSizeSelector, fileSizeSelectorChanged = _ref.fileSizeSelectorChanged, fileImportSelector = _ref.fileImportSelector, fileImportSelectorChanged = _ref.fileImportSelectorChanged;
+            fileSizeSelector = _ref.fileSizeSelector, fileSizeSelectorChanged = _ref.fileSizeSelectorChanged, fileImportSelector = _ref.fileImportSelector, fileImportSelectorChanged = _ref.fileImportSelectorChanged, postTypesSelector = _ref.postTypesSelector, postTypesSelectorChanged = _ref.postTypesSelectorChanged;
             data = new FormData();
             data.append('action', 'rmc_ajax_media_cleaner_settings');
             data.append('nonce', wpVars.nonce);
@@ -41484,35 +41942,51 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
             data.append('file_size_selection', fileSizeSelector);
             data.append('file_import_selector', fileImportSelectorChanged);
             data.append('file_import_selection', fileImportSelector);
-            _context.prev = 8;
-            _context.next = 11;
+
+            // Add post types data if provided (allow empty arrays)
+            if (postTypesSelectorChanged === 'changed' && Array.isArray(postTypesSelector)) {
+              data.append('post_types_selector', postTypesSelectorChanged);
+              data.append('post_types_selection', JSON.stringify(postTypesSelector));
+            }
+            console.log('Sending to server:', {
+              file_size_selector: fileSizeSelectorChanged,
+              file_size_selection: fileSizeSelector,
+              file_import_selector: fileImportSelectorChanged,
+              file_import_selection: fileImportSelector,
+              post_types_selector: postTypesSelectorChanged,
+              post_types_selection: postTypesSelector
+            });
+            _context.prev = 10;
+            _context.next = 13;
             return fetch(wpVars.ajaxURL, {
               method: 'POST',
               credentials: 'same-origin',
               body: data
             });
-          case 11:
+          case 13:
             response = _context.sent;
-            _context.next = 14;
+            _context.next = 16;
             return response.json();
-          case 14:
+          case 16:
             result = _context.sent;
-            if ((result === null || result === void 0 ? void 0 : result.data) === 'Done') {
+            console.log('Server response:', result);
+            if (result !== null && result !== void 0 && result.success) {
               setDataResponse('complete');
-              // Optionally reload or handle success state
-              // setTimeout(() => location.reload(), 500);
+              console.log('Settings updated successfully');
+            } else {
+              console.error('Settings update failed:', result);
             }
-            _context.next = 21;
+            _context.next = 24;
             break;
-          case 18:
-            _context.prev = 18;
-            _context.t0 = _context["catch"](8);
-            console.error('[WP Pageviews Plugin]', _context.t0);
           case 21:
+            _context.prev = 21;
+            _context.t0 = _context["catch"](10);
+            console.error('[Media Cleaner Settings] Error:', _context.t0);
+          case 24:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[8, 18]]);
+      }, _callee, null, [[10, 21]]);
     }));
     return function handlePostData(_x2) {
       return _ref2.apply(this, arguments);
@@ -41526,9 +42000,9 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
       mode: "dark",
       title: "Media Cleaner Settings",
       description: "Configure your media cleaner preferences below. Adjust the minimum file size limit to control which files are targeted for review."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
       className: "container",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
         className: "section",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
           children: "File Size Settings"
@@ -41560,7 +42034,147 @@ var MediaCleanerSettings = function MediaCleanerSettings() {
             })]
           })]
         })]
-      })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
+          children: "Backup Settings"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "section-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
+            children: "Enable file backup to save deleted media files to a backup folder before they are permanently removed. This provides an extra layer of safety in case you need to restore files later."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "media-cleaner-item-settings__file-import",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("label", {
+              htmlFor: "file-import-selector",
+              style: {
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                type: "checkbox",
+                id: "file-import-selector",
+                name: "fileimport-option",
+                checked: formValues['fileimport-option'] === 'on',
+                onChange: handleImportChange
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "Enable File Backup Before Deletion"
+              })]
+            }), formValues['fileimport-option'] === 'on' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+              style: {
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#f0f0f0',
+                borderRadius: '4px'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+                children: "Backup Location:"
+              }), " Files will be backed up to ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("code", {
+                children: "/ronik-base/admin/media-cleaner/ronikdetached/"
+              }), " before deletion."]
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+        className: "section",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
+          children: "Post Type Settings"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "section-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
+            children: "Select which post types should be included when scanning for media usage. Only selected post types will be checked for media references. Uncheck post types you want to exclude from the scan."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+              children: "Please note:"
+            }), " If you adjust your settings, a preloaded scan of your site will be discarded and a new scan will need to be initiated either manually or automatically in order for you to review your files."]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "media-cleaner-item-settings__post-types",
+            style: {
+              marginTop: '20px'
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              style: {
+                marginBottom: '15px',
+                display: 'flex',
+                gap: '10px'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                type: "button",
+                onClick: function onClick() {
+                  return handleSelectAllPostTypes(true);
+                },
+                style: {
+                  padding: '8px 16px',
+                  cursor: 'pointer'
+                },
+                children: "Select All"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                type: "button",
+                onClick: function onClick() {
+                  return handleSelectAllPostTypes(false);
+                },
+                style: {
+                  padding: '8px 16px',
+                  cursor: 'pointer'
+                },
+                children: "Deselect All"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+              style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '10px',
+                marginTop: '10px'
+              },
+              children: allPostTypes.map(function (postType) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("label", {
+                  htmlFor: "post-type-".concat(postType),
+                  style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    padding: '8px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                    type: "checkbox",
+                    id: "post-type-".concat(postType),
+                    checked: selectedPostTypes.includes(postType),
+                    onChange: function onChange(e) {
+                      return handlePostTypeChange(postType, e.target.checked);
+                    }
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                    children: postType
+                  })]
+                }, postType);
+              })
+            }), selectedPostTypes.length === 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+              style: {
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#fff3cd',
+                borderRadius: '4px',
+                color: '#856404'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+                children: "Warning:"
+              }), " No post types selected. Please select at least one post type to enable media scanning."]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+              style: {
+                marginTop: '15px',
+                fontSize: '14px',
+                color: '#666'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+                children: "Selected:"
+              }), " ", selectedPostTypes.length, " of ", allPostTypes.length, " post types"]
+            })]
+          })]
+        })]
+      })]
     })]
   });
 };

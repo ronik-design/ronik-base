@@ -306,7 +306,8 @@ class Ronik_Base
 		if ($this->get_beta_mode()) {
 			return true;
 		} else {
-			update_option('rbp_media_cleaner_file_import', 'off');
+			// Don't reset file_import option - let user settings persist
+			// update_option('rbp_media_cleaner_file_import', 'off');
 
 			// Down the line we should fetch the key from the marketing site on every load if the key gets invalidated.
 			$rbp_media_cleaner_api_key = get_option('rbp_media_cleaner_api_key') ? get_option('rbp_media_cleaner_api_key') : "";
@@ -326,7 +327,7 @@ class Ronik_Base
 		// 150kb
 		// update_option('rbp_media_cleaner_file_size', 0.1);
 		// Backup
-		update_option('rbp_media_cleaner_file_import', 'off');
+		// update_option('rbp_media_cleaner_file_import', 'off');
 		return true;
 	}
 

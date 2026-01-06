@@ -109,10 +109,15 @@ class MediaCleanerDataHandler
         $preserved_data = $this->getPreservedData();
         $unlinked_data = get_transient('rmc_media_cleaner_media_data_collectors_image_id_array_finalized') ?: [];
 
+        $total_media = $this->getTotalMediaCount();
+        $total_pages = $this->getTotalPagesCount();
+
         $stats = [
             'unlinked' => count($unlinked_data),
             'preserved' => count($preserved_data),
-            'total' => $this->getTotalMediaCount(),
+            'total' => $total_media,
+            'total_pages' => $total_pages,
+            'pages_to_media_ratio' => $total_media > 0 ? round($total_pages / $total_media, 2) : 0,
         ];
 
         // Calculate file sizes
@@ -124,6 +129,12 @@ class MediaCleanerDataHandler
 
         // Calculate breakdown by file type
         $stats['breakdown'] = $this->calculateFileTypeBreakdown($unlinked_data, $stats['unlinked']);
+
+        // Calculate file size distribution for recommendations
+        // Allow bypassing cache via query parameter for debugging
+        $force_recalculate = isset($_GET['recalculate_distribution']) && $_GET['recalculate_distribution'] === 'true';
+        $stats['file_size_distribution'] = $this->calculateFileSizeDistribution($force_recalculate);
+        $stats['current_file_size_setting'] = $this->getCurrentFileSizeSetting();
 
         return wp_send_json_success($stats);
     }
@@ -582,6 +593,274 @@ class MediaCleanerDataHandler
         ];
 
         return count(get_posts($args));
+    }
+
+    /**
+     * Get total pages count (all post types except attachment)
+     */
+    private function getTotalPagesCount()
+    {
+        $post_types = get_post_types(array(), 'names', 'and');
+        // Remove attachment and other system types
+        $post_types = array_diff(
+            $post_types,
+            array(
+                'attachment',
+                'revision',
+                'nav_menu_item',
+                'custom_css',
+                'customize_changeset',
+                'oembed_cache',
+                'wp_block',
+                'wp_template',
+                'wp_template_part',
+                'wp_global_styles',
+                'wp_navigation',
+                'acf-post-type',
+                'acf-taxonomy',
+                'acf-field-group',
+                'acf-field',
+                'acf-ui-options-page',
+                'wp_font_family',
+                'wp_font_face',
+                'ame_ac_changeset'
+            )
+        );
+
+        $total_count = 0;
+        foreach ($post_types as $post_type) {
+            $post_counts = wp_count_posts($post_type);
+            $total_count += $post_counts->publish
+                + ($post_counts->future ?? 0)
+                + ($post_counts->draft ?? 0)
+                + ($post_counts->pending ?? 0)
+                + ($post_counts->private ?? 0)
+                + (property_exists($post_counts, 'archive') ? $post_counts->archive : 0);
+        }
+
+        return $total_count;
+    }
+
+    /**
+     * Calculate file size distribution for different thresholds
+     * Uses actual filesystem file sizes (same method as media cleaner) for accurate counts
+     * 
+     * @param bool $force_recalculate If true, bypasses cache and recalculates
+     */
+    private function calculateFileSizeDistribution($force_recalculate = false)
+    {
+        global $wpdb;
+        
+        // Check cache first (cache for 1 hour) unless forced to recalculate
+        $cache_key = 'rmc_file_size_distribution';
+        
+        if (!$force_recalculate) {
+            $cached = get_transient($cache_key);
+            if ($cached !== false && is_array($cached) && isset($cached[0])) {
+            // Validate cached data - ensure 0 threshold matches current total and has valid data
+            $current_total = (int)$wpdb->get_var("
+                SELECT COUNT(*) FROM {$wpdb->posts} 
+                WHERE post_type = 'attachment' 
+                AND post_status = 'inherit'
+            ");
+            // If cached total doesn't match current total, or if cached data is all zeros, recalculate
+            $has_valid_data = false;
+            foreach ($cached as $key => $value) {
+                if ($key > 0 && $value > 0) {
+                    $has_valid_data = true;
+                    break;
+                }
+            }
+            
+            if ($cached[0] == $current_total && $has_valid_data) {
+                error_log("File size distribution: Using cached data");
+                return $cached;
+            }
+                // Clear invalid cache
+                error_log("File size distribution: Clearing invalid cache. Total match: " . ($cached[0] == $current_total ? 'yes' : 'no') . ", Has valid data: " . ($has_valid_data ? 'yes' : 'no'));
+                delete_transient($cache_key);
+            }
+        } else {
+            // Force recalculate - clear cache
+            error_log("File size distribution: Force recalculating - clearing cache");
+            delete_transient($cache_key);
+        }
+        
+        $thresholds = [0, 1, 5, 10]; // MB thresholds (0 = total, others match frontend display)
+        $distribution = [];
+        
+        // Get all attachment IDs
+        $attachment_ids = $wpdb->get_col("
+            SELECT ID FROM {$wpdb->posts} 
+            WHERE post_type = 'attachment' 
+            AND post_status = 'inherit'
+        ");
+        
+        $total_attachments = count($attachment_ids);
+        $distribution[0] = $total_attachments;
+        
+        if ($total_attachments == 0) {
+            // Return empty distribution if no attachments
+            foreach ($thresholds as $threshold_mb) {
+                if ($threshold_mb > 0) {
+                    $distribution[$threshold_mb] = 0;
+                }
+            }
+            return $distribution;
+        }
+        
+        // Count files for each threshold using actual filesystem sizes
+        // Process all files once and check against all thresholds simultaneously for efficiency
+        $counts_by_threshold = [];
+        foreach ($thresholds as $threshold_mb) {
+            if ($threshold_mb > 0) {
+                $counts_by_threshold[$threshold_mb] = 0;
+            }
+        }
+        
+        $processed = 0;
+        $files_found = 0;
+        $files_missing = 0;
+        $batch_size = 500; // Process in larger batches
+        $batches = array_chunk($attachment_ids, $batch_size);
+        
+        error_log("File size distribution: Starting calculation for {$total_attachments} files");
+        
+        foreach ($batches as $batch_index => $batch) {
+            foreach ($batch as $attachment_id) {
+                $filesize_bytes = 0;
+                
+                // Try multiple methods to get file size (same as media cleaner logic)
+                $metadata = wp_get_attachment_metadata($attachment_id);
+                
+                // Method 1: Check metadata filesize first
+                if (isset($metadata['filesize']) && $metadata['filesize'] > 0) {
+                    $filesize_bytes = (int)$metadata['filesize'];
+                }
+                // Method 2: Try file path from metadata
+                elseif (isset($metadata['file']) && $metadata['file']) {
+                    $file_path = $this->upload_dir['basedir'] . '/' . $metadata['file'];
+                    if (file_exists($file_path)) {
+                        $filesize_bytes = @filesize($file_path);
+                    }
+                }
+                // Method 3: Fallback to get_attached_file
+                if ($filesize_bytes == 0) {
+                    $file_path = get_attached_file($attachment_id);
+                    if ($file_path && file_exists($file_path)) {
+                        $filesize_bytes = @filesize($file_path);
+                    }
+                }
+                
+                if ($filesize_bytes > 0) {
+                    $files_found++;
+                    // Convert to MB (same calculation as media cleaner: bytes / 1024 / 1024)
+                    $filesize_mb = $filesize_bytes / 1024 / 1024;
+                    
+                    // Check against all thresholds at once (using >= for greater than or equal to)
+                    foreach ($thresholds as $threshold_mb) {
+                        if ($threshold_mb > 0 && $filesize_mb >= $threshold_mb) {
+                            $counts_by_threshold[$threshold_mb]++;
+                        }
+                    }
+                } else {
+                    $files_missing++;
+                    // Log first few missing files for debugging
+                    if ($files_missing <= 5) {
+                        error_log("File size distribution: File not found for ID {$attachment_id}. Metadata file: " . (isset($metadata['file']) ? $metadata['file'] : 'none') . ", get_attached_file: " . (get_attached_file($attachment_id) ?: 'none'));
+                    }
+                }
+                $processed++;
+            }
+            
+            // Log progress every 10 batches
+            if (($batch_index + 1) % 10 == 0) {
+                error_log("File size distribution: Processed {$processed}/{$total_attachments} files. Found: {$files_found}, Missing: {$files_missing}");
+            }
+            
+            // If we've processed a lot but found no files, something is wrong
+            // But try a larger sample first (maybe files are in later batches)
+            if ($processed >= 5000 && $files_found == 0) {
+                error_log("File size distribution: WARNING - Processed {$processed} files but found 0 files. This suggests files may not exist on filesystem. Stopping calculation.");
+                break; // Exit early - don't scale zeros
+            }
+            
+            // If we've found some files and processed enough, we can scale the rest
+            if ($files_found > 0 && $processed >= 5000 && $processed < $total_attachments && ($processed / $total_attachments) < 0.5) {
+                // If we've processed 5000+ files but less than 50%, estimate the rest
+                $processed_ratio = $processed / $total_attachments;
+                
+                error_log("File size distribution: Scaling results. Processed {$processed}/{$total_attachments} ({$processed_ratio}), Files found: {$files_found}");
+                
+                foreach ($thresholds as $threshold_mb) {
+                    if ($threshold_mb > 0 && $counts_by_threshold[$threshold_mb] > 0) {
+                        // Scale up the counts proportionally
+                        $counts_by_threshold[$threshold_mb] = (int)($counts_by_threshold[$threshold_mb] / $processed_ratio);
+                    }
+                }
+                break; // Exit early after scaling
+            }
+        }
+        
+        error_log("File size distribution: Completed. Processed {$processed}/{$total_attachments}. Files found: {$files_found}, Missing: {$files_missing}");
+        
+        // Remove any [0] key from counts_by_threshold if it exists (shouldn't, but safeguard)
+        if (isset($counts_by_threshold[0])) {
+            unset($counts_by_threshold[0]);
+        }
+        
+        error_log("File size distribution: Counts by threshold: " . print_r($counts_by_threshold, true));
+        
+        // Initialize distribution array - [0] is always the total, never scaled
+        $distribution = [];
+        $distribution[0] = $total_attachments; // Always set to total, not scaled
+        
+        // Set distribution values for each threshold (only for thresholds > 0)
+        foreach ($thresholds as $threshold_mb) {
+            if ($threshold_mb > 0) {
+                $distribution[$threshold_mb] = $counts_by_threshold[$threshold_mb] ?? 0;
+            }
+        }
+        
+        // Final safeguard: ensure [0] is always the total (in case anything overwrote it)
+        $distribution[0] = $total_attachments;
+        
+        error_log("File size distribution: Final distribution (total={$total_attachments}): " . print_r($distribution, true));
+        
+        // Only cache if we have valid data (not all zeros)
+        $has_valid_distribution = false;
+        foreach ($distribution as $key => $value) {
+            if ($key > 0 && $value > 0) {
+                $has_valid_distribution = true;
+                break;
+            }
+        }
+        
+        if ($has_valid_distribution && $distribution[0] > 0) {
+            // Cache the result for 1 hour
+            set_transient($cache_key, $distribution, HOUR_IN_SECONDS);
+            error_log("File size distribution: Cached valid distribution");
+        } else {
+            error_log("File size distribution: NOT caching - distribution is invalid or all zeros");
+            // Clear any existing bad cache
+            delete_transient($cache_key);
+        }
+        
+        return $distribution;
+    }
+
+    /**
+     * Get current file size setting in MB
+     * Defaults to 1MB if not set (for stats calculation)
+     */
+    private function getCurrentFileSizeSetting()
+    {
+        $file_size_bytes = get_option('rbp_media_cleaner_file_size', 0);
+        if ($file_size_bytes == 0) {
+            // Default to 1MB if not set (for stats/recommendations)
+            return 1.0;
+        }
+        return $file_size_bytes / 1048576; // Convert bytes to MB
     }
 
     /**

@@ -25,7 +25,7 @@ class RmcDataGathering
         delete_option('rbp_media_cleaner_sync-time');
         delete_option('rbp_media_cleaner_sync_running-time');
         update_option('rbp_media_cleaner_sync_running', 'not-running');
-        error_log(print_r('Completed Reseting Everything!', true));
+        error_log(print_r('Completed Reseting Everything! RmcDataGathering', true));
     }
 
     public function rmc_getLineWithString_ronikdesigns($fileName, $id)
@@ -149,16 +149,25 @@ class RmcDataGathering
 
 
     // postTypesRetrieval retrieves all the post types and custom post types of the entire site.
+    // If a saved selection exists, it returns that instead.
     public function postTypesRetrieval()
     {
         $rbpHelper = new RbpHelper;
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 12a, postTypesRetrieval retrieves all the post types and custom post types of the entire site. ', 'low', 'rbp_media_cleaner');
+        
+        // Check if there's a saved selection of post types
+        $saved_post_types = get_option('rbp_media_cleaner_post_types');
+        if (is_array($saved_post_types) && !empty($saved_post_types)) {
+            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 12a-1, Using saved post types selection: ' . print_r($saved_post_types, true), 'low', 'rbp_media_cleaner');
+            return $saved_post_types;
+        }
+        
+        // Otherwise, get all available post types
         $post_types = get_post_types(array(), 'names', 'and');
         // We remove a few of the deafult types to help with speed cases..
         $post_types_without_defaults = array_diff(
             $post_types,
             array(
-                'contact-form',
                 'attachment',
                 'revision',
                 'nav_menu_item',
@@ -273,20 +282,21 @@ class RmcDataGathering
         // Add memory safety limits
         // $max_images_to_process = get_option('rbp_media_cleaner_max_images', 10000); // Default limit of 10000 images
         $overall_page_count = count($rmc_media_cleaner_media_data_collectors_posts_array);
+        $number_images_process = 2000;      // Very small site → process more
         
-        if ($overall_page_count > 20000) {
-            $number_images_process = 50;       // Extremely large site
-        } elseif ($overall_page_count > 8000) {
-            $number_images_process = 100;       // Very large
-        } elseif ($overall_page_count > 5000) {
-            $number_images_process = 150;       // Large
-        } elseif ($overall_page_count > 3000) {
-            $number_images_process = 200;       // Moderate
-        } elseif ($overall_page_count > 1500) {
-            $number_images_process = 250;      // Smallish
-        } else {
-            $number_images_process = 2000;      // Very small site → process more
-        }
+        // if ($overall_page_count > 20000) {
+        //     $number_images_process = 50;       // Extremely large site
+        // } elseif ($overall_page_count > 8000) {
+        //     $number_images_process = 100;       // Very large
+        // } elseif ($overall_page_count > 5000) {
+        //     $number_images_process = 150;       // Large
+        // } elseif ($overall_page_count > 3000) {
+        //     $number_images_process = 200;       // Moderate
+        // } elseif ($overall_page_count > 1500) {
+        //     $number_images_process = 250;      // Smallish
+        // } else {
+        //     $number_images_process = 2000;      // Very small site → process more
+        // }
 
 
         // $number_images_process = 10000;
@@ -1147,6 +1157,9 @@ class RmcDataGathering
         $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11a, imageCloneSave. ', 'low', 'rbp_media_cleaner');
 
         $f_file_import = get_option('rbp_media_cleaner_file_import');
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11a, imageCloneSave. f_file_import value: ' . print_r($f_file_import, true), 'low', 'rbp_media_cleaner');
+        error_log('Media Cleaner: f_file_import = ' . print_r($f_file_import, true));
+        
         // Update the memory option.
         $helper = new RonikBaseHelper;
         $helper->ronikdesigns_increase_memory();
@@ -1216,139 +1229,331 @@ class RmcDataGathering
         }
 
 
+        // Debug: Log the condition check
+        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d-check, Checking backup condition. Has data: ' . (!empty($rbp_media_cleaner_media_data) ? 'yes' : 'no') . ', f_file_import: ' . print_r($f_file_import, true), 'low', 'rbp_media_cleaner');
+        error_log('Media Cleaner: Backup condition check - Has data: ' . (!empty($rbp_media_cleaner_media_data) ? 'yes (' . count($rbp_media_cleaner_media_data) . ' items)' : 'no') . ', f_file_import: ' . $f_file_import);
+        
         if ($rbp_media_cleaner_media_data && $f_file_import == 'on') {
-            error_log(print_r('KEVIN FIX THIS! This should never trigger!', true));
+            // Backup mode: Files will be backed up to ronikdetached folder before deletion
+            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, imageCloneSave. Backup mode enabled', 'low', 'rbp_media_cleaner');
+            error_log('Media Cleaner: Backup mode ENABLED - starting backup process');
 
+            $backup_dir = dirname(__FILE__, 2) . '/ronikdetached/';
+            
+            // Create backup directory if it doesn't exist
+            if (!is_dir($backup_dir)) {
+                if (!wp_mkdir_p($backup_dir)) {
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Failed to create backup directory', 'high', 'rbp_media_cleaner');
+                    return false;
+                }
+            }
+
+            // Generate timestamp for unique filenames
+            $timestamp = date('Y-m-d-H-i-s');
+            
+            // Check if base files exist, if so append timestamp
+            $base_zip = $backup_dir . 'archive-media.zip';
+            $base_sql = $backup_dir . 'archive-database.sql';
+            
+            if (file_exists($base_zip) || file_exists($base_sql)) {
+                // Files exist, use timestamped filenames
+                $zip_filename = $backup_dir . 'archive-media-' . $timestamp . '.zip';
+                $sql_filename = $backup_dir . 'archive-database-' . $timestamp . '.sql';
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Existing backups found, using timestamped filenames', 'low', 'rbp_media_cleaner');
+            } else {
+                // No existing files, use base names
+                $zip_filename = $base_zip;
+                $sql_filename = $base_sql;
+            }
+            
+            error_log('Media Cleaner: Backup directory: ' . $backup_dir);
+            error_log('Media Cleaner: Zip filename: ' . $zip_filename);
+            error_log('Media Cleaner: SQL filename: ' . $sql_filename);
+
+            // Initialize zip archive once outside the loop
+            $zip = new \ZipArchive();
+            $zip_opened = false;
+            $zip_result = $zip->open($zip_filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            if ($zip_result === TRUE) {
+                $zip_opened = true;
+                $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Zip archive created at: ' . $zip_filename, 'low', 'rbp_media_cleaner');
+            } else {
+                $error_msg = 'Unknown error';
+                switch ($zip_result) {
+                    case \ZipArchive::ER_EXISTS: $error_msg = 'File already exists'; break;
+                    case \ZipArchive::ER_INCONS: $error_msg = 'Zip archive inconsistent'; break;
+                    case \ZipArchive::ER_INVAL: $error_msg = 'Invalid argument'; break;
+                    case \ZipArchive::ER_MEMORY: $error_msg = 'Memory allocation failure'; break;
+                    case \ZipArchive::ER_NOENT: $error_msg = 'No such file'; break;
+                    case \ZipArchive::ER_NOZIP: $error_msg = 'Not a zip archive'; break;
+                    case \ZipArchive::ER_OPEN: $error_msg = 'Can\'t open file'; break;
+                    case \ZipArchive::ER_READ: $error_msg = 'Read error'; break;
+                    case \ZipArchive::ER_SEEK: $error_msg = 'Seek error'; break;
+                }
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Failed to create zip archive: ' . $error_msg . ' (Code: ' . $zip_result . ')', 'high', 'rbp_media_cleaner');
+            }
+
+            $upload_dir = wp_upload_dir();
+            $upload_base_path = $upload_dir['basedir'];
+
+            // Process each file for backup
             foreach ($rbp_media_cleaner_media_data as $rbp_data_id) {
-                $time_stamp = time();
-                // First lets copy the full image to the ronikdetached folder.
-                $upload_dir   = wp_upload_dir();
-                // We must use the get_attached_file function
-                $link = get_attached_file($rbp_data_id);
-                $file_path = $link;
-                $file_name = basename(get_attached_file($rbp_data_id));
-                $file_path_date = str_replace($upload_dir['baseurl'], '', $link);
-                $file_path_date_mod = str_replace($file_name, '', $file_path_date);
-                $file_path_date_mod_array = explode('/wp-content/uploads', $file_path_date_mod);
-                $file_path_date_mod_array_reindexed = array_values(array_filter($file_path_date_mod_array));
-                if (isset($file_path_date_mod_array_reindexed[1])) {
-                    $file_path_date_mod_array_last = explode('/', $file_path_date_mod_array_reindexed[1]);
-                    $file_path_date_mod_array_last_reindexed = array_values(array_filter($file_path_date_mod_array_last));
-                    //Year in YYYY format.
-                    $year = $file_path_date_mod_array_last_reindexed[0];
-                    //Month in mm format, with leading zeros.
-                    $month = $file_path_date_mod_array_last_reindexed[1];
-                    //The folder path for our file should be YYYY/MM/DD
-                }
-
-                if (!is_dir(dirname(__FILE__, 2) . '/ronikdetached/')) {
-                    //Create our directory.
-                    mkdir(dirname(__FILE__, 2) . '/ronikdetached/', 0777, true);
-                }
-
-                // Erase old files and database
-                if (file_exists(dirname(__FILE__, 2) . '/ronikdetached/archive-database.sql')) {
-                    unlink(dirname(__FILE__, 2) . '/ronikdetached/archive-database.sql');
-                }
-                if (file_exists(dirname(__FILE__, 2) . '/ronikdetached/archive-media.zip')) {
-                    unlink(dirname(__FILE__, 2) . '/ronikdetached/archive-media.zip');
-                }
-
-                if ($file_path && isset($file_path_date_mod_array_reindexed[1])) {
-                    if (file_exists($file_path)) {
-                        $zip = new ZipArchive();
-                        $filename = dirname(__FILE__, 2) . "/ronikdetached/archive-media.zip";
-                        if ($zip->open($filename, ZipArchive::CREATE) !== TRUE) {
-                            exit("cannot open <$filename>\n");
-                        }
-                        // Add a file new.txt file to zip using the text specified
-                        $zip->addFromString('instructions.txt', "Unzip the folder and copy the media back to the mirror path inside the folder.");
-                        $zip->addFile($file_path, "$year/$month/" . $file_name);
-                        $zip->close();
-                    }
-                }
-
-
-                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, imageCloneSave. ' . $rbp_data_id, 'low', 'rbp_media_cleaner');
-
                 try {
-                    $clone_path = get_post_meta($rbp_data_id, '_wp_attached_file'); // Full path
-                    if (isset($clone_path[0])) {
-                        // Get the attachment ID from the file path
+                    $file_path = get_attached_file($rbp_data_id);
+                    
+                    if (!$file_path || !file_exists($file_path)) {
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, File not found for ID: ' . $rbp_data_id, 'medium', 'rbp_media_cleaner');
+                        continue;
+                    }
+
+                    // Extract relative path from uploads directory more reliably
+                    $relative_path = str_replace($upload_base_path, '', $file_path);
+                    $relative_path = ltrim($relative_path, '/\\');
+                    
+                    // Extract year/month from path (format: YYYY/MM/filename)
+                    $path_parts = explode('/', trim($relative_path, '/'));
+                    $year = isset($path_parts[0]) && is_numeric($path_parts[0]) ? $path_parts[0] : date('Y');
+                    $month = isset($path_parts[1]) && is_numeric($path_parts[1]) ? $path_parts[1] : date('m');
+                    $file_name = basename($file_path);
+                    $zip_path = $year . '/' . $month . '/' . $file_name;
+
+                    // Add file to zip if zip was opened successfully
+                    // Use addFromString() to read file content immediately, so file can be deleted before zip closes
+                    if ($zip_opened) {
+                        $file_content = @file_get_contents($file_path);
+                        if ($file_content !== false) {
+                            if ($zip->addFromString($zip_path, $file_content)) {
+                                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Added to backup: ' . $zip_path . ' (' . number_format(strlen($file_content)) . ' bytes)', 'low', 'rbp_media_cleaner');
+                            } else {
+                                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Failed to add file to zip: ' . $zip_path, 'medium', 'rbp_media_cleaner');
+                            }
+                        } else {
+                            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Failed to read file for backup: ' . $file_path, 'medium', 'rbp_media_cleaner');
+                        }
+                    }
+
+                    // Delete attachment
+                    $clone_path = get_post_meta($rbp_data_id, '_wp_attached_file');
+                    if ($clone_path && isset($clone_path[0])) {
                         $clone_attachment_id = attachment_url_to_postid(wp_get_attachment_url($rbp_data_id));
                         if ($clone_attachment_id) {
-                            // Suppress errors from other plugins' hooks that may fail
                             $delete_attachment_clone = @wp_delete_attachment($clone_attachment_id, true);
                             if ($delete_attachment_clone) {
-                                // wp_delete_attachment already handles file deletion when second param is true
-                                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11e, imageCloneSave. Clone File Deleted ', 'low', 'rbp_media_cleaner');
+                                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11e, Clone File Deleted', 'low', 'rbp_media_cleaner');
                             }
                         }
                     }
 
-                    // Delete attachment from database and file
-                    // wp_delete_attachment with true parameter already deletes the file
-                    // Suppress errors from other plugins' hooks that may fail
                     $delete_attachment = @wp_delete_attachment($rbp_data_id, true);
                     if ($delete_attachment) {
-                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, imageCloneSave.  File Deleted ', 'low', 'rbp_media_cleaner');
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, File Deleted: ' . $rbp_data_id, 'low', 'rbp_media_cleaner');
                     } else {
-                        // Log if deletion failed but don't stop processing
-                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, imageCloneSave. File Deletion Failed for ID: ' . $rbp_data_id, 'medium', 'rbp_media_cleaner');
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, File Deletion Failed for ID: ' . $rbp_data_id, 'medium', 'rbp_media_cleaner');
                     }
                 } catch (Exception $e) {
-                    // Log the error but continue processing other files
-                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, imageCloneSave. Exception deleting file ID ' . $rbp_data_id . ': ' . $e->getMessage(), 'high', 'rbp_media_cleaner');
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11f, Exception deleting file ID ' . $rbp_data_id . ': ' . $e->getMessage(), 'high', 'rbp_media_cleaner');
                     error_log('Media Cleaner: Error deleting attachment ' . $rbp_data_id . ': ' . $e->getMessage());
                 }
             }
 
-            // Use WordPress database abstraction instead of direct mysqli
-            global $wpdb;
-            $tables = $wpdb->get_col('SHOW TABLES');
-            $sqlScript = "";
-            
-            foreach ($tables as $table) {
-                // Get table structure
-                $create_table = $wpdb->get_row($wpdb->prepare("SHOW CREATE TABLE `%s`", $table), ARRAY_N);
-                if ($create_table) {
-                    $sqlScript .= "\n\n" . $create_table[1] . ";\n\n";
+            // Close zip archive - this will write the zip file to disk
+            if ($zip_opened) {
+                $close_result = $zip->close();
+                if ($close_result) {
+                    // Verify the zip file was created
+                    if (file_exists($zip_filename)) {
+                        $file_size = filesize($zip_filename);
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Zip archive closed successfully. File size: ' . number_format($file_size) . ' bytes', 'low', 'rbp_media_cleaner');
+                    } else {
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Zip archive closed but file not found at: ' . $zip_filename, 'medium', 'rbp_media_cleaner');
+                    }
+                } else {
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Failed to close zip archive', 'medium', 'rbp_media_cleaner');
                 }
-                
-                // Get table data
-                $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM `%s`", $table), ARRAY_N);
-                if ($rows) {
-                    $columnCount = count($rows[0]);
-                    foreach ($rows as $row) {
-                        $sqlScript .= "INSERT INTO `{$table}` VALUES(";
-                        for ($j = 0; $j < $columnCount; $j++) {
-                            if (isset($row[$j])) {
-                                $sqlScript .= '"' . $wpdb->_real_escape($row[$j]) . '"';
-                            } else {
-                                $sqlScript .= '""';
-                            }
-                            if ($j < ($columnCount - 1)) {
-                                $sqlScript .= ',';
-                            }
+            } else {
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11d, Zip archive was not opened, skipping close', 'medium', 'rbp_media_cleaner');
+            }
+
+            // Database backup - Backup entire database
+            global $wpdb;
+            
+            // Get all tables from the database
+            $tables_to_backup = array();
+            
+            // Try to get database name first
+            $db_name = $wpdb->dbname;
+            $show_tables_query = $db_name ? "SHOW TABLES FROM `{$db_name}`" : "SHOW TABLES";
+            
+            // Get tables - WordPress returns them with a dynamic key like "Tables_in_database_name"
+            $tables_result = $wpdb->get_results($show_tables_query, ARRAY_N);
+            
+            if ($tables_result && !empty($tables_result)) {
+                // Extract table names from the result
+                // SHOW TABLES returns: array(0 => array(0 => 'table_name')) or array(0 => array('Tables_in_db' => 'table_name'))
+                foreach ($tables_result as $table_row) {
+                    if (is_array($table_row)) {
+                        // Get the first value from the array (table name is always the first element)
+                        $table_name = reset($table_row);
+                        if ($table_name && is_string($table_name)) {
+                            $tables_to_backup[] = $table_name;
                         }
-                        $sqlScript .= ");\n";
                     }
                 }
-                $sqlScript .= "\n";
+                
+                // Log what we found
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Found ' . count($tables_to_backup) . ' tables via SHOW TABLES', 'low', 'rbp_media_cleaner');
             }
             
-            if (!empty($sqlScript)) {
-                $backup_file_name = dirname(__FILE__, 2) . '/ronikdetached/archive-database.sql';
-                $fileHandler = fopen($backup_file_name, 'w+');
-                if ($fileHandler) {
-                    $number_of_lines = fwrite($fileHandler, $sqlScript);
-                    fclose($fileHandler);
-                    $message = "Backup Created Successfully";
-                    error_log(print_r($message, true));
-                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, imageCloneSave. BACKUP ' . $message, 'low', 'rbp_media_cleaner');
+            // Fallback if no tables found or SHOW TABLES failed
+            if (empty($tables_to_backup)) {
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, SHOW TABLES returned no results, using fallback tables', 'medium', 'rbp_media_cleaner');
+                // Use WordPress table properties which already have the correct prefix
+                $tables_to_backup = array(
+                    $wpdb->posts, 
+                    $wpdb->postmeta, 
+                    $wpdb->users, 
+                    $wpdb->usermeta, 
+                    $wpdb->options, 
+                    $wpdb->comments, 
+                    $wpdb->commentmeta, 
+                    $wpdb->terms, 
+                    $wpdb->term_taxonomy, 
+                    $wpdb->term_relationships, 
+                    $wpdb->termmeta
+                );
+                
+                // Try to get additional tables that might exist using information_schema
+                if (!empty($wpdb->dbname)) {
+                    $escaped_dbname = esc_sql($wpdb->dbname);
+                    $additional_tables = $wpdb->get_results("SELECT table_name FROM information_schema.tables WHERE table_schema = '{$escaped_dbname}'", ARRAY_A);
+                    if ($additional_tables) {
+                        foreach ($additional_tables as $table_info) {
+                            if (isset($table_info['table_name'])) {
+                                $tables_to_backup[] = $table_info['table_name'];
+                            }
+                        }
+                        $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Found ' . count($additional_tables) . ' additional tables via information_schema', 'low', 'rbp_media_cleaner');
+                    }
                 }
             }
+            
+            if (empty($tables_to_backup)) {
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, ERROR: No tables found to backup!', 'high', 'rbp_media_cleaner');
+                error_log('Media Cleaner: No tables found for backup');
+                return false;
+            }
+            
+            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Backing up ' . count($tables_to_backup) . ' tables: ' . implode(', ', array_slice($tables_to_backup, 0, 5)) . (count($tables_to_backup) > 5 ? '...' : ''), 'low', 'rbp_media_cleaner');
+            
+            $sql_script = "-- Media Cleaner Backup - Full Database\n";
+            $sql_script .= "-- Generated: " . date('Y-m-d H:i:s') . "\n";
+            $sql_script .= "-- Tables: " . count($tables_to_backup) . "\n\n";
+            
+            $total_tables_processed = 0;
+            foreach ($tables_to_backup as $table_name) {
+                // Escape table name properly (don't use prepare for table names)
+                $escaped_table_name = esc_sql($table_name);
+                
+                // Get table structure
+                $create_table = $wpdb->get_row("SHOW CREATE TABLE `{$escaped_table_name}`", ARRAY_N);
+                if ($create_table && isset($create_table[1])) {
+                    $sql_script .= "DROP TABLE IF EXISTS `{$escaped_table_name}`;\n";
+                    $sql_script .= $create_table[1] . ";\n\n";
+                } else {
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Failed to get table structure for: ' . $table_name, 'medium', 'rbp_media_cleaner');
+                    continue; // Skip this table if we can't get its structure
+                }
+                
+                // Get table data in chunks to avoid memory issues
+                $offset = 0;
+                $chunk_size = 1000;
+                $row_count = 0;
+                
+                while (true) {
+                    // Don't use prepare for table names - construct query manually
+                    $limit = (int)$chunk_size;
+                    $offset_int = (int)$offset;
+                    $query = "SELECT * FROM `{$escaped_table_name}` LIMIT {$limit} OFFSET {$offset_int}";
+                    $rows = $wpdb->get_results($query, ARRAY_A);
+                    
+                    if (empty($rows)) {
+                        break;
+                    }
+                    
+                    foreach ($rows as $row) {
+                        $columns = array_keys($row);
+                        $values = array_values($row);
+                        
+                        // Escape column names
+                        $escaped_columns = array_map(function($col) use ($wpdb) {
+                            return '`' . esc_sql($col) . '`';
+                        }, $columns);
+                        
+                        // Escape values properly for SQL dump format
+                        $escaped_values = array_map(function($value) use ($wpdb) {
+                            if (is_null($value)) {
+                                return 'NULL';
+                            }
+                            // Convert to string and escape for SQL
+                            $value_str = (string)$value;
+                            // Escape backslashes, single quotes, and newlines for SQL
+                            $escaped = str_replace(array("\\", "'", "\n", "\r"), array("\\\\", "\\'", "\\n", "\\r"), $value_str);
+                            return "'" . $escaped . "'";
+                        }, $values);
+                        
+                        $sql_script .= "INSERT INTO `{$escaped_table_name}` (" . implode(', ', $escaped_columns) . ") VALUES (" . implode(', ', $escaped_values) . ");\n";
+                        $row_count++;
+                    }
+                    
+                    $offset += $chunk_size;
+                    
+                    // Prevent memory exhaustion
+                    if ($offset % 10000 == 0) {
+                        gc_collect_cycles();
+                    }
+                }
+                
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Backed up ' . $row_count . ' rows from table: ' . $table_name, 'low', 'rbp_media_cleaner');
+                $sql_script .= "\n";
+                $total_tables_processed++;
+            }
+            
+            $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Processed ' . $total_tables_processed . ' tables. SQL script length: ' . strlen($sql_script) . ' bytes', 'low', 'rbp_media_cleaner');
+            
+            // Write SQL backup file
+            error_log('Media Cleaner: About to write SQL file. Script length: ' . strlen($sql_script) . ' bytes');
+            if (!empty($sql_script) && strlen($sql_script) > 50) { // Check it's more than just headers
+                $file_handler = @fopen($sql_filename, 'w');
+                if ($file_handler) {
+                    $bytes_written = fwrite($file_handler, $sql_script);
+                    fclose($file_handler);
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Database backup created (' . $bytes_written . ' bytes) at: ' . $sql_filename, 'low', 'rbp_media_cleaner');
+                    error_log('Media Cleaner: SQL backup SUCCESS - wrote ' . $bytes_written . ' bytes to ' . $sql_filename);
+                    
+                    // Verify file was written
+                    if (file_exists($sql_filename)) {
+                        $actual_size = filesize($sql_filename);
+                        error_log('Media Cleaner: SQL file verified - exists, size: ' . $actual_size . ' bytes');
+                    } else {
+                        error_log('Media Cleaner: ERROR - SQL file does not exist after write!');
+                    }
+                } else {
+                    $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, Failed to write database backup file to: ' . $sql_filename, 'medium', 'rbp_media_cleaner');
+                    error_log('Media Cleaner: ERROR - Failed to open file for writing: ' . $sql_filename);
+                    error_log('Media Cleaner: Directory exists: ' . (is_dir($backup_dir) ? 'yes' : 'no'));
+                    error_log('Media Cleaner: Directory writable: ' . (is_writable($backup_dir) ? 'yes' : 'no'));
+                }
+            } else {
+                $rbpHelper->ronikdesigns_write_log_devmode('Media Cleaner: Ref 11g, SQL script is empty or too small. Length: ' . strlen($sql_script) . ' bytes', 'high', 'rbp_media_cleaner');
+                error_log('Media Cleaner: SQL backup failed - script length: ' . strlen($sql_script));
+            }
+            
             return true;
+        } else {
+            error_log('Media Cleaner: Backup condition NOT MET - skipping backup');
+            error_log('Media Cleaner: $rbp_media_cleaner_media_data: ' . print_r($rbp_media_cleaner_media_data, true));
+            error_log('Media Cleaner: $f_file_import: ' . print_r($f_file_import, true));
         }
         return true;
     }

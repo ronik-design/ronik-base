@@ -109,10 +109,6 @@ const FetchAddon = ({ pluginName, pluginSlug, title, description, linkHref, link
             // Check if the server response indicates a need to reload
             if (result?.data === 'Reload') {
                 // Reload the page after 1 second
-
-                alert("AAAAAA.");
-
-
                 setTimeout(() => location.reload(), 1000);
             }
         } catch (error) {
@@ -148,7 +144,7 @@ const FetchAddon = ({ pluginName, pluginSlug, title, description, linkHref, link
                     <div className='tile-item__text tile-item__text--name'>{parse(pluginName)}</div>
                     <div className='tile-item__text tile-item__text--title'>{parse(title)}</div>
                     <div className='tile-item__text tile-item__text--desc'>{parse(description)}</div>
-                    <a href={parse(linkHref)} className='tile-item__text tile-item__text--link'>{parse(linkName)}</a>
+                    <a href={parse(linkHref)} className='tile-item__text tile-item__text--link' target="_blank" rel="noopener noreferrer">{parse(linkName)}</a>
 
                     {/* Render the form for license key activation/deactivation */}
                     <form className='tile-item__form' onSubmit={handleSubmit}>
@@ -161,12 +157,13 @@ const FetchAddon = ({ pluginName, pluginSlug, title, description, linkHref, link
                                 value={formValues[licenseKeyId] || (dataResponse.responseResults === 'valid' ? "xxxxxxxxxxxxxxxxxxxxxxxx" : "")}
                                 onChange={handleChange}
                                 disabled={dataResponse.responseResults === 'valid'}
+                                placeholder="Enter your license key"
                             />
                         </div>
                         {/* Render the appropriate button based on validation status */}
                         <button
                             type="submit"
-                            className="submit-btn"
+                            className={`submit-btn ${dataResponse.responseResults === 'valid' ? 'submit-btn--deactivate' : 'submit-btn--activate'}`}
                             onClick={(e) => {
                                 if (dataResponse.responseResults === 'valid') {
                                     // Call deactivateLicense if the license is valid
